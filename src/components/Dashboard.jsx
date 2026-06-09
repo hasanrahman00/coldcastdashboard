@@ -7,29 +7,32 @@ import SalesNav from '../pages/salesnav/SalesNav.jsx'
 import ComingSoon from '../pages/ComingSoon.jsx'
 import Settings from '../pages/Settings.jsx'
 import ApiKey from '../pages/ApiKey.jsx'
+import Extension from '../pages/Extension.jsx'
 
 export default function Dashboard({ onLogout }) {
-  const [route, nav] = useHashRoute('salesnav')
+  const [route, nav] = useHashRoute('dash')
 
-  // Decide what to render for the active route.
   let page
-  if (route === 'settings') page = <Settings />
+  if (route === 'set') page = <Settings />
   else if (route === 'api') page = <ApiKey />
+  else if (route === 'ext') page = <Extension />
   else {
     const product = getProduct(route)
-    if (product && product.status === 'live') page = <SalesNav />
-    else if (product) page = <ComingSoon product={product} />
-    else page = <SalesNav /> // unknown route → default product
+    if (product && !product.soon) page = <SalesNav />
+    else if (product) page = <ComingSoon product={product} nav={nav} />
+    else page = <SalesNav />
   }
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <>
       <Topbar route={route} nav={nav} onLogout={onLogout} />
-      <main className="mx-auto w-full max-w-[1180px] flex-1 px-5 pb-16 pt-6 sm:px-7">
-        <StatsBox nav={nav} />
-        <ProductNav route={route} nav={nav} />
-        <div className="mt-6">{page}</div>
+      <main className="mn">
+        <div className="cnt">
+          <StatsBox nav={nav} />
+          <ProductNav route={route} nav={nav} />
+          {page}
+        </div>
       </main>
-    </div>
+    </>
   )
 }

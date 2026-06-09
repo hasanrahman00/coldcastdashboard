@@ -1,31 +1,68 @@
 import {
-  IconSearch,
-  IconFilter,
-  IconLayers,
-  IconDatabase,
-  IconMailCheck,
   IconGlobe,
+  IconLayers,
+  IconFeather,
+  IconSearchPlus,
+  IconMailCheck,
+  IconAtSign,
 } from './icons.jsx'
 
 // ─────────────────────────────────────────────────────────────────────────────
-//  The product registry — the ONE source of truth for the nav + routing.
+//  Product registry — single source of truth for the nav + routing + the
+//  coming-soon copy. `id` doubles as the route and the CSS data-p key (the
+//  ported stylesheet colours each tab via .ptab[data-p="<id>"]).
 //
-//  Adding a new app = add an entry here (+ a page component wired in App's
-//  router). The nav tabs, accent colours, "Soon" badges, and the active-tab
-//  underline all derive from this array — no four-places-to-edit problem.
-//
-//  `accent` is a raw hex (used inline for per-product colour, since Tailwind
-//  can't generate class names from runtime variables).
+//  Add a product → add an entry. While soon:true it renders the shared
+//  ComingSoon page automatically.
 // ─────────────────────────────────────────────────────────────────────────────
 
 export const PRODUCTS = [
-  { id: 'salesnav',  label: 'Sales Nav',         short: 'Sales Navigator scraper',   accent: '#4f7cf5', status: 'live', icon: IconSearch },
-  { id: 'waterfall', label: 'Waterfall',         short: 'Waterfall email enricher',  accent: '#0891b2', status: 'soon', icon: IconFilter },
-  { id: 'apollo',    label: 'Apollo',            short: 'Apollo scraper',            accent: '#ea580c', status: 'soon', icon: IconLayers },
-  { id: 'zoominfo',  label: 'ZoomInfo',          short: 'ZoomInfo scraper',          accent: '#7c3aed', status: 'soon', icon: IconDatabase },
-  { id: 'verify',    label: 'Email Verify',      short: 'Email verification',        accent: '#059669', status: 'soon', icon: IconMailCheck },
-  { id: 'domain',    label: 'Domain Enrichment', short: 'Company → domain enrich',   accent: '#db2777', status: 'soon', icon: IconGlobe },
+  {
+    id: 'dash',
+    label: 'Sales Nav Scraper',
+    soon: false,
+    icon: IconGlobe,
+  },
+  {
+    id: 'waterfall',
+    label: 'Waterfall Email Enricher',
+    soon: true,
+    icon: IconLayers,
+    title: 'Waterfall Email Enricher',
+    body: 'Chain your providers in a waterfall to maximize verified-email coverage. Each lead falls through to the next source until a valid, deliverable address is found — then runs through the built-in verifier.',
+  },
+  {
+    id: 'apollo',
+    label: 'Apollo Scraper',
+    soon: true,
+    icon: IconFeather,
+    title: 'Apollo Scraper',
+    body: 'Export targeted contact and company lists straight from your Apollo searches — names, titles, verified emails, and firmographics — with the same one-click flow as the Sales Nav scraper.',
+  },
+  {
+    id: 'zoominfo',
+    label: 'ZoomInfo Scraper',
+    soon: true,
+    icon: IconSearchPlus,
+    title: 'ZoomInfo Scraper',
+    body: 'Pull contacts and accounts from ZoomInfo into clean, enriched CSVs — direct dials, work emails, and company data — without manual exports or seat limits.',
+  },
+  {
+    id: 'verify',
+    label: 'Email Verify',
+    soon: true,
+    icon: IconMailCheck,
+    title: 'Email Verify',
+    body: 'Validate any email list in bulk — syntax, MX, SMTP, catch-all, and risk scoring — so you only send to deliverable addresses and protect your sender reputation. This is the engine that powers the waterfall enricher.',
+  },
+  {
+    id: 'domain',
+    label: 'Domain Enrichment',
+    soon: true,
+    icon: IconAtSign,
+    title: 'Domain Enrichment',
+    body: 'Turn a list of company domains into full firmographics — company name, industry, size, location, socials, and key contacts — in one upload. The same enrichment engine behind the scraper, pointed straight at domains.',
+  },
 ]
 
-export const PRODUCT_IDS = PRODUCTS.map((p) => p.id)
 export const getProduct = (id) => PRODUCTS.find((p) => p.id === id)

@@ -1,62 +1,42 @@
 import { useState } from 'react'
 import { useApp } from '../store/AppStore.jsx'
 import { useToast } from '../store/ToastProvider.jsx'
-import { IconUser } from '../lib/icons.jsx'
+import { IconUsers, IconChain } from '../lib/icons.jsx'
 
 function ProfileCard({ p, isActive, onActivate, onDelete }) {
   const online = !!p.online
   return (
-    <div
-      className={
-        'rounded-2xl border bg-card p-4 transition ' +
-        (isActive ? 'border-brand/40 ring-1 ring-brand/20' : 'border-line')
-      }
-    >
-      <div className="flex items-center gap-3">
-        <button
-          onClick={() => onActivate(p.id)}
+    <div className={'profile-card' + (isActive ? ' active' : '')}>
+      <div className="profile-head">
+        <div
+          className={'profile-radio' + (isActive ? ' on' : '')}
           title={isActive ? 'Active profile' : 'Set as active profile'}
-          className={
-            'grid h-5 w-5 shrink-0 place-items-center rounded-full border-2 transition ' +
-            (isActive ? 'border-brand' : 'border-slate-300 hover:border-brand')
-          }
-        >
-          {isActive && <span className="h-2.5 w-2.5 rounded-full bg-brand" />}
-        </button>
-
-        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-slate-100 text-slate-500">
-          <IconUser className="h-4.5 w-4.5" />
-        </span>
-
-        <div className="min-w-0 flex-1">
-          <div className="truncate text-sm font-bold text-ink">{p.name || p.id}</div>
-          <div className="mt-0.5 flex items-center gap-1.5 text-xs font-medium">
-            <span className={'h-2 w-2 rounded-full ' + (online ? 'bg-emerald-500' : 'bg-amber-400')} />
-            <span className={online ? 'text-emerald-600' : 'text-muted'}>
-              {online ? 'Connected via extension' : 'Extension not connected'}
-            </span>
-          </div>
+          onClick={() => onActivate(p.id)}
+        />
+        <div className="profile-name">{p.name || p.id}</div>
+        <div className="profile-actions">
+          <button
+            className="btn btn-g btn-sm"
+            onClick={() => onDelete(p)}
+            style={{ color: 'var(--red)', borderColor: 'rgba(244,63,94,.3)' }}
+          >
+            Delete
+          </button>
         </div>
-
-        <button
-          onClick={() => onDelete(p)}
-          className="rounded-lg border border-rose-200 px-2.5 py-1 text-xs font-bold text-rose-600 transition hover:bg-rose-50"
-        >
-          Delete
-        </button>
       </div>
-
-      {p.message && String(p.message).trim() && (
-        <div className="mt-2.5 rounded-lg bg-amber-50 px-3 py-1.5 text-xs font-medium text-amber-700">
-          ⚠ {p.message}
-        </div>
-      )}
+      <div className="profile-stats">
+        <span>
+          <span className={'stat-dot ' + (online ? 'ok' : 'warn')} />
+          {online ? 'Connected via extension' : 'Extension not connected'}
+        </span>
+      </div>
+      {p.message && String(p.message).trim() && <div className="profile-msg">⚠ {p.message}</div>}
     </div>
   )
 }
 
 export default function Settings() {
-  const { profiles, activeProfileId, activateProfile, deleteProfile } = useApp()
+  const { profiles, activeProfileId, activateProfile, deleteProfile, refreshProfiles } = useApp()
   const toast = useToast()
   const [busy, setBusy] = useState(false)
 
@@ -92,50 +72,106 @@ export default function Settings() {
   }
 
   return (
-    <div className="cc-card-in mx-auto max-w-3xl">
-      <h2 className="text-xl font-extrabold tracking-tight text-ink">Settings</h2>
-      <p className="mt-1 text-sm text-muted">
-        Manage the browser-extension profiles that power your scraping jobs.
-      </p>
-
-      <h3 className="mb-3 mt-6 text-sm font-bold uppercase tracking-wide text-faint">
-        Profiles
-      </h3>
-
-      {profiles.length ? (
-        <div className="space-y-3">
-          {profiles.map((p) => (
-            <ProfileCard
-              key={p.id}
-              p={p}
-              isActive={p.id === activeProfileId}
-              onActivate={onActivate}
-              onDelete={onDelete}
-            />
-          ))}
+    <>
+      {/* Profiles */}
+      <div className="sbox">
+        <div className="sbox-h">
+          <div className="sbox-ic">
+            <IconUsers />
+          </div>
+          <h3>Profiles</h3>
         </div>
-      ) : (
-        <div className="rounded-2xl border border-dashed border-line bg-card p-6 text-center text-sm text-muted">
-          No profiles yet. Install the Coldcast browser extension and connect it —
-          your profile appears here automatically.
-        </div>
-      )}
+        <p>
+          Each profile = one LinkedIn account connected through the browser extension. To add another,
+          connect the extension in a different Chrome profile.
+        </p>
 
-      {profiles.length > 0 && !anyOnline && (
-        <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-700">
-          Profile not connected. Open the Coldcast extension in your Chrome and make
-          sure it shows “connected”.
+        <div className="profile-list">
+          {profiles.length ? (
+            profiles.map((p) => (
+              <ProfileCard
+                key={p.id}
+                p={p}
+                isActive={p.id === activeProfileId}
+                onActivate={onActivate}
+                onDelete={onDelete}
+              />
+            ))
+          ) : (
+            <div className="profile-empty">
+              No profiles yet. Install the browser extension and connect it (see <b>One-time setup</b>) —
+              your profile appears here automatically.
+            </div>
+          )}
         </div>
-      )}
 
-      <div className="mt-8 rounded-2xl border border-line bg-card p-5">
-        <h3 className="text-sm font-bold text-ink">One-time setup</h3>
-        <ol className="mt-2 list-decimal space-y-1 pl-5 text-sm text-muted">
-          <li>Install the Coldcast Chrome extension.</li>
-          <li>Open it and paste your API key (find it on the API key page).</li>
-          <li>Once it shows “connected”, your profile appears above automatically.</li>
-        </ol>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          <button className="btn btn-g" onClick={refreshProfiles} style={{ marginLeft: 'auto' }}>
+            Refresh
+          </button>
+        </div>
+        {profiles.length > 0 && !anyOnline && (
+          <p className="setup-note" style={{ marginTop: 12 }}>
+            Profile not connected. Open the Coldcast extension in your Chrome and make sure it shows
+            “connected”.
+          </p>
+        )}
       </div>
-    </div>
+
+      {/* Connect data sources */}
+      <div className="sbox">
+        <div className="sbox-h">
+          <div className="sbox-ic">
+            <IconChain />
+          </div>
+          <h3>Connect data sources</h3>
+        </div>
+
+        <p style={{ marginBottom: 14, color: 'var(--text-muted)', fontSize: 13 }}>
+          Coldcast enriches your leads using your own logged-in sessions — there are <b>no API keys to
+          paste</b>. Just stay signed in to the sources below <b>in the same Chrome where the Coldcast
+          extension is installed</b>.
+        </p>
+
+        <ol className="setup-steps">
+          <li>
+            <h4>Log into each source</h4>
+            <p>Click a card below and sign in normally, using accounts you already have. You only do this once per source.</p>
+          </li>
+          <li>
+            <h4>Use the same Chrome profile</h4>
+            <p>Sign in in the <b>same Chrome profile</b> where the Coldcast extension runs, so it can reuse your session.</p>
+          </li>
+          <li>
+            <h4>Run a job</h4>
+            <p>When you export, Coldcast pulls emails, phone numbers, and company data from whichever sources you're signed in to. Not signed in to one? It's simply skipped.</p>
+          </li>
+        </ol>
+
+        <div className="enrich-grid">
+          <a className="enrich-card" href="https://www.lusha.com/login/" target="_blank" rel="noopener noreferrer">
+            <div className="enrich-h">
+              <b>Lusha</b>
+              <span className="enrich-action">Open &amp; log in →</span>
+            </div>
+            <p>Verified business emails &amp; direct-dial phone numbers from your Lusha credits.</p>
+          </a>
+          <a className="enrich-card" href="https://salesql.com/" target="_blank" rel="noopener noreferrer">
+            <div className="enrich-h">
+              <b>SalesQL</b>
+              <span className="enrich-action">Open &amp; log in →</span>
+            </div>
+            <p>Business email addresses &amp; company details for your leads.</p>
+          </a>
+          <a className="enrich-card" href="https://contactout.com/login" target="_blank" rel="noopener noreferrer">
+            <div className="enrich-h">
+              <b>ContactOut</b>
+              <span className="enrich-action">Open &amp; log in →</span>
+            </div>
+            <p>Personal &amp; work emails plus phone numbers, when you're logged in.</p>
+          </a>
+        </div>
+      </div>
+    </>
   )
 }

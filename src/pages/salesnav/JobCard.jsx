@@ -1,18 +1,18 @@
 import { useApp } from '../../store/AppStore.jsx'
 import { useToast } from '../../store/ToastProvider.jsx'
 import {
+  IconCalendar,
+  IconUser,
+  IconUsersSm,
+  IconFileLines,
   IconPlay,
   IconStop,
   IconDownload,
-  IconLogs,
+  IconLogsLines,
   IconTrash,
-  IconCalendar,
-  IconUser,
-  IconUsers,
-  IconLink,
-  IconPage,
   IconRetry,
   IconWarn,
+  IconLink,
 } from '../../lib/icons.jsx'
 
 function jobUrlOf(j) {
@@ -22,20 +22,6 @@ function jobUrlOf(j) {
     url = typeof u === 'string' ? u : (u && (u.url || u.href)) || ''
   }
   return url || j.url || j.searchUrl || ''
-}
-
-function Btn({ onClick, disabled, title, tint, children }) {
-  return (
-    <button
-      onClick={onClick}
-      disabled={disabled}
-      title={title}
-      className="inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs font-bold transition disabled:cursor-not-allowed disabled:opacity-45"
-      style={{ borderColor: tint + '40', color: tint, background: tint + '0d' }}
-    >
-      {children}
-    </button>
-  )
 }
 
 export default function JobCard({ job, onOpenLogs }) {
@@ -50,12 +36,13 @@ export default function JobCard({ job, onOpenLogs }) {
   const anotherRunning = jobs.some(
     (x) => x.id !== job.id && (x.status === 'running' || x.status === 'stopping'),
   )
+  const runTitle = anotherRunning ? 'You already have a job running. Stop it first.' : 'Start scraping'
 
   const profile = profiles.find((p) => p.id === (job.profileId || activeProfileId))
   const profileLabel = profile ? profile.name || profile.id : job.profileId ? 'Unknown profile' : ''
 
   const url = jobUrlOf(job)
-  const date = job.createdAt
+  const d = job.createdAt
     ? new Date(job.createdAt).toLocaleDateString('en-US', {
         month: 'short',
         day: 'numeric',
@@ -65,36 +52,31 @@ export default function JobCard({ job, onOpenLogs }) {
       })
     : ''
 
-  // status line
-  let stColor = '#64748b'
-  let stText = 'Ready to run'
+  // status line (TotLeads-style)
+  let stCls = 'idle'
+  let stTxt = 'Ready to run'
   let StIcon = IconRetry
   if (scrapeBusy) {
-    stColor = '#4f7cf5'
-    stText = job.status === 'stopping' ? 'Stopping…' : 'Scraping…'
+    stCls = 'run'
+    stTxt = job.status === 'stopping' ? 'Stopping…' : 'Scraping…'
   } else if (hasData) {
-    stColor = '#059669'
-    stText = 'File available'
+    stCls = 'ok'
+    stTxt = 'File available'
   } else if (job.status === 'failed') {
-    stColor = '#e11d48'
-    stText = 'Failed'
+    stCls = 'bad'
+    stTxt = 'Failed'
     StIcon = IconWarn
   }
 
-  const run = async () => {
+  const wrap = (fn) => async () => {
     try {
-      await startJob(job.id)
+      await fn()
     } catch (e) {
       toast(e.message || 'Action failed', 'err')
     }
   }
-  const stop = async () => {
-    try {
-      await stopJob(job.id)
-    } catch (e) {
-      toast(e.message || 'Action failed', 'err')
-    }
-  }
+  const run = wrap(() => startJob(job.id))
+  const stop = wrap(() => stopJob(job.id))
   const remove = async () => {
     const running = job.status === 'running' || job.status === 'stopping'
     const msg = running
@@ -112,96 +94,74 @@ export default function JobCard({ job, onOpenLogs }) {
   const pct = job.progress || 0
 
   return (
-    <div className="cc-card-in flex min-h-[228px] flex-col gap-3 rounded-2xl border border-line bg-card p-4 shadow-sm transition hover:shadow-md">
-      {/* title */}
-      <div className="truncate text-[15px] font-bold text-ink">{job.name}</div>
-
-      {/* status line */}
-      <div className="flex items-center gap-1.5 text-sm font-semibold" style={{ color: stColor }}>
-        <StIcon className="h-4 w-4" />
-        {stText}
+    <div className="jc">
+      <div className="jc-h">
+        <div className="jc-t">{job.name || 'Untitled'}</div>
       </div>
 
-      {/* meta */}
-      <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted">
-        {date && (
-          <span className="inline-flex items-center gap-1">
-            <IconCalendar className="h-3.5 w-3.5" /> {date}
-          </span>
-        )}
+      <div className={'jc-st ' + stCls}>
+        <StIcon /> {stTxt}
+      </div>
+
+      <div className="jc-m">
+        <span>
+          <IconCalendar /> {d}
+        </span>
         {profileLabel && (
-          <span className="inline-flex items-center gap-1">
-            <IconUser className="h-3.5 w-3.5" /> {profileLabel}
+          <span>
+            <IconUser /> {profileLabel}
           </span>
         )}
         {job.currentPage ? (
-          <span className="inline-flex items-center gap-1">
-            <IconPage className="h-3.5 w-3.5" /> Page {job.currentPage}
+          <span>
+            <IconFileLines /> Page {job.currentPage}
           </span>
         ) : null}
       </div>
 
-      {/* url */}
       {url && (
-        <a
-          href={url}
-          target="_blank"
-          rel="noopener noreferrer"
-          title={url}
-          className="inline-flex items-center gap-1.5 truncate text-xs text-brand hover:underline"
-        >
-          <IconLink className="h-3.5 w-3.5 shrink-0" />
-          <span className="truncate">{url}</span>
+        <a className="jc-url" href={url} target="_blank" rel="noopener noreferrer" title={url}>
+          <IconLink />
+          <span>{url}</span>
         </a>
       )}
 
-      {/* leads on its own line, coloured number */}
-      <div className="flex items-center gap-1.5 text-sm text-muted">
-        <IconUsers className="h-4 w-4 text-emerald-500" />
-        <span className="text-base font-extrabold text-emerald-600">
-          {(job.totalLeads || 0).toLocaleString()}
-        </span>
-        leads
+      <div className="jc-leads">
+        <IconUsersSm />
+        <span className="n">{(job.totalLeads || 0).toLocaleString()}</span> leads
       </div>
 
-      {/* progress only while running */}
       {scrapeRun && (
-        <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
-          <div className="h-full rounded-full bg-brand transition-all" style={{ width: pct + '%' }} />
+        <div className="jc-p">
+          <div className="jc-pb" style={{ width: pct + '%' }} />
         </div>
       )}
 
-      {/* actions pinned to the bottom */}
-      <div className="mt-auto flex flex-wrap gap-1.5 pt-1">
+      <div className="jc-a">
         {scrapeIdle && (
-          <Btn
-            onClick={run}
-            disabled={anotherRunning}
-            tint="#4f7cf5"
-            title={anotherRunning ? 'You already have a job running. Stop it first.' : 'Start scraping'}
-          >
-            <IconPlay className="h-3.5 w-3.5" /> Run
-          </Btn>
+          <button className="btn btn-s btn-sm" disabled={anotherRunning} title={runTitle} onClick={run}>
+            <IconPlay /> Run
+          </button>
         )}
         {scrapeRun && (
-          <Btn onClick={stop} tint="#d97706" title="Stop scraping">
-            <IconStop className="h-3.5 w-3.5" /> Stop
-          </Btn>
+          <button className="btn btn-w btn-sm" onClick={stop}>
+            <IconStop /> Stop
+          </button>
         )}
-        <Btn onClick={() => dl('csv')} tint="#059669" title="Download CSV">
-          <IconDownload className="h-3.5 w-3.5" /> CSV
-        </Btn>
-        <Btn onClick={() => dl('xlsx')} tint="#7c3aed" title="Download XLSX">
-          <IconDownload className="h-3.5 w-3.5" /> XLSX
-        </Btn>
+        <button className="btn btn-csv btn-sm" onClick={() => dl('csv')}>
+          <IconDownload /> CSV
+        </button>
+        <button className="btn btn-xlsx btn-sm" onClick={() => dl('xlsx')}>
+          <IconDownload /> XLSX
+        </button>
         {!uiConfig.hideLogs && (
-          <Btn onClick={() => onOpenLogs(job)} tint="#0891b2" title="View logs">
-            <IconLogs className="h-3.5 w-3.5" /> Logs
-          </Btn>
+          <button className="btn btn-logs btn-sm" onClick={() => onOpenLogs(job)}>
+            <IconLogsLines /> Logs
+          </button>
         )}
-        <Btn onClick={remove} tint="#e11d48" title="Delete job">
-          <IconTrash className="h-3.5 w-3.5" /> Del
-        </Btn>
+        <button className="btn btn-d btn-sm" title="Delete job" onClick={remove}>
+          <IconTrash /> Del
+        </button>
       </div>
     </div>
   )

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { api, getSavedKey, setSavedKey } from '../lib/api.js'
 import { useApp } from '../store/AppStore.jsx'
 import { useToast } from '../store/ToastProvider.jsx'
-import { IconKey, IconCopy } from '../lib/icons.jsx'
+import { IconKeyOutline } from '../lib/icons.jsx'
 
 export default function ApiKey() {
   const { saveKey } = useApp()
@@ -12,14 +12,12 @@ export default function ApiKey() {
   const [input, setInput] = useState('')
   const [saving, setSaving] = useState(false)
 
-  // Prefer the server's decrypted copy; fall back to the key saved at login.
   useEffect(() => {
     let alive = true
     api
       .me()
       .then((d) => {
-        if (!alive) return
-        if (d && d.key) {
+        if (alive && d && d.key) {
           setKey(d.key)
           setSavedKey(d.key)
         }
@@ -57,53 +55,73 @@ export default function ApiKey() {
     }
   }
 
+  const noKey = !loading && !key
+
   return (
-    <div className="cc-card-in mx-auto max-w-2xl">
-      <h2 className="text-xl font-extrabold tracking-tight text-ink">API key</h2>
-      <p className="mt-1 text-sm text-muted">
-        Paste this key into the Coldcast browser extension to connect your profile.
+    <div className="sbox">
+      <div className="sbox-h">
+        <div className="sbox-ic">
+          <IconKeyOutline />
+        </div>
+        <h3>Your API key</h3>
+      </div>
+      <p>
+        This key connects the Coldcast browser extension to your workspace. Copy it, open the extension
+        (popup or sidebar), paste it, and click <b>Save</b>.
       </p>
 
-      <div className="mt-5 rounded-2xl border border-line bg-card p-5">
-        <div className="mb-2 flex items-center gap-2 text-sm font-bold text-ink">
-          <IconKey className="h-4 w-4 text-brand" /> Your key
-        </div>
-        <div className="flex items-center gap-2">
-          <code className="min-w-0 flex-1 truncate rounded-xl bg-slate-50 px-3 py-2.5 font-mono text-sm text-ink">
-            {loading ? 'Loading…' : key || 'Key not saved yet'}
-          </code>
-          <button
-            onClick={copy}
-            disabled={!key || loading}
-            className="flex items-center gap-1.5 rounded-xl bg-brand px-3 py-2.5 text-sm font-bold text-white transition hover:bg-brand-dark disabled:opacity-50"
-          >
-            <IconCopy className="h-4 w-4" /> Copy
-          </button>
-        </div>
+      <div className="key-box">
+        <div className="key-val">{loading ? 'Loading…' : key || 'Key not saved yet'}</div>
+        <button className="btn btn-p" onClick={copy} disabled={!key || loading}>
+          Copy
+        </button>
+      </div>
 
-        {!loading && !key && (
-          <div className="mt-4 rounded-xl border border-line bg-slate-50 p-4">
-            <p className="text-sm text-muted">
-              First time here? Paste your key once to save it to your account — then
-              it shows here automatically, on any device.
-            </p>
-            <div className="mt-3 flex items-center gap-2">
-              <input
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder="Paste your access key"
-                className="min-w-0 flex-1 rounded-xl border border-line bg-white px-3 py-2.5 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"
-              />
-              <button
-                onClick={save}
-                disabled={saving}
-                className="rounded-xl bg-ink px-4 py-2.5 text-sm font-bold text-white transition hover:bg-slate-700 disabled:opacity-60"
-              >
-                {saving ? 'Saving…' : 'Save'}
-              </button>
-            </div>
+      {noKey && (
+        <>
+          <p className="setup-note" style={{ marginTop: 12 }}>
+            First time here? Paste your key below once to save it to your account — then it shows here
+            automatically, on any device.
+          </p>
+          <div style={{ display: 'flex', marginTop: 10, gap: 10, alignItems: 'stretch' }}>
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Paste your key here to save it"
+              autoComplete="off"
+              spellCheck="false"
+              style={{
+                flex: 1,
+                minWidth: 0,
+                padding: '12px 14px',
+                background: 'var(--bg)',
+                border: '1px solid var(--border-strong)',
+                borderRadius: 10,
+                color: 'var(--text)',
+                fontFamily: 'var(--mono)',
+                fontSize: 13,
+                outline: 'none',
+              }}
+            />
+            <button
+              className="btn btn-p"
+              onClick={save}
+              disabled={saving}
+              style={{ width: 'auto', padding: '0 22px', whiteSpace: 'nowrap' }}
+            >
+              {saving ? 'Saving…' : 'Save key'}
+            </button>
           </div>
-        )}
+        </>
+      )}
+
+      <div className="help-cta" style={{ marginTop: 16 }}>
+        <div className="help-ic">!</div>
+        <div>
+          Keep this key private — anyone who has it can connect to your workspace. New to the extension?
+          Use the <b>Get extension</b> button at the top to install it.
+        </div>
       </div>
     </div>
   )

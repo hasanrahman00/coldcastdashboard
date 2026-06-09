@@ -3,7 +3,7 @@ import { useApp } from '../../store/AppStore.jsx'
 import JobCard from './JobCard.jsx'
 import NewJobModal from './NewJobModal.jsx'
 import LogsModal from './LogsModal.jsx'
-import { IconPlus, IconChevronLeft, IconChevronRight, IconFile } from '../../lib/icons.jsx'
+import { IconPlus, IconChevronLeft, IconChevronRight } from '../../lib/icons.jsx'
 
 const JOBS_PER_PAGE = 9 // 3 cols × 3 rows
 
@@ -13,16 +13,12 @@ export default function SalesNav() {
   const [showNew, setShowNew] = useState(false)
   const [logsJob, setLogsJob] = useState(null)
 
-  // newest-first
   const sorted = useMemo(
     () => [...jobs].sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0)),
     [jobs],
   )
 
   const pages = Math.max(1, Math.ceil(sorted.length / JOBS_PER_PAGE))
-  // `safePage` is the clamped value used for THIS render; the effect below
-  // corrects the stored `page` if jobs shrank (e.g. a delete emptied a page).
-  // Clamping in an effect keeps render pure (no setState during render).
   const safePage = Math.min(page, pages - 1)
   useEffect(() => {
     if (page > pages - 1) setPage(pages - 1)
@@ -31,82 +27,68 @@ export default function SalesNav() {
 
   const goPage = (delta) => {
     setPage((p) => Math.min(Math.max(0, p + delta), pages - 1))
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    const cnt = document.querySelector('.cnt')
+    if (cnt) cnt.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   return (
     <div>
-      {/* Sticky, centred New Job bar — stays visible across pages. */}
-      <div className="sticky top-[58px] z-30 -mx-1 mb-5 flex items-center justify-center bg-canvas/80 py-3 backdrop-blur">
-        <button
-          onClick={() => setShowNew(true)}
-          className="inline-flex items-center gap-2 rounded-xl bg-brand px-5 py-2.5 text-sm font-bold text-white shadow-sm shadow-brand/30 transition hover:bg-brand-dark"
-        >
-          <IconPlus className="h-4 w-4" /> New Job
+      {/* Centered New Job — sticky so it stays visible on any job page */}
+      <div className="newjob-bar">
+        <button className="btn btn-p" onClick={() => setShowNew(true)}>
+          <IconPlus />
+          New Job
         </button>
-        {jobs.length > 0 && (
-          <span className="ml-3 text-sm font-medium text-muted">
-            {jobs.length} {jobs.length === 1 ? 'job' : 'jobs'}
-          </span>
+      </div>
+
+      <div className="jg-head">
+        <h3>Active Jobs</h3>
+        <span className="count">
+          {jobs.length ? `${jobs.length} ${jobs.length === 1 ? 'job' : 'jobs'}` : ''}
+        </span>
+      </div>
+
+      <div className="jg">
+        {sorted.length === 0 ? (
+          <div className="empty">
+            <div className="empty-ic">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="3" />
+                <line x1="8" y1="8" x2="16" y2="8" />
+                <line x1="8" y1="12" x2="16" y2="12" />
+                <line x1="8" y1="16" x2="12" y2="16" />
+              </svg>
+            </div>
+            <h3>No jobs yet</h3>
+            <p>Create your first scraping job to get started</p>
+            <button className="btn btn-p" onClick={() => setShowNew(true)}>
+              <IconPlus />
+              Create Job
+            </button>
+          </div>
+        ) : (
+          slice.map((j) => <JobCard key={j.id} job={j} onOpenLogs={setLogsJob} />)
         )}
       </div>
 
-      {sorted.length === 0 ? (
-        <EmptyState onNew={() => setShowNew(true)} />
-      ) : (
-        <>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {slice.map((j) => (
-              <JobCard key={j.id} job={j} onOpenLogs={setLogsJob} />
-            ))}
-          </div>
-
-          {pages > 1 && (
-            <div className="mt-7 flex items-center justify-center gap-3">
-              <button
-                onClick={() => goPage(-1)}
-                disabled={safePage <= 0}
-                className="grid h-9 w-9 place-items-center rounded-lg border border-line bg-card text-muted transition hover:border-brand/40 hover:text-brand disabled:opacity-40"
-              >
-                <IconChevronLeft className="h-4 w-4" />
-              </button>
-              <span className="text-sm font-medium text-muted">
-                Page {safePage + 1} of {pages}
-              </span>
-              <button
-                onClick={() => goPage(1)}
-                disabled={safePage >= pages - 1}
-                className="grid h-9 w-9 place-items-center rounded-lg border border-line bg-card text-muted transition hover:border-brand/40 hover:text-brand disabled:opacity-40"
-              >
-                <IconChevronRight className="h-4 w-4" />
-              </button>
-            </div>
-          )}
-        </>
+      {pages > 1 && (
+        <div className="jpag">
+          <button className="btn btn-g btn-sm" disabled={safePage <= 0} onClick={() => goPage(-1)}>
+            <IconChevronLeft />
+            Previous
+          </button>
+          <span className="jpag-info">
+            Page {safePage + 1} of {pages}
+          </span>
+          <button className="btn btn-g btn-sm" disabled={safePage >= pages - 1} onClick={() => goPage(1)}>
+            Next
+            <IconChevronRight />
+          </button>
+        </div>
       )}
 
       <NewJobModal open={showNew} onClose={() => setShowNew(false)} />
       <LogsModal job={logsJob} onClose={() => setLogsJob(null)} />
-    </div>
-  )
-}
-
-function EmptyState({ onNew }) {
-  return (
-    <div className="cc-card-in flex min-h-[360px] flex-col items-center justify-center rounded-3xl border border-dashed border-line bg-card px-6 py-16 text-center">
-      <span className="mb-4 grid h-14 w-14 place-items-center rounded-2xl bg-brand/10 text-brand">
-        <IconFile className="h-7 w-7" />
-      </span>
-      <h3 className="text-lg font-extrabold text-ink">No jobs yet</h3>
-      <p className="mt-1 text-sm text-muted">
-        Create your first scraping job to get started.
-      </p>
-      <button
-        onClick={onNew}
-        className="mt-5 inline-flex items-center gap-2 rounded-xl bg-brand px-5 py-2.5 text-sm font-bold text-white transition hover:bg-brand-dark"
-      >
-        <IconPlus className="h-4 w-4" /> Create Job
-      </button>
     </div>
   )
 }

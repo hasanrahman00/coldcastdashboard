@@ -1,8 +1,7 @@
 import { useEffect } from 'react'
-import { IconX } from '../lib/icons.jsx'
 
-// Generic centred modal. Click the overlay or press Esc to close.
-export default function Modal({ open, onClose, title, children, footer, width = 'max-w-lg' }) {
+// Reproduces the original .ov / .md modal. Overlay-click or Esc closes.
+export default function Modal({ open, onClose, title, headerExtra, children, width }) {
   useEffect(() => {
     if (!open) return
     const onKey = (e) => {
@@ -16,28 +15,22 @@ export default function Modal({ open, onClose, title, children, footer, width = 
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm"
+      className="ov on"
       onClick={(e) => {
-        if (e.target === e.currentTarget) onClose()
+        if (e.target.classList.contains('ov')) onClose()
       }}
     >
-      <div className={'cc-pop w-full ' + width + ' overflow-hidden rounded-2xl border border-line bg-white shadow-2xl'}>
-        <div className="flex items-center justify-between border-b border-line px-5 py-3.5">
-          <h3 className="text-base font-bold text-ink">{title}</h3>
-          <button
-            onClick={onClose}
-            className="grid h-8 w-8 place-items-center rounded-lg text-faint transition hover:bg-slate-100 hover:text-ink"
-            aria-label="Close"
-          >
-            <IconX className="h-4 w-4" />
-          </button>
-        </div>
-        <div className="px-5 py-4">{children}</div>
-        {footer && (
-          <div className="flex items-center justify-end gap-2 border-t border-line bg-slate-50/60 px-5 py-3">
-            {footer}
+      <div className="md" style={width ? { width } : undefined}>
+        <div className="md-h">
+          <h3>{title}</h3>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            {headerExtra}
+            <button className="md-x" onClick={onClose} aria-label="Close">
+              ×
+            </button>
           </div>
-        )}
+        </div>
+        <div className="md-b">{children}</div>
       </div>
     </div>
   )
