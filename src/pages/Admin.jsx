@@ -220,7 +220,7 @@ export default function Admin() {
                       const st = statusOf(u)
                       return (
                         <tr key={u.id}>
-                          <td className="adm-name">{u.username}</td>
+                          <td className="adm-name">{u.username}{u.trial && <span className="adm-trial">Trial</span>}</td>
                           <td>{fmtDate(u.createdAt)}</td>
                           <td>{fmtDate(u.expiresAt)}</td>
                           <td><span className="adm-badge" style={{ color: st.color, background: st.color + '18' }}>{st.label}</span></td>
@@ -261,6 +261,7 @@ function AdminStyles() {
       .adm-table tr:hover td{background:var(--bg-elev-2)}
       .adm-name{font-weight:700;color:var(--text)}
       .adm-badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700}
+      .adm-trial{margin-left:8px;display:inline-block;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:#0e7490;background:rgba(8,145,178,.12)}
       .adm-actions{display:flex;gap:6px;justify-content:flex-end}
       .adm-actions-h{text-align:right}
     `}</style>
