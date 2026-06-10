@@ -253,17 +253,15 @@ export default function Admin() {
               <div className="adm-table-wrap">
                 <table className="adm-table">
                   <thead>
-                    <tr><th>Username</th><th>Created</th><th>Expires</th><th>Days left</th><th>Status</th><th>Profiles</th><th>API key</th><th className="adm-actions-h">Actions</th></tr>
+                    <tr><th>Username</th><th>Email</th><th>Created</th><th>Expires</th><th>Days left</th><th>Status</th><th>Profiles</th><th>API key</th><th className="adm-actions-h">Actions</th></tr>
                   </thead>
                   <tbody>
                     {users.map((u) => {
                       const st = statusOf(u)
                       return (
                         <tr key={u.id}>
-                          <td className="adm-name">
-                            <div>{u.username}{u.trial && <span className="adm-trial">Trial</span>}</div>
-                            {u.email && <div className="adm-email">{u.email}</div>}
-                          </td>
+                          <td className="adm-name">{u.username}{u.trial && <span className="adm-trial">Trial</span>}</td>
+                          <td className="adm-emailcell">{u.email || <span style={{ color: 'var(--text-faint)' }}>—</span>}</td>
                           <td>{fmtDate(u.createdAt)}</td>
                           <td>{fmtDate(u.expiresAt)}</td>
                           <td className="adm-days">{daysLeft(u)}</td>
@@ -316,7 +314,7 @@ function AdminStyles() {
       .adm-name{font-weight:700;color:var(--text)}
       .adm-badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700}
       .adm-trial{margin-left:8px;display:inline-block;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:#0e7490;background:rgba(8,145,178,.12)}
-      .adm-email{font-weight:500;font-size:11px;color:var(--text-faint);margin-top:2px}
+      .adm-emailcell{color:var(--text-muted)}
       .adm-days{font-weight:600;color:var(--text);white-space:nowrap}
       .adm-key{display:inline-flex;align-items:center;gap:6px}
       .adm-key code{font-family:var(--mono);font-size:11.5px;color:var(--text-muted);background:var(--bg-elev-2);padding:3px 8px;border-radius:6px;white-space:nowrap}
