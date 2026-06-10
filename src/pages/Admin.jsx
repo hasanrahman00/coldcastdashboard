@@ -12,6 +12,20 @@ function statusOf(u) {
   return { label: 'Active', color: '#047857' }
 }
 
+// Days remaining until the account expires.
+function daysLeft(u) {
+  if (!u.expiresAt) return '—'
+  const ms = new Date(u.expiresAt).getTime() - Date.now()
+  if (ms <= 0) return 'Expired'
+  const d = Math.ceil(ms / 86400000)
+  return d === 1 ? '1 day' : `${d} days`
+}
+
+function shortKey(k) {
+  if (!k) return ''
+  return k.length > 14 ? `${k.slice(0, 6)}…${k.slice(-4)}` : k
+}
+
 // ── password gate ────────────────────────────────────────────────────────────
 function Gate({ onUnlock }) {
   const [pw, setPw] = useState('')
@@ -190,6 +204,10 @@ export default function Admin() {
     if (!window.confirm(`Delete user "${u.username}"? Their job data is NOT deleted, but they lose access.`)) return
     try { await admin.remove(u.id); toast('User deleted', 'ok'); refresh() } catch (e) { toast(e.message, 'err') }
   }
+  const copyKey = (key) => {
+    if (!key) return
+    navigator.clipboard?.writeText(key).then(() => toast('API key copied', 'ok')).catch(() => toast('Copy failed', 'err'))
+  }
 
   if (loading) return <div className="boot"><span className="spin" /><span>Loading…</span></div>
   if (!authed) return <><Gate onUnlock={onUnlock} /><AdminStyles /></>
@@ -219,7 +237,7 @@ export default function Admin() {
               <div className="adm-table-wrap">
                 <table className="adm-table">
                   <thead>
-                    <tr><th>Username</th><th>Created</th><th>Expires</th><th>Status</th><th>Profiles</th><th className="adm-actions-h">Actions</th></tr>
+                    <tr><th>Username</th><th>Created</th><th>Expires</th><th>Days left</th><th>Status</th><th>Profiles</th><th>API key</th><th className="adm-actions-h">Actions</th></tr>
                   </thead>
                   <tbody>
                     {users.map((u) => {
@@ -232,8 +250,19 @@ export default function Admin() {
                           </td>
                           <td>{fmtDate(u.createdAt)}</td>
                           <td>{fmtDate(u.expiresAt)}</td>
+                          <td className="adm-days">{daysLeft(u)}</td>
                           <td><span className="adm-badge" style={{ color: st.color, background: st.color + '18' }}>{st.label}</span></td>
                           <td>{Array.isArray(u.profiles) ? u.profiles.length : 0}</td>
+                          <td>
+                            {u.key ? (
+                              <span className="adm-key">
+                                <code>{shortKey(u.key)}</code>
+                                <button className="adm-key-btn" title="Copy API key" onClick={() => copyKey(u.key)}><IconCopy /></button>
+                              </span>
+                            ) : (
+                              <span style={{ color: 'var(--text-faint)' }}>—</span>
+                            )}
+                          </td>
                           <td>
                             <div className="adm-actions">
                               <button className="btn btn-g btn-sm" onClick={() => extend(u)}>Extend</button>
@@ -272,6 +301,11 @@ function AdminStyles() {
       .adm-badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700}
       .adm-trial{margin-left:8px;display:inline-block;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:#0e7490;background:rgba(8,145,178,.12)}
       .adm-email{font-weight:500;font-size:11px;color:var(--text-faint);margin-top:2px}
+      .adm-days{font-weight:600;color:var(--text);white-space:nowrap}
+      .adm-key{display:inline-flex;align-items:center;gap:6px}
+      .adm-key code{font-family:var(--mono);font-size:11.5px;color:var(--text-muted);background:var(--bg-elev-2);padding:3px 8px;border-radius:6px;white-space:nowrap}
+      .adm-key-btn{display:inline-grid;place-items:center;width:26px;height:26px;border:none;border-radius:7px;background:var(--brand-grad);color:#fff;cursor:pointer;flex-shrink:0}
+      .adm-key-btn svg{width:13px;height:13px}
       .adm-actions{display:flex;gap:6px;justify-content:flex-end}
       .adm-actions-h{text-align:right}
     `}</style>
