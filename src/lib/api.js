@@ -106,6 +106,10 @@ export const api = {
   // ── config ─────────────────────────────────────────────────────────────
   uiConfig: () => asJson('/api/ui-config'),
 
+  // ── public self-serve 1-day trial (no auth) ─────────────────────────────
+  // → { ok, username, key, expiresAt, trialDays }
+  trial: (payload) => postJson('/api/trial', payload),
+
   // ── jobs ───────────────────────────────────────────────────────────────
   createJob: (payload) => postJson('/api/jobs', payload),
   startJob: (id) => postJson(`/api/jobs/${id}/start`),

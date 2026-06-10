@@ -5,6 +5,7 @@ import { AppProvider } from './store/AppStore.jsx'
 import Login from './pages/Login.jsx'
 import Dashboard from './components/Dashboard.jsx'
 import Admin from './pages/Admin.jsx'
+import Trial from './pages/Trial.jsx'
 
 // Boot splash while we validate a stored token.
 function BootSplash() {
@@ -30,6 +31,7 @@ export default function App() {
     return () => window.removeEventListener('hashchange', onHash)
   }, [])
   const isAdmin = hashRoute === 'admin'
+  const isTrial = hashRoute === 'trial' // public self-serve trial (#trial or #/trial)
 
   // On load: if a token exists, restore the cached session immediately (so a
   // refresh doesn't flash login), then validate via /api/auth/me in the
@@ -90,15 +92,17 @@ export default function App() {
   // requested. So /#/salesnav, /#/anything, or a bare URL all land on /#/login
   // when there's no valid session.
   useEffect(() => {
-    if (booted && !me && !isAdmin && !window.location.hash.startsWith('#/login')) {
+    if (booted && !me && !isAdmin && !isTrial && !window.location.hash.startsWith('#/login')) {
       window.location.hash = '#/login'
     }
-  }, [booted, me, isAdmin])
+  }, [booted, me, isAdmin, isTrial])
 
   return (
     <ToastProvider>
       {isAdmin ? (
         <Admin />
+      ) : isTrial ? (
+        <Trial />
       ) : !booted ? (
         <BootSplash />
       ) : me ? (
