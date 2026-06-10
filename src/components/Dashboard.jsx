@@ -10,7 +10,7 @@ import ApiKey from '../pages/ApiKey.jsx'
 import Extension from '../pages/Extension.jsx'
 
 export default function Dashboard({ onLogout }) {
-  const [route, nav] = useHashRoute('dash')
+  const [route, nav] = useHashRoute('salesnav')
 
   let page
   if (route === 'set') page = <Settings />

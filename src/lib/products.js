@@ -18,7 +18,7 @@ import {
 
 export const PRODUCTS = [
   {
-    id: 'dash',
+    id: 'salesnav',
     label: 'Sales Nav Scraper',
     soon: false,
     icon: IconGlobe,

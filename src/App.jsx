@@ -42,7 +42,7 @@ export default function App() {
       expiresAt: resp.expiresAt,
       secondsLeft: resp.secondsLeft,
     })
-    window.location.hash = '#/dash'
+    window.location.hash = '#/salesnav'
   }, [])
 
   const handleLogout = useCallback(() => {

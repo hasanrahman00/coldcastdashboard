@@ -1,7 +1,7 @@
 import { PRODUCTS } from '../lib/products.js'
 
 // Horizontal product tabs. The ported CSS colours each tab by its data-p
-// attribute (.ptab[data-p="dash"] etc.) and draws the active underline.
+// attribute (.ptab[data-p="salesnav"] etc.) and draws the active underline.
 export default function ProductNav({ route, nav }) {
   return (
     <div className="pnav" role="tablist" aria-label="Products">

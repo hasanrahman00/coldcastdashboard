@@ -1078,19 +1078,19 @@ body{flex-direction:column}
 .pnav-new{margin-left:auto;align-self:center}
 /* Colorful product tabs — each module has its own accent: the icon always shows
    it, and the text + underline pick it up when the tab is active. */
-.ptab[data-p="dash"] svg{color:#4f7cf5}
+.ptab[data-p="salesnav"] svg{color:#4f7cf5}
 .ptab[data-p="waterfall"] svg{color:#0891b2}
 .ptab[data-p="apollo"] svg{color:#ea580c}
 .ptab[data-p="zoominfo"] svg{color:#7c3aed}
 .ptab[data-p="verify"] svg{color:#059669}
 .ptab[data-p="domain"] svg{color:#db2777}
-.ptab.on[data-p="dash"]{color:#3257d6}
+.ptab.on[data-p="salesnav"]{color:#3257d6}
 .ptab.on[data-p="waterfall"]{color:#0e7490}
 .ptab.on[data-p="apollo"]{color:#c2410c}
 .ptab.on[data-p="zoominfo"]{color:#6d28d9}
 .ptab.on[data-p="verify"]{color:#047857}
 .ptab.on[data-p="domain"]{color:#be185d}
-.ptab.on[data-p="dash"]::after{background:linear-gradient(90deg,#4f7cf5,#22d3ee)}
+.ptab.on[data-p="salesnav"]::after{background:linear-gradient(90deg,#4f7cf5,#22d3ee)}
 .ptab.on[data-p="waterfall"]::after{background:linear-gradient(90deg,#0891b2,#22d3ee)}
 .ptab.on[data-p="apollo"]::after{background:linear-gradient(90deg,#f97316,#ea580c)}
 .ptab.on[data-p="zoominfo"]::after{background:linear-gradient(90deg,#a78bfa,#7c3aed)}

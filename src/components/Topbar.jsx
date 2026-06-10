@@ -32,7 +32,7 @@ export default function Topbar({ route, nav, onLogout }) {
 
   return (
     <header className="topbar">
-      <div className="tb-brand" onClick={() => nav('dash')} title="Dashboard">
+      <div className="tb-brand" onClick={() => nav('salesnav')} title="Dashboard">
         <div className="tb-logo">
           <IconLogo />
         </div>

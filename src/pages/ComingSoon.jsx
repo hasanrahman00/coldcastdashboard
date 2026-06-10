@@ -8,7 +8,7 @@ export default function ComingSoon({ product, nav }) {
       <div className="chip">Coming soon</div>
       <h3>{product.title || product.label}</h3>
       <p>{product.body}</p>
-      <button className="btn btn-g" onClick={() => nav('dash')}>
+      <button className="btn btn-g" onClick={() => nav('salesnav')}>
         ← Back to Sales Nav Scraper
       </button>
     </div>
