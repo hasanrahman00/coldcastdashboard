@@ -18,7 +18,9 @@ export default function Trial() {
     e.preventDefault()
     setError('')
     const u = username.trim()
+    const em = email.trim()
     if (!u) return setError('Pick a username to continue.')
+    if (!em) return setError('Enter your email to continue.')
     setBusy(true)
     try {
       const d = await api.trial({ username: u, email: email.trim() })
@@ -67,7 +69,7 @@ export default function Trial() {
               <input type="text" autoFocus value={username} onChange={(e) => setUsername(e.target.value)} placeholder="e.g. acme-corp" autoComplete="off" />
             </div>
 
-            <label style={{ marginTop: 14 }}>Email <span style={{ textTransform: 'none', fontWeight: 500, color: 'var(--text-faint)' }}>(optional)</span></label>
+            <label style={{ marginTop: 14 }}>Email</label>
             <div className="login-field">
               <IconKeyOutline />
               <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@company.com" autoComplete="email" />

@@ -63,6 +63,7 @@ function Gate({ onUnlock }) {
 // ── create-user form ─────────────────────────────────────────────────────────
 function CreateUser({ onCreated }) {
   const [username, setUsername] = useState('')
+  const [email, setEmail] = useState('')
   const [days, setDays] = useState('30')
   const [busy, setBusy] = useState(false)
   const [issuedKey, setIssuedKey] = useState('')
@@ -73,9 +74,10 @@ function CreateUser({ onCreated }) {
     if (!name) return toast('Enter a username', 'err')
     setBusy(true)
     try {
-      const d = await admin.register({ username: name, days: Number(days) || 30 })
+      const d = await admin.register({ username: name, days: Number(days) || 30, email: email.trim() })
       setIssuedKey(d.key || '')
       setUsername('')
+      setEmail('')
       toast('User created', 'ok')
       onCreated()
     } catch (e) {
@@ -95,11 +97,15 @@ function CreateUser({ onCreated }) {
         <h3>Create user</h3>
       </div>
       <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'flex-end' }}>
-        <div style={{ flex: '1 1 220px' }}>
+        <div style={{ flex: '1 1 190px' }}>
           <label className="adm-l">Username</label>
           <input type="text" className="adm-inp" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="e.g. acme-corp" onKeyDown={(e) => e.key === 'Enter' && create()} />
         </div>
-        <div style={{ flex: '0 0 120px' }}>
+        <div style={{ flex: '1 1 190px' }}>
+          <label className="adm-l">Email <span style={{ textTransform: 'none', fontWeight: 500, color: 'var(--text-faint)' }}>(optional)</span></label>
+          <input type="email" className="adm-inp" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="user@company.com" onKeyDown={(e) => e.key === 'Enter' && create()} />
+        </div>
+        <div style={{ flex: '0 0 90px' }}>
           <label className="adm-l">Days</label>
           <input type="number" className="adm-inp" value={days} onChange={(e) => setDays(e.target.value)} min="1" />
         </div>
@@ -220,7 +226,10 @@ export default function Admin() {
                       const st = statusOf(u)
                       return (
                         <tr key={u.id}>
-                          <td className="adm-name">{u.username}{u.trial && <span className="adm-trial">Trial</span>}</td>
+                          <td className="adm-name">
+                            <div>{u.username}{u.trial && <span className="adm-trial">Trial</span>}</div>
+                            {u.email && <div className="adm-email">{u.email}</div>}
+                          </td>
                           <td>{fmtDate(u.createdAt)}</td>
                           <td>{fmtDate(u.expiresAt)}</td>
                           <td><span className="adm-badge" style={{ color: st.color, background: st.color + '18' }}>{st.label}</span></td>
@@ -262,6 +271,7 @@ function AdminStyles() {
       .adm-name{font-weight:700;color:var(--text)}
       .adm-badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700}
       .adm-trial{margin-left:8px;display:inline-block;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:#0e7490;background:rgba(8,145,178,.12)}
+      .adm-email{font-weight:500;font-size:11px;color:var(--text-faint);margin-top:2px}
       .adm-actions{display:flex;gap:6px;justify-content:flex-end}
       .adm-actions-h{text-align:right}
     `}</style>
