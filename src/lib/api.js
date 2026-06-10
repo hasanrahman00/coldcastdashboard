@@ -112,6 +112,8 @@ export const api = {
 
   // ── jobs ───────────────────────────────────────────────────────────────
   createJob: (payload) => postJson('/api/jobs', payload),
+  // "Add to existing list" — point a list at a new search; its next run appends.
+  appendJob: (id, payload) => postJson(`/api/jobs/${encodeURIComponent(id)}/append`, payload),
   startJob: (id) => postJson(`/api/jobs/${id}/start`),
   stopJob: (id) => postJson(`/api/jobs/${id}/stop`),
   deleteJob: (id) => del(`/api/jobs/${id}`),

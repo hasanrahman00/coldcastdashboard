@@ -166,6 +166,7 @@ export function AppProvider({ initialMe, onLogout, children }) {
 
     // job actions (SSE pushes the resulting state back, so no manual refetch)
     createJob: (payload) => guarded(() => api.createJob(payload)),
+    appendJob: (id, payload) => guarded(() => api.appendJob(id, payload)),
     startJob: (id) => guarded(() => api.startJob(id)),
     stopJob: (id) => guarded(() => api.stopJob(id)),
     deleteJob: (id) => guarded(() => api.deleteJob(id)),
