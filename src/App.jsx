@@ -4,6 +4,7 @@ import { ToastProvider } from './store/ToastProvider.jsx'
 import { AppProvider } from './store/AppStore.jsx'
 import Login from './pages/Login.jsx'
 import Dashboard from './components/Dashboard.jsx'
+import Admin from './pages/Admin.jsx'
 
 // Boot splash while we validate a stored token.
 function BootSplash() {
@@ -18,6 +19,17 @@ function BootSplash() {
 export default function App() {
   const [booted, setBooted] = useState(false)
   const [me, setMe] = useState(null)
+
+  // Top-level route check: #/admin is a SEPARATE app (own X-Admin-Password gate),
+  // independent of user login — so it's handled before the login flow and exempt
+  // from the logged-out → /#/login redirect below.
+  const [hashRoute, setHashRoute] = useState(() => window.location.hash.replace(/^#\/?/, ''))
+  useEffect(() => {
+    const onHash = () => setHashRoute(window.location.hash.replace(/^#\/?/, ''))
+    window.addEventListener('hashchange', onHash)
+    return () => window.removeEventListener('hashchange', onHash)
+  }, [])
+  const isAdmin = hashRoute === 'admin'
 
   // On load: if a token exists, restore the cached session immediately (so a
   // refresh doesn't flash login), then validate via /api/auth/me in the
@@ -78,14 +90,16 @@ export default function App() {
   // requested. So /#/salesnav, /#/anything, or a bare URL all land on /#/login
   // when there's no valid session.
   useEffect(() => {
-    if (booted && !me && !window.location.hash.startsWith('#/login')) {
+    if (booted && !me && !isAdmin && !window.location.hash.startsWith('#/login')) {
       window.location.hash = '#/login'
     }
-  }, [booted, me])
+  }, [booted, me, isAdmin])
 
   return (
     <ToastProvider>
-      {!booted ? (
+      {isAdmin ? (
+        <Admin />
+      ) : !booted ? (
         <BootSplash />
       ) : me ? (
         <AppProvider initialMe={me} onLogout={handleLogout}>

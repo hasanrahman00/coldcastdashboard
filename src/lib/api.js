@@ -125,3 +125,39 @@ export const api = {
   // EventSource can't set headers, so the token rides in the query string.
   events: () => new EventSource(apiUrl(`/api/events?token=${encodeURIComponent(getToken())}`)),
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+//  Admin client — a SEPARATE auth scheme from the user app: every call carries
+//  an X-Admin-Password header (matched against ADMIN_PASSWORD on the server),
+//  not the user Bearer token. The password is held in memory (set by the Admin
+//  page from sessionStorage), never sent anywhere but this header.
+// ─────────────────────────────────────────────────────────────────────────────
+let adminPw = ''
+export const setAdminPassword = (pw) => { adminPw = pw || '' }
+
+async function adminReq(path, opts = {}) {
+  const headers = { ...(opts.headers || {}), 'X-Admin-Password': adminPw }
+  const res = await fetch(apiUrl(path), { ...opts, headers })
+  let data = null
+  try { data = await res.json() } catch { /* empty body */ }
+  if (res.status === 403) throw new Error((data && data.error) || 'Wrong admin password')
+  if (!res.ok) throw new Error((data && data.error) || `Request failed (${res.status})`)
+  return data
+}
+
+const adminPost = (path, body) =>
+  adminReq(path, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body || {}),
+  })
+
+export const admin = {
+  setPassword: setAdminPassword,
+  listUsers: () => adminReq('/api/auth/users'),
+  register: (payload) => adminPost('/api/auth/register', payload), // → { user, key }
+  extend: (id, days) => adminPost(`/api/auth/users/${encodeURIComponent(id)}/extend`, { days }),
+  renew: (id, days) => adminPost(`/api/auth/users/${encodeURIComponent(id)}/renew`, { days }),
+  setDisabled: (id, disabled) => adminPost(`/api/auth/users/${encodeURIComponent(id)}/disable`, { disabled }),
+  remove: (id) => adminReq(`/api/auth/users/${encodeURIComponent(id)}`, { method: 'DELETE' }),
+}
