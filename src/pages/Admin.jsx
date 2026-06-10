@@ -177,6 +177,22 @@ export default function Admin() {
       .finally(() => setLoading(false))
   }, [])
 
+  // Auto-refresh while authed: re-fetch every 30s (and on focus), paused when
+  // the tab is hidden. Keeps "Days left" current and surfaces new signups
+  // without a manual reload.
+  useEffect(() => {
+    if (!authed) return
+    const tick = () => { if (!document.hidden) refresh() }
+    const t = setInterval(tick, 30000)
+    window.addEventListener('focus', tick)
+    document.addEventListener('visibilitychange', tick)
+    return () => {
+      clearInterval(t)
+      window.removeEventListener('focus', tick)
+      document.removeEventListener('visibilitychange', tick)
+    }
+  }, [authed, refresh])
+
   const lock = () => {
     sessionStorage.removeItem(PW_KEY)
     setAdminPassword('')
