@@ -27,6 +27,7 @@ export function AppProvider({ initialMe, onLogout, children }) {
   const [profiles, setProfiles] = useState([])
   const [activeProfileId, setActiveProfileId] = useState(null)
   const [connectorOnline, setConnectorOnline] = useState(false)
+  const [usage, setUsage] = useState({ limit: 0, used: 0 }) // daily scrape cap
   const [uiConfig, setUiConfig] = useState({ hideLogs: false, hideSettings: false })
 
   // Run an API call; a 401 anywhere → single logout. Other errors propagate so
@@ -109,6 +110,7 @@ export function AppProvider({ initialMe, onLogout, children }) {
       setProfiles(Array.isArray(d.profiles) ? d.profiles : [])
       setActiveProfileId(d.activeProfileId || null)
       setConnectorOnline(!!d.connectorOnline)
+      setUsage({ limit: d.scrapeLimit ?? 0, used: d.scrapedToday ?? 0 })
     } catch (e) {
       if (e instanceof AuthError) onLogout()
       // network blip → keep last-known cache
@@ -161,6 +163,7 @@ export function AppProvider({ initialMe, onLogout, children }) {
     profiles,
     activeProfileId,
     connectorOnline,
+    usage,
     uiConfig,
     refreshProfiles,
 

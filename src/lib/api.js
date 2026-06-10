@@ -165,5 +165,6 @@ export const admin = {
   extend: (id, days) => adminPost(`/api/auth/users/${encodeURIComponent(id)}/extend`, { days }),
   renew: (id, days) => adminPost(`/api/auth/users/${encodeURIComponent(id)}/renew`, { days }),
   setDisabled: (id, disabled) => adminPost(`/api/auth/users/${encodeURIComponent(id)}/disable`, { disabled }),
+  setLimit: (id, limit) => adminPost(`/api/auth/users/${encodeURIComponent(id)}/scrape-limit`, { limit }),
   remove: (id) => adminReq(`/api/auth/users/${encodeURIComponent(id)}`, { method: 'DELETE' }),
 }

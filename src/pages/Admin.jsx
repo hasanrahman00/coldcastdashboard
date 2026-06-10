@@ -224,6 +224,13 @@ export default function Admin() {
     if (!key) return
     navigator.clipboard?.writeText(key).then(() => toast('API key copied', 'ok')).catch(() => toast('Copy failed', 'err'))
   }
+  const setLimit = async (u) => {
+    const v = window.prompt(`Daily scrape limit for "${u.username}" (rows/day):`, String(u.scrapeLimit ?? ''))
+    if (v === null) return
+    const n = parseInt(v, 10)
+    if (isNaN(n) || n < 0) return toast('Enter a valid number', 'err')
+    try { await admin.setLimit(u.id, n); toast('Daily limit updated', 'ok'); refresh() } catch (e) { toast(e.message, 'err') }
+  }
 
   if (loading) return <div className="boot"><span className="spin" /><span>Loading…</span></div>
   if (!authed) return <><Gate onUnlock={onUnlock} /><AdminStyles /></>
@@ -253,7 +260,7 @@ export default function Admin() {
               <div className="adm-table-wrap">
                 <table className="adm-table">
                   <thead>
-                    <tr><th>Username</th><th>Email</th><th>Created</th><th>Expires</th><th>Days left</th><th>Status</th><th>Profiles</th><th>API key</th><th className="adm-actions-h">Actions</th></tr>
+                    <tr><th>Username</th><th>Email</th><th>Created</th><th>Expires</th><th>Days left</th><th>Daily limit</th><th>Status</th><th>Profiles</th><th>API key</th><th className="adm-actions-h">Actions</th></tr>
                   </thead>
                   <tbody>
                     {users.map((u) => {
@@ -265,6 +272,11 @@ export default function Admin() {
                           <td>{fmtDate(u.createdAt)}</td>
                           <td>{fmtDate(u.expiresAt)}</td>
                           <td className="adm-days">{daysLeft(u)}</td>
+                          <td>
+                            <button className="adm-limit" onClick={() => setLimit(u)} title="Click to change the daily scrape cap">
+                              {(u.scrapeLimit ?? 0).toLocaleString()}<span className="adm-limit-edit">/day ✎</span>
+                            </button>
+                          </td>
                           <td><span className="adm-badge" style={{ color: st.color, background: st.color + '18' }}>{st.label}</span></td>
                           <td>{Array.isArray(u.profiles) ? u.profiles.length : 0}</td>
                           <td>
@@ -320,6 +332,9 @@ function AdminStyles() {
       .adm-key code{font-family:var(--mono);font-size:11.5px;color:var(--text-muted);background:var(--bg-elev-2);padding:3px 8px;border-radius:6px;white-space:nowrap}
       .adm-key-btn{display:inline-grid;place-items:center;width:26px;height:26px;border:none;border-radius:7px;background:var(--brand-grad);color:#fff;cursor:pointer;flex-shrink:0}
       .adm-key-btn svg{width:13px;height:13px}
+      .adm-limit{background:none;border:none;cursor:pointer;font:inherit;color:var(--text);font-weight:600;padding:0;display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+      .adm-limit:hover{color:var(--brand)}
+      .adm-limit-edit{font-size:10px;color:var(--text-faint);font-weight:600}
       .adm-actions{display:flex;gap:6px;justify-content:flex-end}
       .adm-actions-h{text-align:right}
     `}</style>
