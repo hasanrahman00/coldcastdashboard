@@ -51,6 +51,15 @@ export default function App() {
     setMe(null)
   }, [])
 
+  // Logged out (and done booting) → force the login URL no matter what path was
+  // requested. So /#/salesnav, /#/anything, or a bare URL all land on /#/login
+  // when there's no valid session.
+  useEffect(() => {
+    if (booted && !me && !window.location.hash.startsWith('#/login')) {
+      window.location.hash = '#/login'
+    }
+  }, [booted, me])
+
   return (
     <ToastProvider>
       {!booted ? (
