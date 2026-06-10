@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { api, getToken, setToken, setSavedKey, clearAuth } from './lib/api.js'
+import { api, AuthError, getToken, setToken, setSavedKey, clearAuth, getCachedMe, setCachedMe } from './lib/api.js'
 import { ToastProvider } from './store/ToastProvider.jsx'
 import { AppProvider } from './store/AppStore.jsx'
 import Login from './pages/Login.jsx'
@@ -19,17 +19,38 @@ export default function App() {
   const [booted, setBooted] = useState(false)
   const [me, setMe] = useState(null)
 
-  // On load: if a token exists, validate it via /api/auth/me.
+  // On load: if a token exists, restore the cached session immediately (so a
+  // refresh doesn't flash login), then validate via /api/auth/me in the
+  // background. ONLY a genuine 401 ends the session — a network/CORS/backend
+  // hiccup keeps the user logged in instead of bouncing them to /#/login.
   useEffect(() => {
     const token = getToken()
     if (!token) {
       setBooted(true)
       return
     }
+    const cached = getCachedMe()
+    if (cached && cached.secondsLeft > 0) {
+      setMe(cached) // optimistic restore
+      setBooted(true) // render the dashboard instantly; validate in the background
+    }
     api
       .me()
-      .then((d) => setMe(d))
-      .catch(() => clearAuth())
+      .then((d) => {
+        if (d && d.user) {
+          setMe(d)
+          setCachedMe(d)
+        }
+        // a non-401 that returns no user (e.g. misconfigured API URL) is ignored
+        // here — we keep the cached session rather than nuking it.
+      })
+      .catch((e) => {
+        if (e instanceof AuthError) {
+          clearAuth()
+          setMe(null)
+        }
+        // network / transient error → keep the (cached) session as-is
+      })
       .finally(() => setBooted(true))
   }, [])
 
@@ -37,11 +58,13 @@ export default function App() {
   const handleLogin = useCallback((resp, key) => {
     setToken(resp.token)
     setSavedKey(key) // remember the key they signed in with → API tab can show it
-    setMe({
+    const meObj = {
       user: resp.user,
       expiresAt: resp.expiresAt,
       secondsLeft: resp.secondsLeft,
-    })
+    }
+    setCachedMe(meObj) // so a later refresh restores instantly without a server round-trip
+    setMe(meObj)
     window.location.hash = '#/salesnav'
   }, [])
 

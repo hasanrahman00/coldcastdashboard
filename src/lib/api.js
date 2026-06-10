@@ -14,13 +14,32 @@ export const apiUrl = (path) => BASE + path
 // ── token + key storage (same localStorage keys the old dashboard used) ──────
 const TOKEN_KEY = 'vk_token'
 const KEY_KEY = 'vk_key'
+const ME_KEY = 'vk_me'
 export const getToken = () => localStorage.getItem(TOKEN_KEY) || ''
 export const setToken = (t) => localStorage.setItem(TOKEN_KEY, t || '')
 export const getSavedKey = () => localStorage.getItem(KEY_KEY) || ''
 export const setSavedKey = (k) => localStorage.setItem(KEY_KEY, k || '')
+
+// Cache the last-known session so a refresh — or a transient backend hiccup —
+// doesn't bounce a logged-in user to login. secondsLeft is recomputed from the
+// stored expiresAt on every read so it never goes stale.
+export const setCachedMe = (m) => {
+  try { localStorage.setItem(ME_KEY, JSON.stringify(m)) } catch { /* quota */ }
+}
+export const getCachedMe = () => {
+  try {
+    const m = JSON.parse(localStorage.getItem(ME_KEY) || 'null')
+    if (m && m.expiresAt) {
+      m.secondsLeft = Math.max(0, Math.floor((new Date(m.expiresAt).getTime() - Date.now()) / 1000))
+    }
+    return m
+  } catch { return null }
+}
+
 export const clearAuth = () => {
   localStorage.removeItem(TOKEN_KEY)
   localStorage.removeItem(KEY_KEY)
+  localStorage.removeItem(ME_KEY)
 }
 
 // Thrown on HTTP 401 so the app can force a logout from one place.
