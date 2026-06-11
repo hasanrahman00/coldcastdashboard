@@ -15,7 +15,7 @@ function fmtTtl(secs) {
 }
 
 export default function Topbar({ route, nav, onLogout }) {
-  const { me, uiConfig, connectorOnline } = useApp()
+  const { me, uiConfig, connectorOnline, profiles } = useApp()
   const [open, setOpen] = useState(false)
   const ref = useRef(null)
 
@@ -42,7 +42,13 @@ export default function Topbar({ route, nav, onLogout }) {
       <div className="tb-right">
         <span className="conn-pill">
           <span className={'dot' + (connectorOnline ? '' : ' off')} />
-          <span>{connectorOnline ? 'Extension connected' : 'Extension not connected'}</span>
+          <span>
+            {/* With several browsers connected, "Extension connected" is
+                ambiguous (connected WHERE?) — show the count instead. */}
+            {profiles.length > 1
+              ? `${profiles.filter((p) => p.online).length}/${profiles.length} extensions connected`
+              : connectorOnline ? 'Extension connected' : 'Extension not connected'}
+          </span>
         </span>
 
         <button className="tb-icon" onClick={() => nav('set')} title="Settings">

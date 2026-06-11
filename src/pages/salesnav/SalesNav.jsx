@@ -3,6 +3,7 @@ import { useApp } from '../../store/AppStore.jsx'
 import JobCard from './JobCard.jsx'
 import NewJobModal from './NewJobModal.jsx'
 import LogsModal from './LogsModal.jsx'
+import LocalExtBanner from '../../components/LocalExtBanner.jsx'
 import { IconPlus, IconChevronLeft, IconChevronRight } from '../../lib/icons.jsx'
 
 const JOBS_PER_PAGE = 9 // 3 cols × 3 rows
@@ -40,6 +41,8 @@ export default function SalesNav() {
 
   return (
     <div>
+      <LocalExtBanner />
+
       {/* Centered New Job — sticky so it stays visible on any job page */}
       <div className="newjob-bar">
         <button className="btn btn-p" onClick={() => setShowNew(true)}>

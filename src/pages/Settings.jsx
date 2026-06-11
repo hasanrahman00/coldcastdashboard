@@ -2,8 +2,9 @@ import { useState } from 'react'
 import { useApp } from '../store/AppStore.jsx'
 import { useToast } from '../store/ToastProvider.jsx'
 import { IconUsers, IconChain } from '../lib/icons.jsx'
+import LocalExtBanner from '../components/LocalExtBanner.jsx'
 
-function ProfileCard({ p, isActive, onActivate, onDelete }) {
+function ProfileCard({ p, isActive, isThisBrowser, onActivate, onDelete }) {
   const online = !!p.online
   return (
     <div className={'profile-card' + (isActive ? ' active' : '')}>
@@ -13,7 +14,14 @@ function ProfileCard({ p, isActive, onActivate, onDelete }) {
           title={isActive ? 'Active profile' : 'Set as active profile'}
           onClick={() => onActivate(p.id)}
         />
-        <div className="profile-name">{p.name || p.id}</div>
+        <div className="profile-name">
+          {p.name || p.id}
+          {isThisBrowser && (
+            <span className="this-browser-badge" title="The extension reporting this profile is installed in the browser you're using right now">
+              This browser
+            </span>
+          )}
+        </div>
         <div className="profile-actions">
           <button
             className="btn btn-g btn-sm"
@@ -36,7 +44,7 @@ function ProfileCard({ p, isActive, onActivate, onDelete }) {
 }
 
 export default function Settings() {
-  const { profiles, activeProfileId, activateProfile, deleteProfile, refreshProfiles } = useApp()
+  const { profiles, activeProfileId, activateProfile, deleteProfile, refreshProfiles, localExt } = useApp()
   const toast = useToast()
   const [busy, setBusy] = useState(false)
 
@@ -73,6 +81,8 @@ export default function Settings() {
 
   return (
     <>
+      <LocalExtBanner />
+
       {/* Profiles */}
       <div className="sbox">
         <div className="sbox-h">
@@ -93,6 +103,7 @@ export default function Settings() {
                 key={p.id}
                 p={p}
                 isActive={p.id === activeProfileId}
+                isThisBrowser={!!localExt.profileId && p.id === localExt.profileId}
                 onActivate={onActivate}
                 onDelete={onDelete}
               />
@@ -116,6 +127,9 @@ export default function Settings() {
             “connected”.
           </p>
         )}
+        <style>{`
+          .this-browser-badge{display:inline-block;margin-left:8px;padding:2px 8px;border-radius:999px;border:1px solid rgba(79,124,245,.35);background:rgba(79,124,245,.10);color:var(--brand);font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;vertical-align:middle}
+        `}</style>
       </div>
 
       {/* Connect data sources */}

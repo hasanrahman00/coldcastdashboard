@@ -6,6 +6,7 @@ import {
   useCallback,
 } from 'react'
 import { api, AuthError } from '../lib/api.js'
+import { subscribeLocalExtension } from '../lib/extBridge.js'
 import { useToast } from './ToastProvider.jsx'
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -29,6 +30,13 @@ export function AppProvider({ initialMe, onLogout, children }) {
   const [connectorOnline, setConnectorOnline] = useState(false)
   const [usage, setUsage] = useState({ limit: 0, used: 0 }) // daily scrape cap
   const [uiConfig, setUiConfig] = useState({ hideLogs: false, hideSettings: false })
+  // THIS browser's extension state, reported by the extension's dashboard
+  // bridge. installed=false until a message arrives (extension missing OR a
+  // pre-bridge version) — treat as "unknown", not "not installed".
+  const [localExt, setLocalExt] = useState({
+    installed: false, connected: false, hasKey: false,
+    profileId: '', profileName: '', authError: '',
+  })
 
   // Run an API call; a 401 anywhere → single logout. Other errors propagate so
   // the calling component can toast a useful message.
@@ -139,6 +147,9 @@ export function AppProvider({ initialMe, onLogout, children }) {
     api.uiConfig().then(setUiConfig).catch(() => {})
   }, [])
 
+  // ── THIS browser's extension (dashboard bridge messages) ───────────────
+  useEffect(() => subscribeLocalExtension(setLocalExt), [])
+
   // ── session countdown (decrement once per second) ──────────────────────
   useEffect(() => {
     const t = setInterval(() => {
@@ -165,6 +176,7 @@ export function AppProvider({ initialMe, onLogout, children }) {
     connectorOnline,
     usage,
     uiConfig,
+    localExt,
     refreshProfiles,
 
     // job actions (SSE pushes the resulting state back, so no manual refetch)
