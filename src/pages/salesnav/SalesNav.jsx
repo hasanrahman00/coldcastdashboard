@@ -34,7 +34,10 @@ export default function SalesNav() {
 
   const limit = usage?.limit || 0
   const used = usage?.used || 0
-  const pct = limit > 0 ? Math.min(100, Math.round((used / limit) * 100)) : 0
+  // Fractional (not rounded): with a large limit, rounding to whole percent
+  // makes the bar quantize to 1%-wide steps (≈300 rows at a 30k limit), so it
+  // looks frozen while the row count climbs. A fractional width moves smoothly.
+  const pct = limit > 0 ? Math.min(100, (used / limit) * 100) : 0
   const remaining = Math.max(0, limit - used)
   const atLimit = limit > 0 && used >= limit
   const nearLimit = limit > 0 && used >= limit * 0.9
@@ -68,7 +71,7 @@ export default function SalesNav() {
           <div className="scrape-usage-bar">
             <div
               className="scrape-usage-fill"
-              style={{ width: pct + '%', background: nearLimit ? 'var(--red)' : 'var(--brand-grad)' }}
+              style={{ width: pct.toFixed(2) + '%', background: nearLimit ? 'var(--red)' : 'var(--brand-grad)' }}
             />
           </div>
         </div>
