@@ -46,13 +46,21 @@ async function getDb() {
 // set we DENY — unless FREE_ACCOUNT_ALLOW_INSECURE=1 (local dev only).
 async function isAuthorized(req) {
   const auth = req.headers.authorization || ''
-  if (!/^Bearer\s+/i.test(auth)) return false
+  if (!/^Bearer\s+/i.test(auth)) { console.warn('[free-account] denied: no Bearer token on request'); return false }
   const backend = process.env.BACKEND_URL
-  if (!backend) return process.env.FREE_ACCOUNT_ALLOW_INSECURE === '1'
+  if (!backend) {
+    if (process.env.FREE_ACCOUNT_ALLOW_INSECURE === '1') return true
+    console.warn('[free-account] denied: BACKEND_URL not set (and FREE_ACCOUNT_ALLOW_INSECURE != 1)')
+    return false
+  }
   try {
     const r = await fetch(backend.replace(/\/$/, '') + '/api/auth/me', { headers: { Authorization: auth } })
+    if (!r.ok) console.warn('[free-account] denied: backend /api/auth/me returned', r.status)
     return r.ok
-  } catch { return false }
+  } catch (e) {
+    console.warn('[free-account] denied: auth-check fetch failed —', (e && e.message) || e)
+    return false
+  }
 }
 
 // Atomically claim a RANDOM unused account for the source. $sample picks a random
