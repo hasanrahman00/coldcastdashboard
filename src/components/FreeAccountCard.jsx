@@ -45,11 +45,17 @@ export default function FreeAccountCard({ name, source }) {
       {acct ? (
         <div className="fa-creds">
           <div className="fa-row">
-            <span className="fa-val">{acct.account}</span>
+            <div className="fa-field">
+              <span className="fa-label">Email</span>
+              <span className="fa-val">{acct.account}</span>
+            </div>
             <button className="btn btn-g btn-sm" onClick={() => copy(acct.account, 'Email')}>Copy</button>
           </div>
           <div className="fa-row">
-            <span className="fa-val">{acct.password}</span>
+            <div className="fa-field">
+              <span className="fa-label">Password</span>
+              <span className="fa-val">{acct.password}</span>
+            </div>
             <button className="btn btn-g btn-sm" onClick={() => copy(acct.password, 'Password')}>Copy</button>
           </div>
           <button className="fa-again" onClick={fetchAccount} disabled={loading}>
@@ -66,7 +72,9 @@ export default function FreeAccountCard({ name, source }) {
         .free-acct{display:flex;flex-direction:column;gap:10px}
         .fa-get{align-self:flex-start}
         .fa-creds{display:flex;flex-direction:column;gap:8px}
-        .fa-row{display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--bg-elev-2);border:1px solid var(--border);border-radius:8px;padding:6px 10px}
+        .fa-row{display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--bg-elev-2);border:1px solid var(--border);border-radius:8px;padding:7px 10px}
+        .fa-field{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}
+        .fa-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-dim)}
         .fa-val{font-family:var(--mono,'JetBrains Mono',monospace);font-size:12.5px;word-break:break-all;color:var(--text)}
         .fa-again{align-self:flex-start;background:none;border:none;color:var(--brand);font-size:12px;font-weight:600;cursor:pointer;padding:0}
       `}</style>
