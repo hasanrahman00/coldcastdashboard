@@ -15,6 +15,11 @@
 import { MongoClient } from 'mongodb'
 import dns from 'dns'
 
+// The Vercel Node runtime parses the request URL with the deprecated url.parse()
+// (DEP0169). It's harmless — but it clutters the logs as a warning, so silence
+// deprecation notices for this function.
+process.noDeprecation = true
+
 // Local dev (vercel dev / node) may sit on a network that can't do the SRV
 // lookup mongodb+srv:// needs (querySrv ECONNREFUSED) — force a public resolver
 // there. On deployed Vercel, leave the platform's own resolver alone.
