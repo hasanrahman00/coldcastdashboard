@@ -194,6 +194,11 @@ export function AppProvider({ initialMe, onLogout, children }) {
       refreshProfiles()
       return d
     },
+    renameProfile: async (id, name) => {
+      const d = await guarded(() => api.renameProfile(id, name))
+      refreshProfiles()
+      return d
+    },
     deleteProfile: async (id) => {
       const d = await guarded(() => api.deleteProfile(id))
       refreshProfiles()

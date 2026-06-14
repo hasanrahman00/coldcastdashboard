@@ -4,8 +4,23 @@ import { useToast } from '../store/ToastProvider.jsx'
 import { IconUsers, IconChain } from '../lib/icons.jsx'
 import LocalExtBanner from '../components/LocalExtBanner.jsx'
 
-function ProfileCard({ p, isActive, isThisBrowser, onActivate, onDelete }) {
+function ProfileCard({ p, isActive, isThisBrowser, onActivate, onDelete, onRename }) {
   const online = !!p.online
+  const [editing, setEditing] = useState(false)
+  const [draft, setDraft] = useState(p.name || '')
+  const [saving, setSaving] = useState(false)
+
+  const startEdit = () => { setDraft(p.name || ''); setEditing(true) }
+  const cancelEdit = () => { if (!saving) setEditing(false) }
+  const saveEdit = async () => {
+    const name = draft.trim()
+    if (!name || name === p.name) { setEditing(false); return } // no-op rename
+    setSaving(true)
+    // Only leave edit mode on success — on failure keep the card open with the
+    // user's typed draft so they can retry without re-typing.
+    try { if (await onRename(p.id, name)) setEditing(false) } finally { setSaving(false) }
+  }
+
   return (
     <div className={'profile-card' + (isActive ? ' active' : '')}>
       <div className="profile-head">
@@ -14,22 +29,54 @@ function ProfileCard({ p, isActive, isThisBrowser, onActivate, onDelete }) {
           title={isActive ? 'Active profile' : 'Set as active profile'}
           onClick={() => onActivate(p.id)}
         />
-        <div className="profile-name">
-          {p.name || p.id}
-          {isThisBrowser && (
-            <span className="this-browser-badge" title="The extension reporting this profile is installed in the browser you're using right now">
-              This browser
-            </span>
-          )}
-        </div>
+        {editing ? (
+          <input
+            className="profile-rename"
+            value={draft}
+            autoFocus
+            maxLength={80}
+            disabled={saving}
+            placeholder="Profile name"
+            onChange={(e) => setDraft(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') saveEdit()
+              else if (e.key === 'Escape') cancelEdit()
+            }}
+          />
+        ) : (
+          <div className="profile-name">
+            {p.name || p.id}
+            {isThisBrowser && (
+              <span className="this-browser-badge" title="The extension reporting this profile is installed in the browser you're using right now">
+                This browser
+              </span>
+            )}
+          </div>
+        )}
         <div className="profile-actions">
-          <button
-            className="btn btn-g btn-sm"
-            onClick={() => onDelete(p)}
-            style={{ color: 'var(--red)', borderColor: 'rgba(244,63,94,.3)' }}
-          >
-            Delete
-          </button>
+          {editing ? (
+            <>
+              <button className="btn btn-p btn-sm" onClick={saveEdit} disabled={saving}>
+                {saving ? 'Saving…' : 'Save'}
+              </button>
+              <button className="btn btn-g btn-sm" onClick={cancelEdit} disabled={saving}>
+                Cancel
+              </button>
+            </>
+          ) : (
+            <>
+              <button className="btn btn-g btn-sm" onClick={startEdit}>
+                Rename
+              </button>
+              <button
+                className="btn btn-g btn-sm"
+                onClick={() => onDelete(p)}
+                style={{ color: 'var(--red)', borderColor: 'rgba(244,63,94,.3)' }}
+              >
+                Delete
+              </button>
+            </>
+          )}
         </div>
       </div>
       <div className="profile-stats">
@@ -44,7 +91,7 @@ function ProfileCard({ p, isActive, isThisBrowser, onActivate, onDelete }) {
 }
 
 export default function Settings() {
-  const { profiles, activeProfileId, activateProfile, deleteProfile, refreshProfiles, localExt } = useApp()
+  const { profiles, activeProfileId, activateProfile, renameProfile, deleteProfile, refreshProfiles, localExt } = useApp()
   const toast = useToast()
   const [busy, setBusy] = useState(false)
 
@@ -60,6 +107,17 @@ export default function Settings() {
       toast(e.message || 'Action failed', 'err')
     } finally {
       setBusy(false)
+    }
+  }
+
+  const onRename = async (id, name) => {
+    try {
+      await renameProfile(id, name)
+      toast('Profile renamed', 'ok')
+      return true
+    } catch (e) {
+      toast(e.message || 'Rename failed', 'err')
+      return false
     }
   }
 
@@ -105,6 +163,7 @@ export default function Settings() {
                 isActive={p.id === activeProfileId}
                 isThisBrowser={!!localExt.profileId && p.id === localExt.profileId}
                 onActivate={onActivate}
+                onRename={onRename}
                 onDelete={onDelete}
               />
             ))
@@ -129,6 +188,8 @@ export default function Settings() {
         )}
         <style>{`
           .this-browser-badge{display:inline-block;margin-left:8px;padding:2px 8px;border-radius:999px;border:1px solid rgba(79,124,245,.35);background:rgba(79,124,245,.10);color:var(--brand);font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;vertical-align:middle}
+          .profile-rename{flex:1;min-width:0;font:inherit;font-weight:600;font-size:14px;color:var(--text);padding:6px 10px;border:1px solid var(--brand);border-radius:8px;background:var(--bg-elev-1);outline:none}
+          .profile-rename:disabled{opacity:.6}
         `}</style>
       </div>
 

@@ -125,6 +125,7 @@ export const api = {
   // ── profiles / extension status ────────────────────────────────────────
   agentStatus: () => asJson('/api/agent/status'),
   activateProfile: (id) => postJson(`/api/profiles/${encodeURIComponent(id)}/activate`),
+  renameProfile: (id, name) => postJson(`/api/profiles/${encodeURIComponent(id)}`, { name }),
   deleteProfile: (id) => del(`/api/profiles/${encodeURIComponent(id)}`),
 
   // ── live updates (Server-Sent Events) ──────────────────────────────────
