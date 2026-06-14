@@ -35,6 +35,7 @@ export default function NewJobModal({ open, onClose }) {
   const [url, setUrl] = useState('')
   const [profileId, setProfileId] = useState('')
   const [mode, setMode] = useState('without_signal')
+  const [speed, setSpeed] = useState('fast')
   const [existingId, setExistingId] = useState('')
   const [busy, setBusy] = useState(false)
 
@@ -73,7 +74,7 @@ export default function NewJobModal({ open, onClose }) {
         await appendJob(existingId, { url: u, profileId })
         toast(`Added to “${selectedJob?.name || 'list'}” — click Run to scrape & append`, 'ok')
       } else {
-        await createJob({ name: name.trim() || 'Untitled', url: u, profileId, mode })
+        await createJob({ name: name.trim() || 'Untitled', url: u, profileId, mode, speed })
         toast('Job created!', 'ok')
       }
       setUrl('')
@@ -149,6 +150,18 @@ export default function NewJobModal({ open, onClose }) {
           ))}
         </select>
       </div>
+
+      {target === 'new' && (
+        <div className="fg">
+          <label>
+            Scraper speed <span style={subLabel}>— page-to-page pace</span>
+          </label>
+          <select value={speed} onChange={(e) => setSpeed(e.target.value)} style={selStyle}>
+            <option value="fast">Fast — current speed (5–10s per page)</option>
+            <option value="normal">Normal — safer (12–20s per page)</option>
+          </select>
+        </div>
+      )}
 
       {target === 'new' ? (
         <div className="fg">

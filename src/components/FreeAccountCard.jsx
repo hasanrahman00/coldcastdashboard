@@ -8,20 +8,30 @@ const LOGIN_URLS = {
   ContactOut: 'https://contactout.com/login',
 }
 
-// One source card on the Setup page: a "Get a free account" button that pulls a
-// fresh login from the Google Sheet (via the /api/free-account serverless fn),
-// then shows the email + password with copy buttons.
+// Persist the last fetched account per source so it survives page reloads and
+// navigating away/back — the user keeps their credential until they Refetch.
+const storeKey = (source) => `cc_free_acct_${source}`
+function loadStored(source) {
+  try { return JSON.parse(localStorage.getItem(storeKey(source)) || 'null') } catch { return null }
+}
+
+// One source card on the Setup page. First click "Get a free account" → reveals
+// email + password (persisted). After that the button becomes "Refetch", which
+// pulls a fresh account and REPLACES the shown one (e.g. if it didn't work).
 export default function FreeAccountCard({ name, source }) {
   const toast = useToast()
-  const [acct, setAcct] = useState(null) // { account, password }
+  const [acct, setAcct] = useState(() => loadStored(source))
   const [loading, setLoading] = useState(false)
 
   const fetchAccount = async () => {
     setLoading(true)
     try {
       const d = await getFreeAccount(source)
-      setAcct({ account: d.account, password: d.password })
+      const next = { account: d.account, password: d.password }
+      setAcct(next)
+      try { localStorage.setItem(storeKey(source), JSON.stringify(next)) } catch { /* quota */ }
     } catch (e) {
+      // keep the existing account on failure so the user doesn't lose it
       toast(e.message || 'Could not fetch an account', 'err')
     } finally {
       setLoading(false)
@@ -58,8 +68,8 @@ export default function FreeAccountCard({ name, source }) {
             </div>
             <button className="btn btn-g btn-sm" onClick={() => copy(acct.password, 'Password')}>Copy</button>
           </div>
-          <button className="fa-again" onClick={fetchAccount} disabled={loading}>
-            {loading ? 'Fetching…' : 'Get another'}
+          <button className="btn btn-g btn-sm fa-get" onClick={fetchAccount} disabled={loading} title="Get a new account, replacing this one">
+            {loading ? 'Fetching…' : 'Refetch'}
           </button>
         </div>
       ) : (
@@ -76,7 +86,6 @@ export default function FreeAccountCard({ name, source }) {
         .fa-field{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}
         .fa-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-dim)}
         .fa-val{font-family:var(--mono,'JetBrains Mono',monospace);font-size:12.5px;word-break:break-all;color:var(--text)}
-        .fa-again{align-self:flex-start;background:none;border:none;color:var(--brand);font-size:12px;font-weight:600;cursor:pointer;padding:0}
       `}</style>
     </div>
   )
