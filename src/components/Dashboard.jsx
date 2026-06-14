@@ -7,12 +7,13 @@ import ProductNav from './ProductNav.jsx'
 import SalesNav from '../pages/salesnav/SalesNav.jsx'
 import ComingSoon from '../pages/ComingSoon.jsx'
 import Settings from '../pages/Settings.jsx'
+import Setup from '../pages/Setup.jsx'
 import ApiKey from '../pages/ApiKey.jsx'
 import Extension from '../pages/Extension.jsx'
 
 // Every route the logged-in app recognizes: the product tabs + the config pages.
 // Anything else (typo, stale #/login, #/dash, bare hash) → bounce to salesnav.
-const VALID_ROUTES = new Set([...PRODUCTS.map((p) => p.id), 'set', 'api', 'ext'])
+const VALID_ROUTES = new Set([...PRODUCTS.map((p) => p.id), 'set', 'setup', 'api', 'ext'])
 
 export default function Dashboard({ onLogout }) {
   const [route, nav] = useHashRoute('salesnav')
@@ -24,6 +25,7 @@ export default function Dashboard({ onLogout }) {
 
   let page
   if (route === 'set') page = <Settings />
+  else if (route === 'setup') page = <Setup />
   else if (route === 'api') page = <ApiKey />
   else if (route === 'ext') page = <Extension />
   else {

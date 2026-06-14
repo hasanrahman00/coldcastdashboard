@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { useApp } from '../store/AppStore.jsx'
-import { IconLogo, IconGear, IconChevronDown, IconKeyOutline, IconSignout } from '../lib/icons.jsx'
+import { IconLogo, IconGear, IconChevronDown, IconKeyOutline, IconSignout, IconChain } from '../lib/icons.jsx'
 
 function fmtTtl(secs) {
   if (secs <= 0) return 'Expired'
@@ -75,6 +75,9 @@ export default function Topbar({ route, nav, onLogout }) {
                 <IconGear /> Settings
               </button>
             )}
+            <button className="acct-item" onClick={() => { setOpen(false); nav('setup') }}>
+              <IconChain /> Setup
+            </button>
             <button className="acct-item" onClick={() => { setOpen(false); nav('api') }}>
               <IconKeyOutline /> API key
             </button>
