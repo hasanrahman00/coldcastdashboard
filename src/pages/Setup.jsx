@@ -1,4 +1,5 @@
 import { IconChain } from '../lib/icons.jsx'
+import FreeAccountCard from '../components/FreeAccountCard.jsx'
 
 // Setup — onboarding guide for connecting the data sources Coldcast enriches
 // from. Reached via the account dropdown (below Settings). Moved here out of
@@ -14,48 +15,24 @@ export default function Setup() {
       </div>
 
       <p style={{ marginBottom: 16, color: 'var(--text-muted)', fontSize: 13 }}>
-        Coldcast enriches your leads using your own logged-in sessions — there are <b>no API keys to
-        paste</b>. Just stay signed in to the sources below <b>in the same Chrome where the Coldcast
-        extension is installed</b>.
+        We use 3 sources to find extra data for your leads. Log in to all 3 below to get the best results.
       </p>
 
       <ol className="setup-steps">
         <li>
-          <h4>Log into each source</h4>
-          <p>Click a card below and sign in normally, using accounts you already have. You only do this once per source.</p>
+          <h4>Sign in to all 3 sources</h4>
+          <p>Open the cards below and log in to each one. You only need to do this once.</p>
         </li>
         <li>
-          <h4>Use the same Chrome profile</h4>
-          <p>Sign in in the <b>same Chrome profile</b> where the Coldcast extension runs, so it can reuse your session.</p>
-        </li>
-        <li>
-          <h4>Run a job</h4>
-          <p>When you export, Coldcast pulls emails, phone numbers, and company data from whichever sources you're signed in to. Not signed in to one? It's simply skipped.</p>
+          <h4>Run your export</h4>
+          <p>Your leads come back enriched automatically.</p>
         </li>
       </ol>
 
       <div className="enrich-grid">
-        <a className="enrich-card" href="https://www.lusha.com/login/" target="_blank" rel="noopener noreferrer">
-          <div className="enrich-h">
-            <b>Lusha</b>
-            <span className="enrich-action">Open &amp; log in →</span>
-          </div>
-          <p>Verified business emails &amp; direct-dial phone numbers from your Lusha credits.</p>
-        </a>
-        <a className="enrich-card" href="https://salesql.com/" target="_blank" rel="noopener noreferrer">
-          <div className="enrich-h">
-            <b>SalesQL</b>
-            <span className="enrich-action">Open &amp; log in →</span>
-          </div>
-          <p>Business email addresses &amp; company details for your leads.</p>
-        </a>
-        <a className="enrich-card" href="https://contactout.com/login" target="_blank" rel="noopener noreferrer">
-          <div className="enrich-h">
-            <b>ContactOut</b>
-            <span className="enrich-action">Open &amp; log in →</span>
-          </div>
-          <p>Personal &amp; work emails plus phone numbers, when you're logged in.</p>
-        </a>
+        <FreeAccountCard name="Lusha" source="lusha" />
+        <FreeAccountCard name="SalesQL" source="salesql" />
+        <FreeAccountCard name="ContactOut" source="contactout" />
       </div>
     </div>
   )

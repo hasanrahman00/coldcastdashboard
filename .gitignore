@@ -11,3 +11,11 @@ npm-debug.log*
 
 # local preview config
 .claude/
+
+.vercel
+.env*
+
+# Google service-account key — NEVER commit
+service-account.json
+*.sa.json
+*-service-account*.json
