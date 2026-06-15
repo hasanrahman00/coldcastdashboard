@@ -2,7 +2,6 @@ import { useState, useEffect, useMemo } from 'react'
 import Modal from '../../components/Modal.jsx'
 import { useApp } from '../../store/AppStore.jsx'
 import { useToast } from '../../store/ToastProvider.jsx'
-import { IconPlus } from '../../lib/icons.jsx'
 
 const selStyle = {
   width: '100%',
@@ -25,6 +24,14 @@ const radioWrap = {
   background: 'var(--bg-elev-2)',
 }
 const subLabel = { color: 'var(--text-faint)', fontWeight: 500, textTransform: 'none', letterSpacing: 0 }
+// Selectable-card style for the radio pickers. Highlights the active choice with
+// a brand border + glow so non-technical users can clearly see what's selected.
+const card = (active) => ({
+  ...radioWrap,
+  borderColor: active ? 'var(--brand)' : 'var(--border)',
+  boxShadow: active ? '0 0 0 3px rgba(99,102,241,.15)' : 'none',
+  transition: 'border-color .15s, box-shadow .15s',
+})
 
 export default function NewJobModal({ open, onClose }) {
   const { jobs, profiles, activeProfileId, createJob, appendJob, refreshProfiles } = useApp()
@@ -88,26 +95,30 @@ export default function NewJobModal({ open, onClose }) {
   }
 
   return (
-    <Modal open={open} onClose={onClose} title="New Job">
+    <Modal open={open} onClose={onClose} title="🚀 New Job">
+      <p style={{ margin: '-2px 0 16px', fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.5 }}>
+        Turn a LinkedIn Sales Navigator search into a clean, exportable lead list — just fill in the steps below 👇
+      </p>
+
       {/* New list vs add-to-existing */}
       <div className="tabs">
         <button type="button" className={'tab' + (target === 'new' ? ' on' : '')} onClick={() => setTarget('new')}>
-          New list
+          🆕 New list
         </button>
         <button type="button" className={'tab' + (target === 'existing' ? ' on' : '')} onClick={() => setTarget('existing')}>
-          Add to existing list
+          ➕ Add to existing
         </button>
       </div>
 
       {target === 'new' ? (
         <div className="fg">
-          <label>List Name</label>
+          <label>🏷️ List name <span style={subLabel}>— a name you'll recognize later</span></label>
           <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Landscaping Leads — US" />
         </div>
       ) : (
         <div className="fg">
           <label>
-            Select list <span style={subLabel}>— append into this one (dedup on)</span>
+            📂 Select list <span style={subLabel}>— new leads get added here, duplicates removed</span>
           </label>
           {sortedJobs.length === 0 ? (
             <div style={{ fontSize: 13, color: 'var(--text-faint)', padding: '10px 0' }}>
@@ -127,7 +138,7 @@ export default function NewJobModal({ open, onClose }) {
       )}
 
       <div className="fg">
-        <label>LinkedIn Sales Nav URL</label>
+        <label>🔗 LinkedIn Sales Nav URL <span style={subLabel}>— paste the search link from your browser</span></label>
         <textarea
           rows="3"
           value={url}
@@ -138,14 +149,14 @@ export default function NewJobModal({ open, onClose }) {
 
       <div className="fg">
         <label>
-          Run with profile <span style={subLabel}>— which Chrome to use</span>
+          🖥️ Run with profile <span style={subLabel}>— which connected browser to use</span>
         </label>
         <select value={profileId} onChange={(e) => setProfileId(e.target.value)} style={selStyle}>
           {profiles.length === 0 && <option value="">— Select a profile —</option>}
           {profiles.map((p) => (
             <option key={p.id} value={p.id}>
               {p.name || p.id}
-              {p.online ? '  • connected' : '  • offline'}
+              {p.online ? '  🟢 connected' : '  ⚪ offline'}
             </option>
           ))}
         </select>
@@ -154,22 +165,38 @@ export default function NewJobModal({ open, onClose }) {
       {target === 'new' && (
         <div className="fg">
           <label>
-            Scraper speed <span style={subLabel}>— page-to-page pace</span>
+            ⏱️ Scraper speed <span style={subLabel}>— how fast it moves between pages</span>
           </label>
-          <select value={speed} onChange={(e) => setSpeed(e.target.value)} style={selStyle}>
-            <option value="fast">Fast — current speed (5–10s per page)</option>
-            <option value="normal">Normal — safer (12–20s per page)</option>
-          </select>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+            <label style={card(speed === 'fast')}>
+              <input type="radio" name="jobSpeed" value="fast" checked={speed === 'fast'} onChange={() => setSpeed('fast')} style={{ marginTop: 3, flexShrink: 0 }} />
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 600 }}>⚡ Fast</div>
+                <div style={{ fontSize: 11.5, color: 'var(--text-faint)', lineHeight: 1.4, marginTop: 2 }}>
+                  Quicker — 5–10s per page.
+                </div>
+              </div>
+            </label>
+            <label style={card(speed === 'normal')}>
+              <input type="radio" name="jobSpeed" value="normal" checked={speed === 'normal'} onChange={() => setSpeed('normal')} style={{ marginTop: 3, flexShrink: 0 }} />
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 600 }}>🛡️ Normal</div>
+                <div style={{ fontSize: 11.5, color: 'var(--text-faint)', lineHeight: 1.4, marginTop: 2 }}>
+                  Safer, more human — 12–20s per page.
+                </div>
+              </div>
+            </label>
+          </div>
         </div>
       )}
 
       {target === 'new' ? (
         <div className="fg">
           <label>
-            Mode <span style={subLabel}>— what to capture</span>
+            🎛️ Mode <span style={subLabel}>— what to capture</span>
           </label>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-            <label style={radioWrap}>
+            <label style={card(mode === 'without_signal')}>
               <input
                 type="radio"
                 name="jobMode"
@@ -179,13 +206,13 @@ export default function NewJobModal({ open, onClose }) {
                 style={{ marginTop: 3, flexShrink: 0 }}
               />
               <div>
-                <div style={{ fontSize: 13, fontWeight: 600 }}>Without Signal</div>
+                <div style={{ fontSize: 13, fontWeight: 600 }}>📇 Without Signal</div>
                 <div style={{ fontSize: 11.5, color: 'var(--text-faint)', lineHeight: 1.4, marginTop: 2 }}>
                   Standard contact data. Faster.
                 </div>
               </div>
             </label>
-            <label style={radioWrap}>
+            <label style={card(mode === 'with_signal')}>
               <input
                 type="radio"
                 name="jobMode"
@@ -195,9 +222,9 @@ export default function NewJobModal({ open, onClose }) {
                 style={{ marginTop: 3, flexShrink: 0 }}
               />
               <div>
-                <div style={{ fontSize: 13, fontWeight: 600 }}>With Signal</div>
+                <div style={{ fontSize: 13, fontWeight: 600 }}>🎯 With Signal</div>
                 <div style={{ fontSize: 11.5, color: 'var(--text-faint)', lineHeight: 1.4, marginTop: 2 }}>
-                  Adds badges (mutual conn., recently hired, etc.) + post text. Slower, safer pacing.
+                  Adds badges (mutual connections, recently hired…) + post text. Slower, safer.
                 </div>
               </div>
             </label>
@@ -205,8 +232,8 @@ export default function NewJobModal({ open, onClose }) {
         </div>
       ) : (
         selectedJob && (
-          <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: -4, marginBottom: 4 }}>
-            New leads are <b>appended</b> to this list and deduped — existing rows are kept. Mode stays{' '}
+          <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: -4, marginBottom: 4, lineHeight: 1.5 }}>
+            ℹ️ New leads are <b>appended</b> to this list and deduped — existing rows are kept. Mode stays{' '}
             <b>{selectedJob.mode === 'with_signal' ? 'With Signal' : 'Without Signal'}</b> (the list's own).
           </div>
         )
@@ -214,12 +241,11 @@ export default function NewJobModal({ open, onClose }) {
 
       <button
         className="btn btn-p"
-        style={{ width: '100%', justifyContent: 'center', marginTop: 10, padding: 12 }}
+        style={{ width: '100%', justifyContent: 'center', marginTop: 10, padding: 12, fontSize: 15, fontWeight: 600 }}
         disabled={busy || (target === 'existing' && !existingId)}
         onClick={submit}
       >
-        <IconPlus />
-        {busy ? 'Saving…' : target === 'existing' ? 'Add to list' : 'Create Job'}
+        {busy ? '⏳ Saving…' : target === 'existing' ? '➕ Add to list' : '🚀 Create Job'}
       </button>
     </Modal>
   )
