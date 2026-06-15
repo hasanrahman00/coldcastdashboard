@@ -57,14 +57,16 @@ export default function SalesNav() {
       {limit > 0 && (
         <div className="scrape-usage">
           <div className="scrape-usage-top">
-            <span className="scrape-usage-label">Daily scraping</span>
+            <span className="scrape-usage-label">{usage?.resetsDaily ? 'Daily scraping' : 'Scrape allowance'}</span>
             <span className="scrape-usage-nums">
               <b style={{ color: atLimit ? 'var(--red)' : 'var(--text)' }}>{used.toLocaleString()}</b>
               {' / '}
               {limit.toLocaleString()} rows
               <span className="scrape-usage-left">
                 {' · '}
-                {atLimit ? 'limit reached — resets 00:00 UTC' : `${remaining.toLocaleString()} left today`}
+                {atLimit
+                  ? (usage?.resetsDaily ? 'limit reached — resets 00:00 UTC' : 'allowance used — contact admin')
+                  : `${remaining.toLocaleString()} left${usage?.resetsDaily ? ' today' : ''}`}
               </span>
             </span>
           </div>

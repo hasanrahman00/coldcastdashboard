@@ -28,7 +28,7 @@ export function AppProvider({ initialMe, onLogout, children }) {
   const [profiles, setProfiles] = useState([])
   const [activeProfileId, setActiveProfileId] = useState(null)
   const [connectorOnline, setConnectorOnline] = useState(false)
-  const [usage, setUsage] = useState({ limit: 0, used: 0 }) // daily scrape cap
+  const [usage, setUsage] = useState({ limit: 0, used: 0, resetsDaily: false }) // scrape cap (paid resets daily; free = hard total)
   const [uiConfig, setUiConfig] = useState({ hideLogs: false, hideSettings: false })
   // THIS browser's extension state, reported by the extension's dashboard
   // bridge. installed=false until a message arrives (extension missing OR a
@@ -118,7 +118,7 @@ export function AppProvider({ initialMe, onLogout, children }) {
       setProfiles(Array.isArray(d.profiles) ? d.profiles : [])
       setActiveProfileId(d.activeProfileId || null)
       setConnectorOnline(!!d.connectorOnline)
-      setUsage({ limit: d.scrapeLimit ?? 0, used: d.scrapedToday ?? 0 })
+      setUsage({ limit: d.scrapeLimit ?? 0, used: d.scrapedToday ?? 0, resetsDaily: !!d.scrapeResetsDaily })
     } catch (e) {
       if (e instanceof AuthError) onLogout()
       // network blip → keep last-known cache

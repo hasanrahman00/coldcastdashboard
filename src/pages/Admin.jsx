@@ -225,11 +225,23 @@ export default function Admin() {
     navigator.clipboard?.writeText(key).then(() => toast('API key copied', 'ok')).catch(() => toast('Copy failed', 'err'))
   }
   const setLimit = async (u) => {
-    const v = window.prompt(`Daily scrape limit for "${u.username}" (rows/day):`, String(u.scrapeLimit ?? ''))
+    const v = window.prompt(`Total scrape allowance for "${u.username}" (rows):`, String(u.scrapeLimit ?? ''))
     if (v === null) return
     const n = parseInt(v, 10)
     if (isNaN(n) || n < 0) return toast('Enter a valid number', 'err')
-    try { await admin.setLimit(u.id, n); toast('Daily limit updated', 'ok'); refresh() } catch (e) { toast(e.message, 'err') }
+    try { await admin.setLimit(u.id, n); toast('Allowance updated', 'ok'); refresh() } catch (e) { toast(e.message, 'err') }
+  }
+  // Switch a user between Free (1,000 rows / 1 day) and Paid (20,000 rows / 30 days).
+  // Refreshes their allowance and restarts the clock from today.
+  const changePlan = async (u, plan) => {
+    if (plan === (u.trial ? 'free' : 'paid')) return
+    const label = plan === 'paid' ? 'Paid — 20,000 rows / 30 days' : 'Free — 1,000 rows / 1 day'
+    if (!window.confirm(`Switch "${u.username}" to ${label}?\n\nThis refreshes their row allowance and restarts the clock from today.`)) {
+      refresh() // user cancelled — re-sync the dropdown to the real value
+      return
+    }
+    try { await admin.setPlan(u.id, plan); toast(`Switched to ${plan === 'paid' ? 'Paid' : 'Free'}`, 'ok'); refresh() }
+    catch (e) { toast(e.message, 'err'); refresh() }
   }
 
   if (loading) return <div className="boot"><span className="spin" /><span>Loading…</span></div>
@@ -260,21 +272,32 @@ export default function Admin() {
               <div className="adm-table-wrap">
                 <table className="adm-table">
                   <thead>
-                    <tr><th>Username</th><th>Email</th><th>Created</th><th>Expires</th><th>Days left</th><th>Daily limit</th><th>Status</th><th>Profiles</th><th>API key</th><th className="adm-actions-h">Actions</th></tr>
+                    <tr><th>Username</th><th>Email</th><th>Created</th><th>Expires</th><th>Days left</th><th>Plan</th><th>Allowance</th><th>Status</th><th>Profiles</th><th>API key</th><th className="adm-actions-h">Actions</th></tr>
                   </thead>
                   <tbody>
                     {users.map((u) => {
                       const st = statusOf(u)
                       return (
                         <tr key={u.id}>
-                          <td className="adm-name">{u.username}{u.trial && <span className="adm-trial">Trial</span>}</td>
+                          <td className="adm-name">{u.username}</td>
                           <td className="adm-emailcell">{u.email || <span style={{ color: 'var(--text-faint)' }}>—</span>}</td>
                           <td>{fmtDate(u.createdAt)}</td>
                           <td>{fmtDate(u.expiresAt)}</td>
                           <td className="adm-days">{daysLeft(u)}</td>
                           <td>
-                            <button className="adm-limit" onClick={() => setLimit(u)} title="Click to change the daily scrape cap">
-                              {(u.scrapeLimit ?? 0).toLocaleString()}<span className="adm-limit-edit">/day ✎</span>
+                            <select
+                              className={'adm-plan adm-plan-' + (u.trial ? 'free' : 'paid')}
+                              value={u.trial ? 'free' : 'paid'}
+                              onChange={(e) => changePlan(u, e.target.value)}
+                              title="Switch between Free (1,000 rows / 1 day) and Paid (20,000 rows / 30 days)"
+                            >
+                              <option value="free">Free</option>
+                              <option value="paid">Paid</option>
+                            </select>
+                          </td>
+                          <td>
+                            <button className="adm-limit" onClick={() => setLimit(u)} title="Click to change the total row allowance">
+                              {(u.scrapeLimit ?? 0).toLocaleString()}<span className="adm-limit-edit"> rows ✎</span>
                             </button>
                           </td>
                           <td><span className="adm-badge" style={{ color: st.color, background: st.color + '18' }}>{st.label}</span></td>
@@ -326,6 +349,10 @@ function AdminStyles() {
       .adm-name{font-weight:700;color:var(--text)}
       .adm-badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700}
       .adm-trial{margin-left:8px;display:inline-block;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:#0e7490;background:rgba(8,145,178,.12)}
+      .adm-plan{border-radius:8px;font-size:12px;font-weight:700;padding:4px 8px;cursor:pointer;border:1px solid var(--border-strong);background:var(--bg-elev-2);color:var(--text);font-family:inherit}
+      .adm-plan:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(99,102,241,.15)}
+      .adm-plan-free{color:#0e7490}
+      .adm-plan-paid{color:#047857}
       .adm-emailcell{color:var(--text-muted)}
       .adm-days{font-weight:600;color:var(--text);white-space:nowrap}
       .adm-key{display:inline-flex;align-items:center;gap:6px}
