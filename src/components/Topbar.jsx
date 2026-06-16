@@ -15,7 +15,7 @@ function fmtTtl(secs) {
 }
 
 export default function Topbar({ route, nav, onLogout }) {
-  const { me, uiConfig, connectorOnline, profiles } = useApp()
+  const { me, uiConfig, connectorOnline, profiles, credits } = useApp()
   const [open, setOpen] = useState(false)
   const ref = useRef(null)
 
@@ -40,6 +40,20 @@ export default function Topbar({ route, nav, onLogout }) {
       </div>
 
       <div className="tb-right">
+        <span
+          className="credit-pill"
+          title="Credits for email enrichment & verification — 1 credit = 1 valid email · 2 verifications · ⅓ of a domain/LinkedIn enrichment (3 credits each)"
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 6,
+            padding: '6px 12px', borderRadius: 999, whiteSpace: 'nowrap',
+            background: 'rgba(217,119,6,.10)', border: '1px solid rgba(217,119,6,.28)',
+            color: '#b45309', fontSize: 13, fontWeight: 700,
+          }}
+        >
+          <span aria-hidden style={{ fontSize: 14, lineHeight: 1 }}>⚡</span>
+          {(credits ?? 0).toLocaleString()} credits
+        </span>
+
         <span className="conn-pill">
           <span className={'dot' + (connectorOnline ? '' : ' off')} />
           <span>

@@ -1,10 +1,10 @@
 import { useApp } from '../store/AppStore.jsx'
 import { useToast } from '../store/ToastProvider.jsx'
 import { getSavedKey } from '../lib/api.js'
-import { IconGrid, IconUsers, IconPlay, IconDownload, IconCopy } from '../lib/icons.jsx'
+import { IconGrid, IconUsers, IconPlay, IconZap, IconDownload, IconCopy } from '../lib/icons.jsx'
 
 export default function StatsBox({ nav }) {
-  const { jobs, profiles, connectorOnline, activeProfileId } = useApp()
+  const { jobs, profiles, connectorOnline, activeProfileId, credits } = useApp()
   const toast = useToast()
 
   const totalLeads = jobs.reduce((s, j) => s + (j.totalLeads || 0), 0)
@@ -64,6 +64,17 @@ export default function StatsBox({ nav }) {
             Running
           </div>
           <div className="v">{running}</div>
+        </div>
+        <div className="sbx-divider" />
+        <div
+          className="sbx-stat"
+          title="Credits for email enrichment & verification. 1 credit = 1 valid email enriched · 2 email verifications · ⅓ of a domain/LinkedIn enrichment (3 credits each)."
+        >
+          <div className="l">
+            <IconZap />
+            Credits
+          </div>
+          <div className="v" style={{ color: '#d97706' }}>{(credits ?? 0).toLocaleString()}</div>
         </div>
       </div>
 

@@ -29,6 +29,7 @@ export function AppProvider({ initialMe, onLogout, children }) {
   const [activeProfileId, setActiveProfileId] = useState(null)
   const [connectorOnline, setConnectorOnline] = useState(false)
   const [usage, setUsage] = useState({ limit: 0, used: 0, resetsDaily: false }) // scrape cap (paid resets daily; free = hard total)
+  const [credits, setCredits] = useState(() => initialMe?.user?.credits ?? 0) // pay-per-use wallet (enrich / verify / domain)
   const [uiConfig, setUiConfig] = useState({ hideLogs: false, hideSettings: false })
   // THIS browser's extension state, reported by the extension's dashboard
   // bridge. installed=false until a message arrives (extension missing OR a
@@ -119,6 +120,7 @@ export function AppProvider({ initialMe, onLogout, children }) {
       setActiveProfileId(d.activeProfileId || null)
       setConnectorOnline(!!d.connectorOnline)
       setUsage({ limit: d.scrapeLimit ?? 0, used: d.scrapedToday ?? 0, resetsDaily: !!d.scrapeResetsDaily })
+      if (typeof d.credits === 'number') setCredits(d.credits)
     } catch (e) {
       if (e instanceof AuthError) onLogout()
       // network blip → keep last-known cache
@@ -175,6 +177,7 @@ export function AppProvider({ initialMe, onLogout, children }) {
     activeProfileId,
     connectorOnline,
     usage,
+    credits,
     uiConfig,
     localExt,
     refreshProfiles,

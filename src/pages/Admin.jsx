@@ -231,6 +231,14 @@ export default function Admin() {
     if (isNaN(n) || n < 0) return toast('Enter a valid number', 'err')
     try { await admin.setLimit(u.id, n); toast('Allowance updated', 'ok'); refresh() } catch (e) { toast(e.message, 'err') }
   }
+  // Top up (or set) a user's credit wallet for email enrich / verify / domain.
+  const editCredits = async (u) => {
+    const v = window.prompt(`Credits for "${u.username}" (enrich / verify / domain):`, String(u.credits ?? ''))
+    if (v === null) return
+    const n = parseInt(v, 10)
+    if (isNaN(n) || n < 0) return toast('Enter a valid number', 'err')
+    try { await admin.setCredits(u.id, n); toast('Credits updated', 'ok'); refresh() } catch (e) { toast(e.message, 'err') }
+  }
   // Switch a user between Free (1,000 rows / 1 day) and Paid (20,000 rows / 30 days).
   // Refreshes their allowance and restarts the clock from today.
   const changePlan = async (u, plan) => {
@@ -272,7 +280,7 @@ export default function Admin() {
               <div className="adm-table-wrap">
                 <table className="adm-table">
                   <thead>
-                    <tr><th>Username</th><th>Email</th><th>Created</th><th>Expires</th><th>Days left</th><th>Plan</th><th>Allowance</th><th>Status</th><th>Profiles</th><th>API key</th><th className="adm-actions-h">Actions</th></tr>
+                    <tr><th>Username</th><th>Email</th><th>Created</th><th>Expires</th><th>Days left</th><th>Plan</th><th>Allowance</th><th>Credits</th><th>Status</th><th>Profiles</th><th>API key</th><th className="adm-actions-h">Actions</th></tr>
                   </thead>
                   <tbody>
                     {users.map((u) => {
@@ -298,6 +306,11 @@ export default function Admin() {
                           <td>
                             <button className="adm-limit" onClick={() => setLimit(u)} title="Click to change the total row allowance">
                               {(u.scrapeLimit ?? 0).toLocaleString()}<span className="adm-limit-edit"> rows ✎</span>
+                            </button>
+                          </td>
+                          <td>
+                            <button className="adm-limit" onClick={() => editCredits(u)} title="Click to top up the credit wallet (enrich / verify / domain)">
+                              {(u.credits ?? 0).toLocaleString()}<span className="adm-limit-edit"> cr ✎</span>
                             </button>
                           </td>
                           <td><span className="adm-badge" style={{ color: st.color, background: st.color + '18' }}>{st.label}</span></td>
