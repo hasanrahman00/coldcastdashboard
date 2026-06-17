@@ -65,7 +65,7 @@ export default function Topbar({ route, nav, onLogout }) {
           <span style={{ position: 'relative', width: 64, height: 6, borderRadius: 999, background: 'rgba(37,99,235,.18)', overflow: 'hidden', flex: '0 0 auto' }}>
             <span style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: scrapePct.toFixed(1) + '%', background: scrapeBar, transition: 'width .4s ease' }} />
           </span>
-          <span>{scrapeLeft.toLocaleString()} / {scrapeLimit.toLocaleString()} <span style={{ fontWeight: 500, opacity: .8 }}>left</span></span>
+          <span>{scrapeLimit.toLocaleString()} / {scrapeLeft.toLocaleString()} <span style={{ fontWeight: 500, opacity: .8 }}>left</span></span>
         </span>
 
         <span
