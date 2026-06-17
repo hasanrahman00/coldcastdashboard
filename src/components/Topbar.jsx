@@ -15,7 +15,7 @@ function fmtTtl(secs) {
 }
 
 export default function Topbar({ route, nav, onLogout }) {
-  const { me, uiConfig, connectorOnline, profiles, credits } = useApp()
+  const { me, uiConfig, connectorOnline, profiles, credits, usage } = useApp()
   const [open, setOpen] = useState(false)
   const ref = useRef(null)
 
@@ -29,6 +29,9 @@ export default function Topbar({ route, nav, onLogout }) {
 
   const username = me?.user?.username || '—'
   const secondsLeft = me?.secondsLeft ?? 0
+  // Scrape budget — ONE row allowance shared across ALL scrapers (Sales Nav,
+  // Apollo, ZoomInfo…). Separate from the credit wallet. Show rows-left / limit.
+  const scrapeLeft = Math.max(0, (usage?.limit ?? 0) - (usage?.used ?? 0))
 
   return (
     <header className="topbar">
@@ -40,6 +43,20 @@ export default function Topbar({ route, nav, onLogout }) {
       </div>
 
       <div className="tb-right">
+        <span
+          className="scrape-pill"
+          title={`Scraping rows left — a single budget shared across ALL your scrapers (Sales Nav, Apollo, ZoomInfo…). ${usage?.resetsDaily ? 'Resets daily at 00:00 UTC.' : 'Total allowance.'}`}
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 6,
+            padding: '6px 12px', borderRadius: 999, whiteSpace: 'nowrap',
+            background: 'rgba(37,99,235,.10)', border: '1px solid rgba(37,99,235,.28)',
+            color: '#1d4ed8', fontSize: 13, fontWeight: 700,
+          }}
+        >
+          <span aria-hidden style={{ fontSize: 14, lineHeight: 1 }}>📊</span>
+          {scrapeLeft.toLocaleString()} / {(usage?.limit ?? 0).toLocaleString()} rows
+        </span>
+
         <span
           className="credit-pill"
           title="Credits for email enrichment & verification — 1 credit = 1 valid email · 2 verifications · ⅓ of a domain/LinkedIn enrichment (3 credits each)"
