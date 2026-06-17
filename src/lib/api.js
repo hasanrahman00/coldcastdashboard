@@ -8,8 +8,14 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 const BASE = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '')
+// Coldcast Core owns auth + billing + admin (shared by every product). The
+// dashboard calls Core directly for those; product calls (jobs/profiles) stay on
+// BASE (the scraper). If VITE_CORE_URL is unset, CORE_BASE falls back to BASE so
+// the old single-host setup keeps working unchanged — set it to flip auth to Core.
+const CORE_BASE = (import.meta.env.VITE_CORE_URL || '').replace(/\/$/, '') || BASE
 
 export const apiUrl = (path) => BASE + path
+export const coreUrl = (path) => CORE_BASE + path
 
 // ── token + key storage (same localStorage keys the old dashboard used) ──────
 const TOKEN_KEY = 'vk_token'
@@ -51,10 +57,11 @@ export class AuthError extends Error {
 }
 
 async function request(path, opts = {}) {
-  const headers = { ...(opts.headers || {}) }
+  const { base = BASE, ...rest } = opts
+  const headers = { ...(rest.headers || {}) }
   const token = getToken()
   if (token) headers['Authorization'] = 'Bearer ' + token
-  const res = await fetch(apiUrl(path), { ...opts, headers })
+  const res = await fetch(base + path, { ...rest, headers })
   if (res.status === 401) throw new AuthError()
   return res
 }
@@ -72,28 +79,29 @@ async function asJson(path, opts) {
   return data
 }
 
-const postJson = (path, body) =>
+const postJson = (path, body, opts = {}) =>
   asJson(path, {
+    ...opts,
     method: 'POST',
-    headers: body ? { 'Content-Type': 'application/json' } : undefined,
+    headers: { ...(body ? { 'Content-Type': 'application/json' } : {}), ...(opts.headers || {}) },
     body: body ? JSON.stringify(body) : undefined,
   })
 
-const del = (path) => asJson(path, { method: 'DELETE' })
+const del = (path, opts = {}) => asJson(path, { ...opts, method: 'DELETE' })
 
 export const api = {
   base: BASE,
 
-  // ── auth ───────────────────────────────────────────────────────────────
-  login: (key) => postJson('/api/auth/login', { key }),
-  me: () => asJson('/api/auth/me'),
-  saveKey: (key) => postJson('/api/auth/key', { key }),
+  // ── auth (Core owns identity — these go to CORE_BASE) ────────────────────
+  login: (key) => postJson('/api/auth/login', { key }, { base: CORE_BASE }),
+  me: () => asJson('/api/auth/me', { base: CORE_BASE }),
+  saveKey: (key) => postJson('/api/auth/key', { key }, { base: CORE_BASE }),
   // logout is fire-and-forget (keepalive) so it survives the redirect.
   logout: () => {
     const token = getToken()
     if (!token) return
     try {
-      fetch(apiUrl('/api/auth/logout'), {
+      fetch(coreUrl('/api/auth/logout'), {
         method: 'POST',
         headers: { Authorization: 'Bearer ' + token },
         keepalive: true,
@@ -108,7 +116,7 @@ export const api = {
 
   // ── public self-serve 1-day trial (no auth) ─────────────────────────────
   // → { ok, username, key, expiresAt, trialDays }
-  trial: (payload) => postJson('/api/trial', payload),
+  trial: (payload) => postJson('/api/trial', payload, { base: CORE_BASE }),
 
   // ── jobs ───────────────────────────────────────────────────────────────
   createJob: (payload) => postJson('/api/jobs', payload),
@@ -142,9 +150,10 @@ export const api = {
 let adminPw = ''
 export const setAdminPassword = (pw) => { adminPw = pw || '' }
 
+// Admin endpoints live on Core too (centralized user management).
 async function adminReq(path, opts = {}) {
   const headers = { ...(opts.headers || {}), 'X-Admin-Password': adminPw }
-  const res = await fetch(apiUrl(path), { ...opts, headers })
+  const res = await fetch(coreUrl(path), { ...opts, headers })
   let data = null
   try { data = await res.json() } catch { /* empty body */ }
   if (res.status === 403) throw new Error((data && data.error) || 'Wrong admin password')
