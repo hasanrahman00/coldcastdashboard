@@ -49,24 +49,24 @@ export default function Topbar({ route, nav, onLogout }) {
       </div>
 
       <div className="tb-right">
-        {scrapeLimit > 0 && (
-          <span
-            className="scrape-pill"
-            title={`Scraping rows — ${scrapeUsed.toLocaleString()} / ${scrapeLimit.toLocaleString()} used (${scrapePct.toFixed(0)}%). One budget shared across ALL your scrapers (Sales Nav, Apollo, ZoomInfo…); it ticks down live as a job runs. ${usage?.resetsDaily ? 'Resets daily at 00:00 UTC.' : 'Total allowance.'}`}
-            style={{
-              display: 'inline-flex', alignItems: 'center', gap: 8,
-              padding: '6px 12px', borderRadius: 999, whiteSpace: 'nowrap',
-              background: 'rgba(37,99,235,.10)', border: '1px solid rgba(37,99,235,.28)',
-              color: '#1d4ed8', fontSize: 12.5, fontWeight: 700,
-            }}
-          >
-            <span aria-hidden style={{ fontSize: 14, lineHeight: 1 }}>📊</span>
-            <span style={{ position: 'relative', width: 64, height: 6, borderRadius: 999, background: 'rgba(37,99,235,.18)', overflow: 'hidden', flex: '0 0 auto' }}>
-              <span style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: scrapePct.toFixed(1) + '%', background: scrapeBar, transition: 'width .4s ease' }} />
-            </span>
-            <span>{scrapeLeft.toLocaleString()} left</span>
+        <span
+          className="scrape-pill"
+          title={scrapeLimit > 0
+            ? `Scraping rows — ${scrapeUsed.toLocaleString()} used of ${scrapeLimit.toLocaleString()} (${scrapePct.toFixed(0)}%) · ${scrapeLeft.toLocaleString()} left. One budget shared across ALL your scrapers; ticks down live as a job runs. ${usage?.resetsDaily ? 'Resets daily at 00:00 UTC.' : 'Total allowance.'}`
+            : 'Scrape limit not loaded — /api/agent/status returned no scrapeLimit. Check you are logged in and the scraper API is reachable.'}
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 8,
+            padding: '6px 12px', borderRadius: 999, whiteSpace: 'nowrap',
+            background: 'rgba(37,99,235,.10)', border: '1px solid rgba(37,99,235,.28)',
+            color: '#1d4ed8', fontSize: 12.5, fontWeight: 700,
+          }}
+        >
+          <span aria-hidden style={{ fontSize: 14, lineHeight: 1 }}>📊</span>
+          <span style={{ position: 'relative', width: 64, height: 6, borderRadius: 999, background: 'rgba(37,99,235,.18)', overflow: 'hidden', flex: '0 0 auto' }}>
+            <span style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: scrapePct.toFixed(1) + '%', background: scrapeBar, transition: 'width .4s ease' }} />
           </span>
-        )}
+          <span>{scrapeLeft.toLocaleString()} / {scrapeLimit.toLocaleString()} <span style={{ fontWeight: 500, opacity: .8 }}>left</span></span>
+        </span>
 
         <span
           className="credit-pill"
