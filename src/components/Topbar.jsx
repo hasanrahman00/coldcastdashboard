@@ -30,8 +30,14 @@ export default function Topbar({ route, nav, onLogout }) {
   const username = me?.user?.username || '—'
   const secondsLeft = me?.secondsLeft ?? 0
   // Scrape budget — ONE row allowance shared across ALL scrapers (Sales Nav,
-  // Apollo, ZoomInfo…). Separate from the credit wallet. Show rows-left / limit.
-  const scrapeLeft = Math.max(0, (usage?.limit ?? 0) - (usage?.used ?? 0))
+  // Apollo, ZoomInfo…), separate from the credit wallet. Shown as a live usage
+  // bar: it fills (and "left" drops) in real time as a job runs, because
+  // AppStore polls /api/agent/status every 8s.
+  const scrapeLimit = usage?.limit ?? 0
+  const scrapeUsed  = usage?.used ?? 0
+  const scrapePct   = scrapeLimit > 0 ? Math.min(100, (scrapeUsed / scrapeLimit) * 100) : 0
+  const scrapeLeft  = Math.max(0, scrapeLimit - scrapeUsed)
+  const scrapeBar   = scrapePct >= 100 ? '#dc2626' : scrapePct >= 90 ? '#d97706' : '#2563eb'
 
   return (
     <header className="topbar">
@@ -43,19 +49,24 @@ export default function Topbar({ route, nav, onLogout }) {
       </div>
 
       <div className="tb-right">
-        <span
-          className="scrape-pill"
-          title={`Scraping rows left — a single budget shared across ALL your scrapers (Sales Nav, Apollo, ZoomInfo…). ${usage?.resetsDaily ? 'Resets daily at 00:00 UTC.' : 'Total allowance.'}`}
-          style={{
-            display: 'inline-flex', alignItems: 'center', gap: 6,
-            padding: '6px 12px', borderRadius: 999, whiteSpace: 'nowrap',
-            background: 'rgba(37,99,235,.10)', border: '1px solid rgba(37,99,235,.28)',
-            color: '#1d4ed8', fontSize: 13, fontWeight: 700,
-          }}
-        >
-          <span aria-hidden style={{ fontSize: 14, lineHeight: 1 }}>📊</span>
-          {scrapeLeft.toLocaleString()} / {(usage?.limit ?? 0).toLocaleString()} rows
-        </span>
+        {scrapeLimit > 0 && (
+          <span
+            className="scrape-pill"
+            title={`Scraping rows — ${scrapeUsed.toLocaleString()} / ${scrapeLimit.toLocaleString()} used (${scrapePct.toFixed(0)}%). One budget shared across ALL your scrapers (Sales Nav, Apollo, ZoomInfo…); it ticks down live as a job runs. ${usage?.resetsDaily ? 'Resets daily at 00:00 UTC.' : 'Total allowance.'}`}
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 8,
+              padding: '6px 12px', borderRadius: 999, whiteSpace: 'nowrap',
+              background: 'rgba(37,99,235,.10)', border: '1px solid rgba(37,99,235,.28)',
+              color: '#1d4ed8', fontSize: 12.5, fontWeight: 700,
+            }}
+          >
+            <span aria-hidden style={{ fontSize: 14, lineHeight: 1 }}>📊</span>
+            <span style={{ position: 'relative', width: 64, height: 6, borderRadius: 999, background: 'rgba(37,99,235,.18)', overflow: 'hidden', flex: '0 0 auto' }}>
+              <span style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: scrapePct.toFixed(1) + '%', background: scrapeBar, transition: 'width .4s ease' }} />
+            </span>
+            <span>{scrapeLeft.toLocaleString()} left</span>
+          </span>
+        )}
 
         <span
           className="credit-pill"
