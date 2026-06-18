@@ -4,6 +4,7 @@ import {
   useEffect,
   useState,
   useCallback,
+  useRef,
 } from 'react'
 import { api, AuthError } from '../lib/api.js'
 import { subscribeLocalExtension } from '../lib/extBridge.js'
@@ -116,16 +117,8 @@ export function AppProvider({ initialMe, onLogout, children }) {
   const refreshProfiles = useCallback(async () => {
     try {
       const d = await api.agentStatus()
-      const profs = Array.isArray(d.profiles) ? d.profiles : []
-      setProfiles(profs)
-      // Default the active-profile radio to the CONNECTED (bridge-online) profile:
-      // if the server has no active profile, or its active one isn't online, prefer
-      // an online profile so the radio + new jobs target the connected browser.
-      const backendActive = d.activeProfileId || null
-      const onlineProfile = profs.find((p) => p && (p.online || p.bridge))
-      const activeIsOnline =
-        backendActive && profs.some((p) => p && p.id === backendActive && (p.online || p.bridge))
-      setActiveProfileId(activeIsOnline ? backendActive : onlineProfile ? onlineProfile.id : backendActive)
+      setProfiles(Array.isArray(d.profiles) ? d.profiles : [])
+      setActiveProfileId(d.activeProfileId || null)
       setConnectorOnline(!!d.connectorOnline)
       setUsage({ limit: d.scrapeLimit ?? 0, used: d.scrapedToday ?? 0, resetsDaily: !!d.scrapeResetsDaily })
       if (typeof d.credits === 'number') setCredits(d.credits)
@@ -151,6 +144,23 @@ export function AppProvider({ initialMe, onLogout, children }) {
       document.removeEventListener('visibilitychange', onFocus)
     }
   }, [refreshProfiles])
+
+  // ── Default the active-profile radio to THIS BROWSER ───────────────────
+  // The profile connected through the dashboard's own browser (localExt) is the
+  // one the user is sitting in — the sensible default to scrape with. Once it's
+  // known + present in the list, select + PERSIST it (so the 8s poll doesn't
+  // flicker it back). One-shot per load; a manual radio change afterward sticks.
+  const autoSelectedLocalRef = useRef(false)
+  useEffect(() => {
+    if (autoSelectedLocalRef.current) return
+    const localId = localExt.profileId
+    if (!localId || !profiles.some((p) => p.id === localId)) return
+    autoSelectedLocalRef.current = true
+    if (activeProfileId !== localId) {
+      setActiveProfileId(localId)
+      api.activateProfile(localId).catch(() => {})
+    }
+  }, [localExt.profileId, profiles, activeProfileId])
 
   // ── ui-config (logs/settings visibility) ───────────────────────────────
   useEffect(() => {
