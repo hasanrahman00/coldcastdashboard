@@ -116,8 +116,16 @@ export function AppProvider({ initialMe, onLogout, children }) {
   const refreshProfiles = useCallback(async () => {
     try {
       const d = await api.agentStatus()
-      setProfiles(Array.isArray(d.profiles) ? d.profiles : [])
-      setActiveProfileId(d.activeProfileId || null)
+      const profs = Array.isArray(d.profiles) ? d.profiles : []
+      setProfiles(profs)
+      // Default the active-profile radio to the CONNECTED (bridge-online) profile:
+      // if the server has no active profile, or its active one isn't online, prefer
+      // an online profile so the radio + new jobs target the connected browser.
+      const backendActive = d.activeProfileId || null
+      const onlineProfile = profs.find((p) => p && (p.online || p.bridge))
+      const activeIsOnline =
+        backendActive && profs.some((p) => p && p.id === backendActive && (p.online || p.bridge))
+      setActiveProfileId(activeIsOnline ? backendActive : onlineProfile ? onlineProfile.id : backendActive)
       setConnectorOnline(!!d.connectorOnline)
       setUsage({ limit: d.scrapeLimit ?? 0, used: d.scrapedToday ?? 0, resetsDaily: !!d.scrapeResetsDaily })
       if (typeof d.credits === 'number') setCredits(d.credits)
