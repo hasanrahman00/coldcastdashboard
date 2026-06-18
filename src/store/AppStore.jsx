@@ -162,6 +162,16 @@ export function AppProvider({ initialMe, onLogout, children }) {
     }
   }, [localExt.profileId, profiles, activeProfileId])
 
+  // ── Refresh on live extension state ────────────────────────────────────
+  // The extension's dashboard bridge pushes a live `state` message whenever it
+  // connects, disconnects, or switches profile. Refetch the account profile
+  // list on those transitions so the connection (and the THIS-BROWSER radio)
+  // updates immediately instead of waiting for the 8s poll. Keyed on the
+  // primitive flags, so identical repeat messages don't trigger a refetch.
+  useEffect(() => {
+    refreshProfiles()
+  }, [localExt.connected, localExt.profileId, refreshProfiles])
+
   // ── ui-config (logs/settings visibility) ───────────────────────────────
   useEffect(() => {
     api.uiConfig().then(setUiConfig).catch(() => {})
