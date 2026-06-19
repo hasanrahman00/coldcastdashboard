@@ -14,6 +14,10 @@ npm-debug.log*
 
 .vercel
 .env*
+# …but DO commit the public templates + per-mode frontend URLs (no secrets in these):
+!.env.example
+!.env.development
+!.env.production
 
 # Google service-account key — NEVER commit
 service-account.json
