@@ -54,8 +54,10 @@ async function isAuthorized(req) {
   if (!/^Bearer\s+/i.test(auth)) { console.warn('[free-account] denied: no Bearer token on request'); return false }
   const backend = process.env.BACKEND_URL
   if (!backend) {
-    if (process.env.FREE_ACCOUNT_ALLOW_INSECURE === '1') return true
-    console.warn('[free-account] denied: BACKEND_URL not set (and FREE_ACCOUNT_ALLOW_INSECURE != 1)')
+    // Local-dev escape hatch ONLY — hard-disabled in production so a leaked or
+    // mis-set env var can never turn the dispenser into an open endpoint.
+    if (process.env.FREE_ACCOUNT_ALLOW_INSECURE === '1' && process.env.VERCEL_ENV !== 'production') return true
+    console.warn('[free-account] denied: BACKEND_URL not set (insecure bypass is disabled in production)')
     return false
   }
   try {
