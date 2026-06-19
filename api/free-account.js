@@ -47,17 +47,17 @@ async function getDb() {
 }
 
 // Only logged-in Coldcast users can pull accounts. Validate the Bearer token
-// against the scraper backend's /api/auth/me. FAIL-CLOSED: if BACKEND_URL isn't
+// against the scraper backend's /api/auth/me. FAIL-CLOSED: if CORE_BACKEND_URL isn't
 // set we DENY — unless FREE_ACCOUNT_ALLOW_INSECURE=1 (local dev only).
 async function isAuthorized(req) {
   const auth = req.headers.authorization || ''
   if (!/^Bearer\s+/i.test(auth)) { console.warn('[free-account] denied: no Bearer token on request'); return false }
-  const backend = process.env.BACKEND_URL
+  const backend = process.env.CORE_BACKEND_URL
   if (!backend) {
     // Local-dev escape hatch ONLY — hard-disabled in production so a leaked or
     // mis-set env var can never turn the dispenser into an open endpoint.
     if (process.env.FREE_ACCOUNT_ALLOW_INSECURE === '1' && process.env.VERCEL_ENV !== 'production') return true
-    console.warn('[free-account] denied: BACKEND_URL not set (insecure bypass is disabled in production)')
+    console.warn('[free-account] denied: CORE_BACKEND_URL not set (insecure bypass is disabled in production)')
     return false
   }
   try {

@@ -2,12 +2,12 @@
 //  api.js — the single place that knows how to talk to the backend.
 //
 //  The dashboard is hosted SEPARATELY from the API (cross-origin), so every URL
-//  is prefixed with VITE_API_URL and auth travels as a Bearer token (read from
+//  is prefixed with VITE_SALESNAV_SCRAPER_URL and auth travels as a Bearer token (read from
 //  localStorage) — never cookies. SSE + file downloads can't send headers, so
 //  for those the token rides in a ?token= query param (the server accepts both).
 // ─────────────────────────────────────────────────────────────────────────────
 
-const BASE = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '')
+const BASE = (import.meta.env.VITE_SALESNAV_SCRAPER_URL || '').replace(/\/$/, '')
 // Coldcast Core owns auth + billing + admin (shared by every product). The
 // dashboard calls Core directly for those; product calls (jobs/profiles) stay on
 // BASE (the scraper). If VITE_CORE_URL is unset, CORE_BASE falls back to BASE so
