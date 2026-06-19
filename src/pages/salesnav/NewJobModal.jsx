@@ -34,7 +34,7 @@ const card = (active) => ({
 })
 
 export default function NewJobModal({ open, onClose }) {
-  const { jobs, profiles, activeProfileId, createJob, appendJob, refreshProfiles } = useApp()
+  const { jobs, profiles, activeProfileId, localExt, createJob, appendJob, refreshProfiles } = useApp()
   const toast = useToast()
 
   const [target, setTarget] = useState('new') // 'new' | 'existing'
@@ -62,9 +62,21 @@ export default function NewJobModal({ open, onClose }) {
   // dropdown to the newest list. Re-runs when fresh data arrives.
   useEffect(() => {
     if (!open) return
-    setProfileId((prev) => (prev && profiles.some((p) => p.id === prev) ? prev : activeProfileId || profiles[0]?.id || ''))
+    setProfileId((prev) => {
+      // Default to a CONNECTED browser so the job targets one that's actually
+      // online: keep the current pick if still online → THIS BROWSER (the
+      // dashboard's own extension) → the active profile if online → any online
+      // → fall back to active/first so the dropdown is never empty.
+      const isOnline = (id) => id && profiles.some((p) => p.id === id && (p.online || p.bridge))
+      const firstOnline = profiles.find((p) => p && (p.online || p.bridge))
+      if (isOnline(prev)) return prev
+      if (isOnline(localExt.profileId)) return localExt.profileId
+      if (isOnline(activeProfileId)) return activeProfileId
+      if (firstOnline) return firstOnline.id
+      return prev && profiles.some((p) => p.id === prev) ? prev : activeProfileId || profiles[0]?.id || ''
+    })
     setExistingId((prev) => (prev && sortedJobs.some((j) => j.id === prev) ? prev : sortedJobs[0]?.id || ''))
-  }, [open, profiles, activeProfileId, sortedJobs])
+  }, [open, profiles, activeProfileId, localExt.profileId, sortedJobs])
 
   const submit = async () => {
     if (!profileId) return toast('Pick a profile to run on', 'err')
