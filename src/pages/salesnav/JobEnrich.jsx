@@ -101,7 +101,7 @@ export default function JobEnrich({ job, scrapeBusy, hasData }) {
         title={scrapeBusy ? 'Wait for scraping to finish' : 'Find verified emails for these leads'}
         onClick={start}
       >
-        <IconMailCheck /> Enrich {total.toLocaleString()} rows
+        <IconMailCheck /> Enrich {total.toLocaleString()} Emails
       </button>
     </div>
   )
