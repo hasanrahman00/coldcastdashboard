@@ -22,6 +22,26 @@ import { useToast } from './ToastProvider.jsx'
 const AppCtx = createContext(null)
 export const useApp = () => useContext(AppCtx)
 
+// Enrich job statuses that count as FINISHED (stop polling, release the Run lock).
+const ENRICH_TERMINAL = ['done', 'completed', 'failed', 'error', 'stopped', 'paused', 'cancelled']
+// In-flight enrich statuses — while one holds, this job's scrape Run is disabled.
+export const ENRICH_ACTIVE = ['uploading', 'queued', 'running', 'processing', 'started']
+
+// Persist scrapeJobId → enrichJobId so a page reload RESUMES the live enrich view
+// (and prevents an accidental double-charge re-run of an already-running job).
+const ENRICH_REFS_KEY = 'vk_enrich_jobs'
+function readEnrichRefs() {
+  try { return JSON.parse(localStorage.getItem(ENRICH_REFS_KEY) || '{}') || {} } catch { return {} }
+}
+function persistEnrichRef(jobId, enrichJobId) {
+  try {
+    const m = readEnrichRefs()
+    if (enrichJobId) m[jobId] = enrichJobId
+    else delete m[jobId]
+    localStorage.setItem(ENRICH_REFS_KEY, JSON.stringify(m))
+  } catch { /* quota */ }
+}
+
 export function AppProvider({ initialMe, onLogout, children }) {
   const toast = useToast()
   const [me, setMe] = useState(initialMe)
@@ -39,6 +59,12 @@ export function AppProvider({ initialMe, onLogout, children }) {
     installed: false, connected: false, hasKey: false,
     profileId: '', profileName: '', authError: '',
   })
+  // Per-scrape-job enrich state, keyed by job id. Kept OUT of the `jobs` array
+  // because SSE replaces job objects wholesale on every job:update (which would
+  // wipe it). The enricher has no SSE → we poll Core for live counts.
+  const [enrichByJob, setEnrichByJob] = useState({})
+  const enrichTimers = useRef({}) // jobId -> setInterval handle
+  const enrichErrs = useRef({})   // jobId -> consecutive poll-error count
 
   // Run an API call; a 401 anywhere → single logout. Other errors propagate so
   // the calling component can toast a useful message.
@@ -198,6 +224,90 @@ export function AppProvider({ initialMe, onLogout, children }) {
     }
   }, [me, onLogout, toast])
 
+  // ── Email enrichment (per scrape job) ──────────────────────────────────
+  const patchEnrich = useCallback((jobId, patch) => {
+    setEnrichByJob((prev) => ({ ...prev, [jobId]: { ...(prev[jobId] || {}), ...patch } }))
+  }, [])
+
+  const stopEnrichPoll = useCallback((jobId) => {
+    const t = enrichTimers.current[jobId]
+    if (t) { clearInterval(t); delete enrichTimers.current[jobId] }
+    delete enrichErrs.current[jobId]
+  }, [])
+
+  // One status poll. Maps the enricher's fields → { total, done } and stops on a
+  // terminal status. Tolerates a few transient errors, then gives up (job gone).
+  const pollEnrichOnce = useCallback(async (jobId, enrichJobId) => {
+    try {
+      const s = await api.enrichStatus(enrichJobId)
+      enrichErrs.current[jobId] = 0
+      const total = s.totals?.totalRows ?? s.progress?.totalContacts ?? 0
+      const done = s.resultCount ?? s.progress?.processedContacts ?? 0
+      const status = String(s.status || 'running').toLowerCase()
+      const terminal = ENRICH_TERMINAL.includes(status) || !!s.completedAt
+      patchEnrich(jobId, {
+        status, total, done,
+        valid: typeof s.resultCount === 'number' ? s.resultCount : null,
+        haltReason: s.haltReason || null,
+        completedAt: s.completedAt || null,
+      })
+      const bal = typeof s.creditsRemaining === 'number' ? s.creditsRemaining
+        : (typeof s.balance === 'number' ? s.balance : null)
+      if (bal != null) setCredits(bal)
+      if (terminal) { stopEnrichPoll(jobId); persistEnrichRef(jobId, null) }
+    } catch (e) {
+      if (e instanceof AuthError) { stopEnrichPoll(jobId); onLogout(); return }
+      const n = (enrichErrs.current[jobId] = (enrichErrs.current[jobId] || 0) + 1)
+      if (n >= 4) { // ~10s of failures → the enrich job is gone/unreachable
+        stopEnrichPoll(jobId); persistEnrichRef(jobId, null)
+        patchEnrich(jobId, { status: 'error', error: e.message || 'Lost the enrich job' })
+      }
+    }
+  }, [patchEnrich, stopEnrichPoll, onLogout])
+
+  const startEnrichPoll = useCallback((jobId, enrichJobId) => {
+    stopEnrichPoll(jobId)
+    pollEnrichOnce(jobId, enrichJobId)
+    enrichTimers.current[jobId] = setInterval(() => {
+      if (!document.hidden) pollEnrichOnce(jobId, enrichJobId)
+    }, 2500)
+  }, [stopEnrichPoll, pollEnrichOnce])
+
+  // Start enriching a finished job: pull its CSV from the scraper → POST to Core
+  // → poll for live counts. Throws (for the caller to toast) on a hard failure.
+  const startEnrich = useCallback(async (job) => {
+    const id = job.id
+    patchEnrich(id, { status: 'uploading', total: job.totalLeads || 0, done: 0, valid: null, error: null, haltReason: null, enrichJobId: null, completedAt: null })
+    try {
+      const file = await api.jobCsvBlob(id)
+      const r = await api.enrichStart(file)
+      const enrichJobId = r && r.jobId
+      if (!enrichJobId) throw new Error('Enricher did not return a job id')
+      patchEnrich(id, { status: 'queued', enrichJobId, total: job.totalLeads || 0, done: 0 })
+      persistEnrichRef(id, enrichJobId)
+      if (typeof r.balance === 'number') setCredits(r.balance)
+      startEnrichPoll(id, enrichJobId)
+      return r
+    } catch (e) {
+      if (e instanceof AuthError) { onLogout(); return undefined }
+      patchEnrich(id, { status: 'error', error: e.message || 'Enrichment failed' })
+      throw e
+    }
+  }, [patchEnrich, startEnrichPoll, onLogout])
+
+  // Resume any in-flight enrich after a reload, and clean up timers on unmount.
+  useEffect(() => {
+    const refs = readEnrichRefs()
+    for (const [jobId, enrichJobId] of Object.entries(refs)) {
+      if (!enrichJobId) continue
+      patchEnrich(jobId, { status: 'queued', enrichJobId })
+      startEnrichPoll(jobId, enrichJobId)
+    }
+    const timers = enrichTimers.current
+    return () => { for (const t of Object.values(timers)) clearInterval(t) }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   const value = {
     me,
     jobs,
@@ -218,6 +328,11 @@ export function AppProvider({ initialMe, onLogout, children }) {
     deleteJob: (id) => guarded(() => api.deleteJob(id)),
     jobLogs: (id) => guarded(() => api.jobLogs(id)),
     downloadUrl: api.downloadUrl,
+
+    // email enrichment (per scrape job) — see the enrich slice above
+    enrichByJob,
+    startEnrich,
+    enrichDownloadUrl: api.enrichDownloadUrl,
 
     // profile actions (refresh after, since these aren't streamed)
     activateProfile: async (id) => {

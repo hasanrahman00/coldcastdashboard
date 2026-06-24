@@ -465,6 +465,20 @@ a.btn:hover{text-decoration:none}
 .jc-a{display:flex;gap:6px;align-items:center;flex-wrap:nowrap}
 .jc-a .btn{flex:0 1 auto;min-width:0;white-space:nowrap}
 
+/* Enrich control — its own line under the leads pill */
+.jc-enrich{display:flex;flex-direction:column;gap:7px;align-self:flex-start;max-width:100%}
+.jc-enrich-h{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:#4f46e5}
+.jc-enrich-h svg{width:14px;height:14px;stroke-width:2.2;flex-shrink:0}
+.jc-enrich-h .n{font-size:14px;font-weight:800;color:#4f46e5;letter-spacing:-.01em}
+.jc-enrich-h .muted{color:var(--text-muted);font-weight:600}
+.jc-enrich.done .jc-enrich-h,.jc-enrich.done .jc-enrich-h .n{color:#047857}
+.jc-enrich.err .jc-enrich-h{color:var(--red)}
+.jc-enrich-dl{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+
+/* Enrich button (indigo / brand) */
+.btn-enr{background:rgba(99,102,241,.12);color:#4f46e5;border-color:rgba(99,102,241,.28)}
+.btn-enr:hover:not(:disabled){background:#4f46e5;color:#fff;border-color:#4f46e5}
+
 /* ═══════════════════ BADGES ═══════════════════ */
 .bd{
   display:inline-flex;

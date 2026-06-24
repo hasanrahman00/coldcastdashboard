@@ -1,5 +1,6 @@
-import { useApp } from '../../store/AppStore.jsx'
+import { useApp, ENRICH_ACTIVE } from '../../store/AppStore.jsx'
 import { useToast } from '../../store/ToastProvider.jsx'
+import JobEnrich from './JobEnrich.jsx'
 import {
   IconCalendar,
   IconUser,
@@ -25,7 +26,7 @@ function jobUrlOf(j) {
 }
 
 export default function JobCard({ job, onOpenLogs }) {
-  const { jobs, profiles, activeProfileId, uiConfig, startJob, stopJob, deleteJob, downloadUrl } = useApp()
+  const { jobs, profiles, activeProfileId, uiConfig, startJob, stopJob, deleteJob, downloadUrl, enrichByJob } = useApp()
   const toast = useToast()
 
   const scrapeIdle = ['idle', 'stopped', 'done', 'failed'].includes(job.status)
@@ -33,10 +34,19 @@ export default function JobCard({ job, onOpenLogs }) {
   const scrapeBusy = scrapeRun || job.status === 'stopping'
   const hasData = job.hasData || job.totalLeads > 0
 
+  // Enrich is mutually exclusive with scraping THIS job: while enrich is in flight
+  // the Run button is locked, and Enrich is locked while the scrape is busy.
+  const enrichState = enrichByJob[job.id]
+  const enriching = !!enrichState && ENRICH_ACTIVE.includes(enrichState.status)
+
   const anotherRunning = jobs.some(
     (x) => x.id !== job.id && (x.status === 'running' || x.status === 'stopping'),
   )
-  const runTitle = anotherRunning ? 'You already have a job running. Stop it first.' : 'Start scraping'
+  const runTitle = enriching
+    ? 'Enrichment is running — wait for it to finish.'
+    : anotherRunning
+      ? 'You already have a job running. Stop it first.'
+      : 'Start scraping'
 
   const profile = profiles.find((p) => p.id === (job.profileId || activeProfileId))
   const profileLabel = profile ? profile.name || profile.id : job.profileId ? 'Unknown profile' : ''
@@ -139,6 +149,8 @@ export default function JobCard({ job, onOpenLogs }) {
         <span className="n">{(job.totalLeads || 0).toLocaleString()}</span> leads
       </div>
 
+      <JobEnrich job={job} scrapeBusy={scrapeBusy} hasData={hasData} />
+
       {scrapeRun && (
         <div className="jc-p">
           <div className="jc-pb" style={{ width: pct + '%' }} />
@@ -147,7 +159,7 @@ export default function JobCard({ job, onOpenLogs }) {
 
       <div className="jc-a">
         {scrapeIdle && (
-          <button className="btn btn-s btn-sm" disabled={anotherRunning} title={runTitle} onClick={run}>
+          <button className="btn btn-s btn-sm" disabled={anotherRunning || enriching} title={runTitle} onClick={run}>
             <IconPlay /> Run
           </button>
         )}

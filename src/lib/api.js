@@ -129,6 +129,14 @@ export const api = {
   // download links open in a new tab → token in the query (no headers possible).
   downloadUrl: (id, fmt) =>
     apiUrl(`/api/jobs/${id}/${fmt}?token=${encodeURIComponent(getToken())}`),
+  // Fetch a finished job's leads CSV as a File (Bearer header, bytes into JS) so it
+  // can be POSTed to Core's enrich proxy — unlike downloadUrl which is a tab nav.
+  jobCsvBlob: async (id) => {
+    const res = await request(`/api/jobs/${id}/csv`) // scraper BASE + Bearer; 401 → AuthError
+    if (!res.ok) throw new Error(`Could not fetch leads (${res.status})`)
+    const blob = await res.blob()
+    return new File([blob], `job-${id}.csv`, { type: 'text/csv' })
+  },
 
   // ── profiles / extension status ────────────────────────────────────────
   agentStatus: () => asJson('/api/agent/status'),
@@ -139,6 +147,20 @@ export const api = {
   // ── live updates (Server-Sent Events) ──────────────────────────────────
   // EventSource can't set headers, so the token rides in the query string.
   events: () => new EventSource(apiUrl(`/api/events?token=${encodeURIComponent(getToken())}`)),
+
+  // ── email enricher (Core proxies the job to the enricher engine) ─────────
+  // Core checks/reserves credits, forwards the file, and bills as valids resolve.
+  enrichStart: (file) => {
+    const fd = new FormData()
+    fd.append('file', file)
+    return asJson('/api/enrich/start', { base: CORE_BASE, method: 'POST', body: fd })
+  },
+  enrichStatus: (id) => asJson(`/api/enrich/jobs/${encodeURIComponent(id)}`, { base: CORE_BASE }),
+  // Opened as a link → token rides in the query (Core's requireAuth accepts ?token=).
+  enrichDownloadUrl: (id, type = 'valid', fmt = 'csv') =>
+    coreUrl(`/api/enrich/download/${encodeURIComponent(id)}?type=${type}&format=${fmt}&token=${encodeURIComponent(getToken())}`),
+  // Live credit wallet (persisted − in-flight usage) for the header/credit pill.
+  creditsBalance: () => asJson('/api/credits/balance', { base: CORE_BASE }),
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
