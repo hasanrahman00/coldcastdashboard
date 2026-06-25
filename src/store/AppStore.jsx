@@ -31,12 +31,11 @@ export const ENRICH_ACTIVE = ['uploading', 'queued', 'queueing', 'run', 'running
 
 // Persist scrapeJobId → enrichJobId so a page reload RESUMES the live enrich view
 // (and prevents an accidental double-charge re-run of an already-running job).
-// Persist a compact snapshot of every job's enrich state so a browser reload restores
-// the WHOLE card — the live "Enriching…" progress AND the finished "Enriched N verified
-// emails" result — instead of anything vanishing. Written on every state change and
-// hydrated by the useState initializer + the resume effect below.
-const ENRICH_STATE_KEY = 'vk_enrich_state'
-const ENRICH_PERSIST_FIELDS = ['status', 'enrichJobId', 'total', 'done', 'valid', 'creditsUsed', 'merged', 'mergedCount', 'haltReason', 'completedAt', 'error']
+// Persist a compact snapshot of every Waterfall enrich UPLOAD (keyed by its enrichJobId)
+// so a browser reload restores the live "Enriching…" progress AND the finished result.
+// Written on every state change, hydrated by the useState initializer + resume effect.
+const ENRICH_STATE_KEY = 'vk_enrich_uploads'
+const ENRICH_PERSIST_FIELDS = ['status', 'enrichJobId', 'fileName', 'createdAt', 'total', 'done', 'valid', 'creditsUsed', 'haltReason', 'completedAt', 'error']
 function readEnrichState() {
   try { return JSON.parse(localStorage.getItem(ENRICH_STATE_KEY) || '{}') || {} } catch { return {} }
 }
@@ -73,12 +72,12 @@ export function AppProvider({ initialMe, onLogout, children }) {
   // Per-scrape-job enrich state, keyed by job id. Kept OUT of the `jobs` array
   // because SSE replaces job objects wholesale on every job:update (which would
   // wipe it). The enricher has no SSE → we poll Core for live counts.
-  // Hydrate the full persisted snapshot in the initializer so a reload shows the right
-  // card from the FIRST frame — active progress OR the finished result — with no flash
-  // of the idle "Enrich N" button. The resume effect (below) re-attaches live polls.
-  const [enrichByJob, setEnrichByJob] = useState(() => readEnrichState())
-  const enrichTimers = useRef({}) // jobId -> setInterval handle
-  const enrichErrs = useRef({})   // jobId -> consecutive poll-error count
+  // Hydrate the persisted upload snapshot in the initializer so a reload shows the right
+  // state from the FIRST frame — active progress OR the finished result. The resume
+  // effect (below) re-attaches live polls to any still-running upload.
+  const [enrichUploads, setEnrichUploads] = useState(() => readEnrichState())
+  const enrichTimers = useRef({}) // enrichJobId -> setInterval handle
+  const enrichErrs = useRef({})   // enrichJobId -> consecutive poll-error count
 
   // Run an API call; a 401 anywhere → single logout. Other errors propagate so
   // the calling component can toast a useful message.
@@ -267,49 +266,39 @@ export function AppProvider({ initialMe, onLogout, children }) {
     }
   }, [me, onLogout, toast])
 
-  // ── Email enrichment (per scrape job) ──────────────────────────────────
-  const patchEnrich = useCallback((jobId, patch) => {
-    setEnrichByJob((prev) => ({ ...prev, [jobId]: { ...(prev[jobId] || {}), ...patch } }))
+  // ── Waterfall Email Enricher — standalone CSV uploads (keyed by enrichJobId) ──
+  // Upload a file → POST to /api/enrich/start → poll live → download the result. No
+  // scrape job and no merge: the user downloads the enriched file. The engine halts at
+  // the credit budget, so credits charged == valid emails in the result. Persisted +
+  // resumed across reloads so a running job's live panel survives a refresh.
+  const patchEnrich = useCallback((id, patch) => {
+    setEnrichUploads((prev) => ({ ...prev, [id]: { ...(prev[id] || {}), ...patch } }))
   }, [])
 
-  const stopEnrichPoll = useCallback((jobId) => {
-    const t = enrichTimers.current[jobId]
-    if (t) { clearInterval(t); delete enrichTimers.current[jobId] }
-    delete enrichErrs.current[jobId]
+  const stopEnrichPoll = useCallback((id) => {
+    const t = enrichTimers.current[id]
+    if (t) { clearInterval(t); delete enrichTimers.current[id] }
+    delete enrichErrs.current[id]
   }, [])
 
-  // When an enrich finishes, merge its emails back into the scrape job's file so the
-  // job's OWN CSV/XLSX download contains them. `merged:true` is persisted on success, so
-  // a reload re-runs the merge only if it didn't complete (idempotent on the scraper).
-  const mergeEnrichIntoJob = useCallback(async (jobId, enrichJobId) => {
-    if (!enrichJobId) return
-    patchEnrich(jobId, { merging: true, mergeError: null })
-    try {
-      const file = await api.enrichResultFile(enrichJobId)   // download from Core
-      const r = await api.enrichMerge(jobId, file)            // POST to the scraper
-      patchEnrich(jobId, { merging: false, merged: true, mergedCount: (r && r.updated) || 0 })
-    } catch (e) {
-      if (e instanceof AuthError) { onLogout(); return }
-      patchEnrich(jobId, { merging: false, mergeError: e.message || 'Could not add emails to the job file' })
-      // leave the resume ref so a reload retries the merge
-    }
-  }, [patchEnrich, onLogout])
+  // Drop an upload from the list (and stop polling it).
+  const removeEnrichUpload = useCallback((id) => {
+    stopEnrichPoll(id)
+    setEnrichUploads((prev) => { const n = { ...prev }; delete n[id]; return n })
+  }, [stopEnrichPoll])
 
-  // One status poll. Maps the enricher's fields → { total, done } and stops on a
-  // terminal status. Tolerates a few transient errors, then gives up (job gone).
-  const pollEnrichOnce = useCallback(async (jobId, enrichJobId) => {
+  // One status poll for a standalone enrich job (keyed by its own enrichJobId). Maps the
+  // enricher's fields → live counts and stops on a terminal status.
+  const pollEnrichOnce = useCallback(async (id) => {
     try {
-      const s = await api.enrichStatus(enrichJobId)
-      enrichErrs.current[jobId] = 0
+      const s = await api.enrichStatus(id)
+      enrichErrs.current[id] = 0
       const total = s.totals?.totalRows ?? s.progress?.totalContacts ?? 0
-      // Live "done" = rows PROCESSED so far (climbs during the run). resultCount is
-      // only the final processed total, so it can't drive a live counter.
       const done = s.progress?.processedContacts ?? s.resultCount ?? 0
-      // Actual emails found = the valid-status count, NOT resultCount (= rows processed).
       const validCount = s.progress?.statusCounts?.valid
       const status = String(s.status || 'running').toLowerCase()
       const terminal = ENRICH_TERMINAL.includes(status) || !!s.completedAt
-      patchEnrich(jobId, {
+      patchEnrich(id, {
         status, total, done,
         valid: typeof validCount === 'number' ? validCount
           : (typeof s.resultCount === 'number' ? s.resultCount : null),
@@ -317,71 +306,60 @@ export function AppProvider({ initialMe, onLogout, children }) {
         haltReason: s.haltReason || null,
         completedAt: s.completedAt || null,
       })
-      // Prefer Core's LIVE balance (s.balance = liveBalance, computed fresh on every
-      // poll) over the enricher's creditsRemaining metadata (a stale snapshot from
-      // when the job ran). Both this and refreshCredits now read liveBalance, so the
-      // pill always shows the real remaining amount and never flickers.
+      // s.balance = Core's live balance, computed fresh each poll → keeps the pill ticking
+      // down in real time as valids resolve (no flicker; matches refreshCredits).
       const bal = typeof s.balance === 'number' ? s.balance
         : (typeof s.creditsRemaining === 'number' ? s.creditsRemaining : null)
       if (bal != null) setCredits(bal)
-      if (terminal) {
-        stopEnrichPoll(jobId)
-        // On success, merge the emails into the scrape job's own file. The terminal
-        // state (done/stopped/failed) stays persisted either way, so the card survives
-        // a reload — nothing vanishes.
-        if (status === 'done' || status === 'completed') mergeEnrichIntoJob(jobId, enrichJobId)
-      }
+      if (terminal) stopEnrichPoll(id)
     } catch (e) {
-      if (e instanceof AuthError) { stopEnrichPoll(jobId); onLogout(); return }
-      const n = (enrichErrs.current[jobId] = (enrichErrs.current[jobId] || 0) + 1)
+      if (e instanceof AuthError) { stopEnrichPoll(id); onLogout(); return }
+      const n = (enrichErrs.current[id] = (enrichErrs.current[id] || 0) + 1)
       if (n >= 4) { // ~10s of failures → the enrich job is gone/unreachable
-        stopEnrichPoll(jobId)
-        patchEnrich(jobId, { status: 'error', error: e.message || 'Lost the enrich job' })
+        stopEnrichPoll(id)
+        patchEnrich(id, { status: 'error', error: e.message || 'Lost the enrich job' })
       }
     }
-  }, [patchEnrich, stopEnrichPoll, onLogout, mergeEnrichIntoJob])
+  }, [patchEnrich, stopEnrichPoll, onLogout])
 
-  const startEnrichPoll = useCallback((jobId, enrichJobId) => {
-    stopEnrichPoll(jobId)
-    pollEnrichOnce(jobId, enrichJobId)
-    enrichTimers.current[jobId] = setInterval(() => {
-      if (!document.hidden) pollEnrichOnce(jobId, enrichJobId)
+  const startEnrichPoll = useCallback((id) => {
+    stopEnrichPoll(id)
+    pollEnrichOnce(id)
+    enrichTimers.current[id] = setInterval(() => {
+      if (!document.hidden) pollEnrichOnce(id)
     }, 2500)
   }, [stopEnrichPoll, pollEnrichOnce])
 
-  // Start enriching a finished job: pull its CSV from the scraper → POST to Core
-  // → poll for live counts. Throws (for the caller to toast) on a hard failure.
-  const startEnrich = useCallback(async (job) => {
-    const id = job.id
-    patchEnrich(id, { status: 'uploading', total: job.totalLeads || 0, done: 0, valid: null, error: null, haltReason: null, enrichJobId: null, completedAt: null })
+  // Start enriching an UPLOADED file: POST to Core → track by the new enrich job id →
+  // poll for live counts. Returns the start response. Throws for the caller to toast.
+  const startEnrich = useCallback(async (file) => {
     try {
-      const file = await api.jobCsvBlob(id)
       const r = await api.enrichStart(file)
-      const enrichJobId = r && r.jobId
-      if (!enrichJobId) throw new Error('Enricher did not return a job id')
-      patchEnrich(id, { status: 'queued', enrichJobId, total: job.totalLeads || 0, done: 0 })
+      const id = r && r.jobId
+      if (!id) throw new Error('Enricher did not return a job id')
+      patchEnrich(id, {
+        enrichJobId: id, fileName: file?.name || 'upload.csv', createdAt: Date.now(),
+        status: 'queued', total: 0, done: 0, valid: null, creditsUsed: 0,
+        error: null, haltReason: null, completedAt: null,
+      })
       if (typeof r.balance === 'number') setCredits(r.balance)
-      startEnrichPoll(id, enrichJobId)
+      startEnrichPoll(id)
       return r
     } catch (e) {
       if (e instanceof AuthError) { onLogout(); return undefined }
-      patchEnrich(id, { status: 'error', error: e.message || 'Enrichment failed' })
       throw e
     }
   }, [patchEnrich, startEnrichPoll, onLogout])
 
-  // Persist the enrich snapshot on every change so a reload can restore it verbatim.
-  useEffect(() => { persistEnrichState(enrichByJob) }, [enrichByJob])
+  // Persist the upload snapshot on every change so a reload restores it verbatim.
+  useEffect(() => { persistEnrichState(enrichUploads) }, [enrichUploads])
 
-  // After a reload: re-attach a live poll to any still-active enrich, and finish an
-  // interrupted merge for one that completed while the tab was closed. Terminal/failed
-  // states just stay shown (hydrated above) — nothing re-polls needlessly or vanishes.
+  // After a reload: re-attach a live poll to any still-running upload. Terminal/failed
+  // states stay shown (hydrated above) — nothing re-polls needlessly or vanishes.
   useEffect(() => {
     const snap = readEnrichState()
-    for (const [jobId, e] of Object.entries(snap)) {
-      if (!e || !e.enrichJobId) continue
-      if (ENRICH_ACTIVE.includes(e.status)) startEnrichPoll(jobId, e.enrichJobId)
-      else if ((e.status === 'done' || e.status === 'completed') && !e.merged) mergeEnrichIntoJob(jobId, e.enrichJobId)
+    for (const [id, e] of Object.entries(snap)) {
+      if (e && e.enrichJobId && ENRICH_ACTIVE.includes(e.status)) startEnrichPoll(id)
     }
     const timers = enrichTimers.current
     return () => { for (const t of Object.values(timers)) clearInterval(t) }
@@ -409,9 +387,10 @@ export function AppProvider({ initialMe, onLogout, children }) {
     jobLogs: (id) => guarded(() => api.jobLogs(id)),
     downloadUrl: api.downloadUrl,
 
-    // email enrichment (per scrape job) — see the enrich slice above
-    enrichByJob,
+    // Waterfall email enricher (standalone uploads) — see the enrich slice above
+    enrichUploads,
     startEnrich,
+    removeEnrichUpload,
     enrichDownloadUrl: api.enrichDownloadUrl,
 
     // profile actions (refresh after, since these aren't streamed)

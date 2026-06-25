@@ -26,7 +26,7 @@ export const PRODUCTS = [
   {
     id: 'waterfall',
     label: 'Waterfall Email Enricher',
-    soon: true,
+    soon: false,
     icon: IconLayers,
     title: 'Waterfall Email Enricher',
     body: 'Chain your providers in a waterfall to maximize verified-email coverage. Each lead falls through to the next source until a valid, deliverable address is found — then runs through the built-in verifier.',
