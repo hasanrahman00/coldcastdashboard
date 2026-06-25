@@ -25,7 +25,9 @@ export const useApp = () => useContext(AppCtx)
 // Enrich job statuses that count as FINISHED (stop polling, release the Run lock).
 const ENRICH_TERMINAL = ['done', 'completed', 'failed', 'error', 'stopped', 'paused', 'cancelled']
 // In-flight enrich statuses — while one holds, this job's scrape Run is disabled.
-export const ENRICH_ACTIVE = ['uploading', 'queued', 'running', 'processing', 'started']
+// NOTE: the enricher reports the running status as 'run' (not 'running'); both are
+// listed so the live panel matches whatever the engine sends.
+export const ENRICH_ACTIVE = ['uploading', 'queued', 'queueing', 'run', 'running', 'processing', 'started']
 
 // Persist scrapeJobId → enrichJobId so a page reload RESUMES the live enrich view
 // (and prevents an accidental double-charge re-run of an already-running job).
