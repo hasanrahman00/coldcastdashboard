@@ -147,7 +147,10 @@ export function AppProvider({ initialMe, onLogout, children }) {
       setActiveProfileId(d.activeProfileId || null)
       setConnectorOnline(!!d.connectorOnline)
       setUsage({ limit: d.scrapeLimit ?? 0, used: d.scrapedToday ?? 0, resetsDaily: !!d.scrapeResetsDaily })
-      if (typeof d.credits === 'number') setCredits(d.credits)
+      // NOTE: credits are NOT taken from agentStatus — the scraper's value can lag
+      // behind Core's live wallet and made the pill flicker between the persisted
+      // total and the live remaining. The credit pill is driven solely by Core's
+      // live balance below (refreshCredits) + the per-job enrich poller.
     } catch (e) {
       if (e instanceof AuthError) onLogout()
       // network blip → keep last-known cache
@@ -170,6 +173,32 @@ export function AppProvider({ initialMe, onLogout, children }) {
       document.removeEventListener('visibilitychange', onFocus)
     }
   }, [refreshProfiles])
+
+  // ── credit wallet (poll Core's LIVE balance) ───────────────────────────
+  // The credit pill's single source of truth: Core's liveBalance = persisted −
+  // in-flight usage. Always the REMAINING amount, updated in real time as enrich/
+  // verify debits it. (The per-job enrich poller also calls setCredits during a run.)
+  const refreshCredits = useCallback(async () => {
+    try {
+      const d = await api.creditsBalance()
+      if (d && typeof d.credits === 'number') setCredits(d.credits)
+    } catch (e) {
+      if (e instanceof AuthError) onLogout()
+    }
+  }, [onLogout])
+
+  useEffect(() => {
+    refreshCredits()
+    const poll = setInterval(() => { if (!document.hidden) refreshCredits() }, 8000)
+    const onFocus = () => { if (!document.hidden) refreshCredits() }
+    window.addEventListener('focus', onFocus)
+    document.addEventListener('visibilitychange', onFocus)
+    return () => {
+      clearInterval(poll)
+      window.removeEventListener('focus', onFocus)
+      document.removeEventListener('visibilitychange', onFocus)
+    }
+  }, [refreshCredits])
 
   // ── Default the active-profile radio to THIS BROWSER ───────────────────
   // The profile connected through the dashboard's own browser (localExt) is the
@@ -235,6 +264,24 @@ export function AppProvider({ initialMe, onLogout, children }) {
     delete enrichErrs.current[jobId]
   }, [])
 
+  // When an enrich finishes, merge its emails back into the scrape job's file so the
+  // job's OWN CSV/XLSX download contains them. The persisted resume-ref is cleared
+  // only AFTER a successful merge, so a reload that re-polls a done job retries it.
+  const mergeEnrichIntoJob = useCallback(async (jobId, enrichJobId) => {
+    if (!enrichJobId) return
+    patchEnrich(jobId, { merging: true, mergeError: null })
+    try {
+      const file = await api.enrichResultFile(enrichJobId)   // download from Core
+      const r = await api.enrichMerge(jobId, file)            // POST to the scraper
+      patchEnrich(jobId, { merging: false, merged: true, mergedCount: (r && r.updated) || 0 })
+      persistEnrichRef(jobId, null)
+    } catch (e) {
+      if (e instanceof AuthError) { onLogout(); return }
+      patchEnrich(jobId, { merging: false, mergeError: e.message || 'Could not add emails to the job file' })
+      // leave the resume ref so a reload retries the merge
+    }
+  }, [patchEnrich, onLogout])
+
   // One status poll. Maps the enricher's fields → { total, done } and stops on a
   // terminal status. Tolerates a few transient errors, then gives up (job gone).
   const pollEnrichOnce = useCallback(async (jobId, enrichJobId) => {
@@ -254,7 +301,13 @@ export function AppProvider({ initialMe, onLogout, children }) {
       const bal = typeof s.creditsRemaining === 'number' ? s.creditsRemaining
         : (typeof s.balance === 'number' ? s.balance : null)
       if (bal != null) setCredits(bal)
-      if (terminal) { stopEnrichPoll(jobId); persistEnrichRef(jobId, null) }
+      if (terminal) {
+        stopEnrichPoll(jobId)
+        // On success, merge the emails into the scrape job's own file; otherwise just
+        // drop the resume ref (nothing to merge back from a failed/stopped run).
+        if (status === 'done' || status === 'completed') mergeEnrichIntoJob(jobId, enrichJobId)
+        else persistEnrichRef(jobId, null)
+      }
     } catch (e) {
       if (e instanceof AuthError) { stopEnrichPoll(jobId); onLogout(); return }
       const n = (enrichErrs.current[jobId] = (enrichErrs.current[jobId] || 0) + 1)
@@ -263,7 +316,7 @@ export function AppProvider({ initialMe, onLogout, children }) {
         patchEnrich(jobId, { status: 'error', error: e.message || 'Lost the enrich job' })
       }
     }
-  }, [patchEnrich, stopEnrichPoll, onLogout])
+  }, [patchEnrich, stopEnrichPoll, onLogout, mergeEnrichIntoJob])
 
   const startEnrichPoll = useCallback((jobId, enrichJobId) => {
     stopEnrichPoll(jobId)

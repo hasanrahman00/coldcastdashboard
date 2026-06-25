@@ -156,6 +156,21 @@ export const api = {
     return asJson('/api/enrich/start', { base: CORE_BASE, method: 'POST', body: fd })
   },
   enrichStatus: (id) => asJson(`/api/enrich/jobs/${encodeURIComponent(id)}`, { base: CORE_BASE }),
+  // Fetch the enricher's full result (all rows + Email/Status/Source) as a File so
+  // it can be merged back into the scrape job's leads.
+  enrichResultFile: async (id) => {
+    const res = await request(`/api/enrich/download/${encodeURIComponent(id)}?type=all&format=csv`, { base: CORE_BASE })
+    if (!res.ok) throw new Error(`Could not fetch enriched result (${res.status})`)
+    const blob = await res.blob()
+    return new File([blob], `enriched-${id}.csv`, { type: 'text/csv' })
+  },
+  // Merge an enriched result CSV into the scrape job's leads (SCRAPER base) — joins
+  // on Person Sales Url, writes Email/Status/Source, regenerates the job CSV/XLSX.
+  enrichMerge: (jobId, file) => {
+    const fd = new FormData()
+    fd.append('file', file)
+    return asJson(`/api/jobs/${encodeURIComponent(jobId)}/enrich-merge`, { method: 'POST', body: fd })
+  },
   // Opened as a link → token rides in the query (Core's requireAuth accepts ?token=).
   enrichDownloadUrl: (id, type = 'valid', fmt = 'csv') =>
     coreUrl(`/api/enrich/download/${encodeURIComponent(id)}?type=${type}&format=${fmt}&token=${encodeURIComponent(getToken())}`),

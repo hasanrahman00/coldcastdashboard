@@ -62,6 +62,9 @@ export default function JobEnrich({ job, scrapeBusy, hasData }) {
           <span className="n">{valid.toLocaleString()}</span>
           <span className="muted">valid{e.haltReason ? ` · ${e.haltReason}` : ''}</span>
         </div>
+        {e.merging && <div style={{ fontSize: 11.5, fontWeight: 600, color: 'var(--text-muted)' }}>Adding emails to the job file…</div>}
+        {e.merged && <div style={{ fontSize: 11.5, fontWeight: 700, color: '#047857' }}>✓ Emails added to the job CSV{typeof e.mergedCount === 'number' ? ` (${e.mergedCount})` : ''}</div>}
+        {e.mergeError && <div style={{ fontSize: 11.5, fontWeight: 600, color: 'var(--red)' }}>{e.mergeError}</div>}
         <div className="jc-enrich-dl">
           <button className="btn btn-csv btn-sm" onClick={() => dl('csv')}>
             <IconDownload /> CSV
