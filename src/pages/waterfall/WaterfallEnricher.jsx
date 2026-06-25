@@ -126,7 +126,7 @@ export default function WaterfallEnricher() {
     <div className="wf">
       <div className="wf-card">
         <h3 className="wf-card-t">Upload a CSV</h3>
-        <div className="wf-card-s">Max: 5000 rows · 10MB. Name + company/website → verified emails — 1 credit per valid email, stops when your credits run out.</div>
+        <div className="wf-card-s">Needs <b>First Name</b>, <b>Last Name</b> &amp; <b>Website</b>. Optional <b>Website_one</b> / <b>Website_two</b> columns are used as waterfall fallbacks if present. Max 5000 rows · 10MB · 1 credit per valid email (stops when credits run out).</div>
 
         <div
           className={'wf-drop' + (drag ? ' over' : '') + (file ? ' has' : '')}
