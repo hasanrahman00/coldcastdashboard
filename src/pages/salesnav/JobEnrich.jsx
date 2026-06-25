@@ -11,10 +11,10 @@
 // ─────────────────────────────────────────────────────────────────────────────
 import { useApp, ENRICH_ACTIVE } from '../../store/AppStore.jsx'
 import { useToast } from '../../store/ToastProvider.jsx'
-import { IconMailCheck, IconDownload, IconRetry, IconWarn } from '../../lib/icons.jsx'
+import { IconMailCheck, IconRetry, IconWarn } from '../../lib/icons.jsx'
 
 export default function JobEnrich({ job, scrapeBusy, hasData }) {
-  const { enrichByJob, startEnrich, enrichDownloadUrl } = useApp()
+  const { enrichByJob, startEnrich } = useApp()
   const toast = useToast()
 
   const e = enrichByJob[job.id] || null
@@ -28,7 +28,6 @@ export default function JobEnrich({ job, scrapeBusy, hasData }) {
     try { await startEnrich(job) }
     catch (err) { toast(err.message || 'Could not start enrichment', 'err') }
   }
-  const dl = (fmt) => window.open(enrichDownloadUrl(e.enrichJobId, 'valid', fmt), '_blank')
 
   // Nothing to enrich yet (scrape produced no leads and no enrich exists).
   if (!hasData && !e) return null
@@ -72,15 +71,11 @@ export default function JobEnrich({ job, scrapeBusy, hasData }) {
           <span className="muted">verified email{valid === 1 ? '' : 's'}{e.haltReason ? ` · ${e.haltReason}` : ''}</span>
         </div>
         {e.merging && <div style={{ fontSize: 11.5, fontWeight: 600, color: 'var(--text-muted)' }}>Adding emails to the job file…</div>}
-        {e.merged && <div style={{ fontSize: 11.5, fontWeight: 700, color: '#047857' }}>✓ Emails added to the job CSV{typeof e.mergedCount === 'number' ? ` (${e.mergedCount})` : ''}</div>}
+        {e.merged && <div style={{ fontSize: 11.5, fontWeight: 700, color: '#047857' }}>✓ {typeof e.mergedCount === 'number' ? `${e.mergedCount} ` : ''}emails written into this job — use the job's CSV / XLSX below</div>}
         {e.mergeError && <div style={{ fontSize: 11.5, fontWeight: 600, color: 'var(--red)' }}>{e.mergeError}</div>}
+        {/* No separate enriched download — emails live in the job's OWN CSV/XLSX (the
+            card's download buttons), so there is exactly ONE file, not a new one. */}
         <div className="jc-enrich-dl">
-          <button className="btn btn-csv btn-sm" onClick={() => dl('csv')}>
-            <IconDownload /> CSV
-          </button>
-          <button className="btn btn-xlsx btn-sm" onClick={() => dl('xlsx')}>
-            <IconDownload /> XLSX
-          </button>
           <button className="btn btn-enr btn-sm" disabled={scrapeBusy} title="Re-run enrichment" onClick={start}>
             <IconRetry /> Again
           </button>
