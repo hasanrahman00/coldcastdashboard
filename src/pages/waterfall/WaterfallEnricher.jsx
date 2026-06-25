@@ -27,6 +27,9 @@ function UploadJob({ job, enrichDownloadUrl, onRemove }) {
   const total = job.total ?? 0
   const processed = job.done ?? 0
   const pct = total > 0 ? Math.min(100, Math.round((processed / total) * 100)) : active ? 6 : 0
+  // Main pass done (all rows scanned) but still running = the catch-all / waterfall-domain
+  // cleaning phase, which doesn't advance the scanned counter. Show it as its own live phase.
+  const cleaning = active && !preparing && total > 0 && processed >= total
   // 'all' = the ORIGINAL uploaded rows preserved (none deleted) with Email/Status/Source
   // appended — rows without a valid email keep their row, just with an empty Email.
   const dl = (fmt) => window.open(enrichDownloadUrl(job.enrichJobId, 'all', fmt), '_blank')
@@ -44,6 +47,12 @@ function UploadJob({ job, enrichDownloadUrl, onRemove }) {
             <span className="enrich-dot" aria-hidden />
             {preparing ? (
               <span>Starting enrichment…</span>
+            ) : cleaning ? (
+              <>
+                <span>Cleaning catch-all domains</span>
+                <b>{valid.toLocaleString()}</b>
+                <span className="muted">verified · waterfall pass · {used.toLocaleString()} credit{used === 1 ? '' : 's'}</span>
+              </>
             ) : (
               <>
                 <span>Enriching</span>
@@ -54,7 +63,11 @@ function UploadJob({ job, enrichDownloadUrl, onRemove }) {
               </>
             )}
           </div>
-          <div className="jc-p"><div className="jc-pb" style={{ width: pct + '%' }} /></div>
+          {cleaning ? (
+            <div className="jc-p indet"><div className="jc-pb" /></div>
+          ) : (
+            <div className="jc-p"><div className="jc-pb" style={{ width: pct + '%' }} /></div>
+          )}
         </>
       )}
 

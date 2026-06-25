@@ -556,6 +556,11 @@ a.btn:hover{text-decoration:none}
 .wf-acts .btn-csv:hover{background:#059669;color:#fff;border-color:#059669}
 .wf-acts .btn-xlsx{background:rgba(37,99,235,.13);color:#2563eb;border-color:rgba(37,99,235,.32)}
 .wf-acts .btn-xlsx:hover{background:#2563eb;color:#fff;border-color:#2563eb}
+/* Indeterminate bar — the catch-all / waterfall cleaning phase (no scanned counter) */
+.jc-p.indet{position:relative;overflow:hidden}
+.jc-p.indet .jc-pb{position:absolute;top:0;bottom:0;left:0;width:36%;box-shadow:none;transition:none;animation:wfIndet 1.15s ease-in-out infinite}
+.jc-p.indet .jc-pb::after{display:none}
+@keyframes wfIndet{0%{left:-36%}100%{left:100%}}
 
 /* ═══════════════════ BADGES ═══════════════════ */
 .bd{
