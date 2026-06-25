@@ -298,8 +298,12 @@ export function AppProvider({ initialMe, onLogout, children }) {
         haltReason: s.haltReason || null,
         completedAt: s.completedAt || null,
       })
-      const bal = typeof s.creditsRemaining === 'number' ? s.creditsRemaining
-        : (typeof s.balance === 'number' ? s.balance : null)
+      // Prefer Core's LIVE balance (s.balance = liveBalance, computed fresh on every
+      // poll) over the enricher's creditsRemaining metadata (a stale snapshot from
+      // when the job ran). Both this and refreshCredits now read liveBalance, so the
+      // pill always shows the real remaining amount and never flickers.
+      const bal = typeof s.balance === 'number' ? s.balance
+        : (typeof s.creditsRemaining === 'number' ? s.creditsRemaining : null)
       if (bal != null) setCredits(bal)
       if (terminal) {
         stopEnrichPoll(jobId)
