@@ -9,7 +9,7 @@ import { useApp, ENRICH_ACTIVE } from '../../store/AppStore.jsx'
 import { useToast } from '../../store/ToastProvider.jsx'
 import { IconUpload, IconMailCheck, IconDownload, IconTrash, IconWarn, IconChevronLeft, IconChevronRight } from '../../lib/icons.jsx'
 
-const MAX_BYTES = 10 * 1024 * 1024 // 10 MB
+const MAX_BYTES = 25 * 1024 * 1024 // 25 MB — comfortably fits ~10k rows
 const JOBS_PER_PAGE = 9 // 3 cols × 3 rows — same grid as the Sales Nav dashboard
 
 const fmtDate = (ts) =>
@@ -91,7 +91,7 @@ export default function WaterfallEnricher() {
 
   const pick = (f) => {
     if (!f) return
-    if (f.size > MAX_BYTES) { toast('That file is over 10MB — please split it into smaller batches.', 'err'); return }
+    if (f.size > MAX_BYTES) { toast('That file is too large — please split it into smaller batches (~10k rows max).', 'err'); return }
     setFile(f)
   }
   const clear = () => { setFile(null); if (inputRef.current) inputRef.current.value = '' }
@@ -128,7 +128,7 @@ export default function WaterfallEnricher() {
     <div className="wf">
       <div className="wf-card">
         <h3 className="wf-card-t">Upload a CSV</h3>
-        <div className="wf-card-s">Needs <b>First Name</b>, <b>Last Name</b> &amp; <b>Website</b>. Optional <b>Website_one</b> / <b>Website_two</b> columns are used as waterfall fallbacks if present. Max 5000 rows · 10MB · 1 credit per valid email (stops when credits run out).</div>
+        <div className="wf-card-s">Supports up to <b>10k rows</b>. Required headers: <b>First Name</b>, <b>Last Name</b>, <b>Website</b> — and it waterfalls through <b>Website_one</b>, <b>Website_two</b> if present. 1 credit per valid email, stops when your credits run out.</div>
 
         <div
           className={'wf-drop' + (drag ? ' over' : '') + (file ? ' has' : '')}
