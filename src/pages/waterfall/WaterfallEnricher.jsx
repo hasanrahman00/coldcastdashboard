@@ -27,7 +27,9 @@ function UploadJob({ job, enrichDownloadUrl, onRemove }) {
   const total = job.total ?? 0
   const processed = job.done ?? 0
   const pct = total > 0 ? Math.min(100, Math.round((processed / total) * 100)) : active ? 6 : 0
-  const dl = (fmt) => window.open(enrichDownloadUrl(job.enrichJobId, 'valid', fmt), '_blank')
+  // 'all' = the ORIGINAL uploaded rows preserved (none deleted) with Email/Status/Source
+  // appended — rows without a valid email keep their row, just with an empty Email.
+  const dl = (fmt) => window.open(enrichDownloadUrl(job.enrichJobId, 'all', fmt), '_blank')
 
   return (
     <div className={'wf-job' + (active ? ' running' : done ? ' done' : errored ? ' err' : '')}>
