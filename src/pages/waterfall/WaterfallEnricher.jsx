@@ -100,7 +100,15 @@ function UploadJob({ job, enrichDownloadUrl, onRemove }) {
             <button className="btn btn-xlsx wf-dlb" onClick={() => dl('xlsx')}><IconDownload /> XLSX</button>
           </>
         )}
-        <button className="wf-x" title="Remove from list" onClick={() => onRemove(job.enrichJobId)}>
+        <button
+          className="wf-x"
+          title="Delete enrichment"
+          onClick={() => {
+            if (window.confirm("Delete this enrichment and its result? You won't be able to download it again.")) {
+              onRemove(job.enrichJobId)
+            }
+          }}
+        >
           <IconTrash />
         </button>
       </div>
