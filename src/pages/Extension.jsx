@@ -1,8 +1,10 @@
 import { IconPuzzle, IconDownload } from '../lib/icons.jsx'
 
-// Hosted .zip link for the Chrome extension. Set VITE_EXT_DOWNLOAD_URL in .env.
-// Blank → the button is disabled (mirrors the original's EXT_DOWNLOAD_URL guard).
-const EXT_URL = import.meta.env.VITE_EXT_DOWNLOAD_URL || ''
+// Hosted .zip link for the Chrome extension. VITE_EXT_DOWNLOAD_URL overrides; otherwise
+// this Drive default is used so the download always works.
+const EXT_URL =
+  import.meta.env.VITE_EXT_DOWNLOAD_URL ||
+  'https://drive.google.com/uc?export=download&id=1pgOr0KiKZLlb-mrTkn_h4Z6Kv0WuiNtl'
 
 export default function Extension() {
   return (
