@@ -62,7 +62,16 @@ export function AppProvider({ initialMe, onLogout, children }) {
   // Per-scrape-job enrich state, keyed by job id. Kept OUT of the `jobs` array
   // because SSE replaces job objects wholesale on every job:update (which would
   // wipe it). The enricher has no SSE → we poll Core for live counts.
-  const [enrichByJob, setEnrichByJob] = useState({})
+  // Hydrate from persisted refs in the initializer so a reload shows the active
+  // "Enriching…" state from the FIRST frame — no flash of the idle "Enrich N" button
+  // before the resume poll (below) kicks in. The poll then fills in live counts.
+  const [enrichByJob, setEnrichByJob] = useState(() => {
+    const out = {}
+    for (const [jobId, enrichJobId] of Object.entries(readEnrichRefs())) {
+      if (enrichJobId) out[jobId] = { status: 'queued', enrichJobId }
+    }
+    return out
+  })
   const enrichTimers = useRef({}) // jobId -> setInterval handle
   const enrichErrs = useRef({})   // jobId -> consecutive poll-error count
 
