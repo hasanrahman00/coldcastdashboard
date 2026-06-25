@@ -1,14 +1,18 @@
-import { useApp } from '../store/AppStore.jsx'
+import { useApp, ENRICH_ACTIVE } from '../store/AppStore.jsx'
 import { useToast } from '../store/ToastProvider.jsx'
 import { getSavedKey } from '../lib/api.js'
-import { IconGrid, IconUsers, IconPlay, IconDownload, IconCopy } from '../lib/icons.jsx'
+import { IconGrid, IconPlay, IconDownload, IconCopy } from '../lib/icons.jsx'
 
 export default function StatsBox({ nav }) {
-  const { jobs, profiles, connectorOnline, activeProfileId } = useApp()
+  const { jobs, profiles, connectorOnline, activeProfileId, enrichUploads } = useApp()
   const toast = useToast()
 
-  const totalLeads = jobs.reduce((s, j) => s + (j.totalLeads || 0), 0)
-  const running = jobs.filter((j) => j.status === 'running').length
+  // Jobs + Running span BOTH products: scrape jobs and Waterfall enrich uploads.
+  const enrichJobs = Object.values(enrichUploads || {})
+  const totalJobs = jobs.length + enrichJobs.length
+  const running =
+    jobs.filter((j) => j.status === 'running').length +
+    enrichJobs.filter((e) => ENRICH_ACTIVE.includes(e.status)).length
 
   // connection slot (mirrors updateProfileSlot)
   const online = profiles.filter((p) => p.online)
@@ -47,15 +51,7 @@ export default function StatsBox({ nav }) {
             <IconGrid />
             Total Jobs
           </div>
-          <div className="v">{jobs.length}</div>
-        </div>
-        <div className="sbx-divider" />
-        <div className="sbx-stat g">
-          <div className="l">
-            <IconUsers />
-            Total Leads
-          </div>
-          <div className="v">{totalLeads.toLocaleString()}</div>
+          <div className="v">{totalJobs}</div>
         </div>
         <div className="sbx-divider" />
         <div className="sbx-stat pr">
