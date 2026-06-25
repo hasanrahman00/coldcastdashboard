@@ -392,6 +392,11 @@ a.btn:hover{text-decoration:none}
   gap:14px;
 }
 .jc-new{animation:fadeUp .4s var(--ease-out)}
+/* Per-state card tint (mirrors the status line: ready / scraping / file-ready / failed) */
+.jc-idle{background:linear-gradient(160deg,rgba(79,124,245,.05) 0%,rgba(50,87,214,.10) 100%);border-color:rgba(79,124,245,.22)}
+.jc-run{background:linear-gradient(160deg,rgba(245,158,11,.06) 0%,rgba(217,119,6,.12) 100%);border-color:rgba(217,119,6,.28)}
+.jc-ok{background:linear-gradient(160deg,rgba(16,185,129,.06) 0%,rgba(5,150,105,.12) 100%);border-color:rgba(5,150,105,.26)}
+.jc-bad{background:linear-gradient(160deg,rgba(225,29,72,.05) 0%,rgba(225,29,72,.11) 100%);border-color:rgba(225,29,72,.3)}
 .jc:hover{
   border-color:var(--border-strong);
   box-shadow:var(--shadow-md);

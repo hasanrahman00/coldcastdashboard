@@ -94,7 +94,7 @@ export default function JobCard({ job, onOpenLogs }) {
   const pct = job.progress || 0
 
   return (
-    <div className="jc">
+    <div className={'jc jc-' + stCls}>
       <div className="jc-h">
         <div className="jc-t">{job.name || 'Untitled'}</div>
         {job.appendNext && (
