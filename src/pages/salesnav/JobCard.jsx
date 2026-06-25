@@ -167,8 +167,8 @@ export default function JobCard({ job, onOpenLogs }) {
             <IconLogsLines /> Logs
           </button>
         )}
-        <button className="btn btn-d btn-sm" title="Delete job" onClick={remove}>
-          <IconTrash /> Del
+        <button className="btn btn-d btn-sm jc-del" title="Delete job" aria-label="Delete job" onClick={remove}>
+          <IconTrash />
         </button>
       </div>
     </div>

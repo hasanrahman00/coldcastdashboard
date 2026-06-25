@@ -276,6 +276,9 @@ a.btn:hover{text-decoration:none}
 .btn-ew{background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff}
 .btn-ew:hover{filter:brightness(1.1)}
 .btn-sm{padding:6px 12px;font-size:12px;border-radius:8px;gap:5px}
+/* Icon-only delete button (Sales Nav job actions) — square, no label */
+.jc-del{padding:6px 8px;gap:0}
+.jc-del svg{width:15px;height:15px}
 .btn-sm svg{width:13px;height:13px}
 .btn:disabled{opacity:.4;pointer-events:none}
 /* Colorful card actions (tinted fills so every button has its own colour, inline) */
