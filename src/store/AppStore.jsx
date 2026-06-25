@@ -29,16 +29,25 @@ export const ENRICH_ACTIVE = ['uploading', 'queued', 'running', 'processing', 's
 
 // Persist scrapeJobId → enrichJobId so a page reload RESUMES the live enrich view
 // (and prevents an accidental double-charge re-run of an already-running job).
-const ENRICH_REFS_KEY = 'vk_enrich_jobs'
-function readEnrichRefs() {
-  try { return JSON.parse(localStorage.getItem(ENRICH_REFS_KEY) || '{}') || {} } catch { return {} }
+// Persist a compact snapshot of every job's enrich state so a browser reload restores
+// the WHOLE card — the live "Enriching…" progress AND the finished "Enriched N verified
+// emails" result — instead of anything vanishing. Written on every state change and
+// hydrated by the useState initializer + the resume effect below.
+const ENRICH_STATE_KEY = 'vk_enrich_state'
+const ENRICH_PERSIST_FIELDS = ['status', 'enrichJobId', 'total', 'done', 'valid', 'merged', 'mergedCount', 'haltReason', 'completedAt', 'error']
+function readEnrichState() {
+  try { return JSON.parse(localStorage.getItem(ENRICH_STATE_KEY) || '{}') || {} } catch { return {} }
 }
-function persistEnrichRef(jobId, enrichJobId) {
+function persistEnrichState(map) {
   try {
-    const m = readEnrichRefs()
-    if (enrichJobId) m[jobId] = enrichJobId
-    else delete m[jobId]
-    localStorage.setItem(ENRICH_REFS_KEY, JSON.stringify(m))
+    const out = {}
+    for (const [jid, e] of Object.entries(map || {})) {
+      if (!e || !e.status || e.status === 'idle') continue
+      const slim = {}
+      for (const f of ENRICH_PERSIST_FIELDS) if (e[f] !== undefined) slim[f] = e[f]
+      out[jid] = slim
+    }
+    localStorage.setItem(ENRICH_STATE_KEY, JSON.stringify(out))
   } catch { /* quota */ }
 }
 
@@ -62,16 +71,10 @@ export function AppProvider({ initialMe, onLogout, children }) {
   // Per-scrape-job enrich state, keyed by job id. Kept OUT of the `jobs` array
   // because SSE replaces job objects wholesale on every job:update (which would
   // wipe it). The enricher has no SSE → we poll Core for live counts.
-  // Hydrate from persisted refs in the initializer so a reload shows the active
-  // "Enriching…" state from the FIRST frame — no flash of the idle "Enrich N" button
-  // before the resume poll (below) kicks in. The poll then fills in live counts.
-  const [enrichByJob, setEnrichByJob] = useState(() => {
-    const out = {}
-    for (const [jobId, enrichJobId] of Object.entries(readEnrichRefs())) {
-      if (enrichJobId) out[jobId] = { status: 'queued', enrichJobId }
-    }
-    return out
-  })
+  // Hydrate the full persisted snapshot in the initializer so a reload shows the right
+  // card from the FIRST frame — active progress OR the finished result — with no flash
+  // of the idle "Enrich N" button. The resume effect (below) re-attaches live polls.
+  const [enrichByJob, setEnrichByJob] = useState(() => readEnrichState())
   const enrichTimers = useRef({}) // jobId -> setInterval handle
   const enrichErrs = useRef({})   // jobId -> consecutive poll-error count
 
@@ -274,8 +277,8 @@ export function AppProvider({ initialMe, onLogout, children }) {
   }, [])
 
   // When an enrich finishes, merge its emails back into the scrape job's file so the
-  // job's OWN CSV/XLSX download contains them. The persisted resume-ref is cleared
-  // only AFTER a successful merge, so a reload that re-polls a done job retries it.
+  // job's OWN CSV/XLSX download contains them. `merged:true` is persisted on success, so
+  // a reload re-runs the merge only if it didn't complete (idempotent on the scraper).
   const mergeEnrichIntoJob = useCallback(async (jobId, enrichJobId) => {
     if (!enrichJobId) return
     patchEnrich(jobId, { merging: true, mergeError: null })
@@ -283,7 +286,6 @@ export function AppProvider({ initialMe, onLogout, children }) {
       const file = await api.enrichResultFile(enrichJobId)   // download from Core
       const r = await api.enrichMerge(jobId, file)            // POST to the scraper
       patchEnrich(jobId, { merging: false, merged: true, mergedCount: (r && r.updated) || 0 })
-      persistEnrichRef(jobId, null)
     } catch (e) {
       if (e instanceof AuthError) { onLogout(); return }
       patchEnrich(jobId, { merging: false, mergeError: e.message || 'Could not add emails to the job file' })
@@ -321,16 +323,16 @@ export function AppProvider({ initialMe, onLogout, children }) {
       if (bal != null) setCredits(bal)
       if (terminal) {
         stopEnrichPoll(jobId)
-        // On success, merge the emails into the scrape job's own file; otherwise just
-        // drop the resume ref (nothing to merge back from a failed/stopped run).
+        // On success, merge the emails into the scrape job's own file. The terminal
+        // state (done/stopped/failed) stays persisted either way, so the card survives
+        // a reload — nothing vanishes.
         if (status === 'done' || status === 'completed') mergeEnrichIntoJob(jobId, enrichJobId)
-        else persistEnrichRef(jobId, null)
       }
     } catch (e) {
       if (e instanceof AuthError) { stopEnrichPoll(jobId); onLogout(); return }
       const n = (enrichErrs.current[jobId] = (enrichErrs.current[jobId] || 0) + 1)
       if (n >= 4) { // ~10s of failures → the enrich job is gone/unreachable
-        stopEnrichPoll(jobId); persistEnrichRef(jobId, null)
+        stopEnrichPoll(jobId)
         patchEnrich(jobId, { status: 'error', error: e.message || 'Lost the enrich job' })
       }
     }
@@ -355,7 +357,6 @@ export function AppProvider({ initialMe, onLogout, children }) {
       const enrichJobId = r && r.jobId
       if (!enrichJobId) throw new Error('Enricher did not return a job id')
       patchEnrich(id, { status: 'queued', enrichJobId, total: job.totalLeads || 0, done: 0 })
-      persistEnrichRef(id, enrichJobId)
       if (typeof r.balance === 'number') setCredits(r.balance)
       startEnrichPoll(id, enrichJobId)
       return r
@@ -366,13 +367,18 @@ export function AppProvider({ initialMe, onLogout, children }) {
     }
   }, [patchEnrich, startEnrichPoll, onLogout])
 
-  // Resume any in-flight enrich after a reload, and clean up timers on unmount.
+  // Persist the enrich snapshot on every change so a reload can restore it verbatim.
+  useEffect(() => { persistEnrichState(enrichByJob) }, [enrichByJob])
+
+  // After a reload: re-attach a live poll to any still-active enrich, and finish an
+  // interrupted merge for one that completed while the tab was closed. Terminal/failed
+  // states just stay shown (hydrated above) — nothing re-polls needlessly or vanishes.
   useEffect(() => {
-    const refs = readEnrichRefs()
-    for (const [jobId, enrichJobId] of Object.entries(refs)) {
-      if (!enrichJobId) continue
-      patchEnrich(jobId, { status: 'queued', enrichJobId })
-      startEnrichPoll(jobId, enrichJobId)
+    const snap = readEnrichState()
+    for (const [jobId, e] of Object.entries(snap)) {
+      if (!e || !e.enrichJobId) continue
+      if (ENRICH_ACTIVE.includes(e.status)) startEnrichPoll(jobId, e.enrichJobId)
+      else if ((e.status === 'done' || e.status === 'completed') && !e.merged) mergeEnrichIntoJob(jobId, e.enrichJobId)
     }
     const timers = enrichTimers.current
     return () => { for (const t of Object.values(timers)) clearInterval(t) }
