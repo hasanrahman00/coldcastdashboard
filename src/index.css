@@ -526,11 +526,10 @@ a.btn:hover{text-decoration:none}
 .wf-clear{margin-left:auto;background:none;border:none;color:var(--brand);font-weight:700;cursor:pointer;font-size:12px;padding:0}
 .wf-clear:hover{text-decoration:underline}
 .wf-jobs{display:flex;flex-direction:column;gap:10px}
-.wf-job{background:linear-gradient(160deg,var(--bg-elev-1) 0%,var(--bg-elev-2) 100%);border:1px solid var(--border);border-radius:var(--radius-lg);padding:22px 24px;display:flex;flex-direction:column;gap:13px;min-height:230px}
+.wf-job{background:linear-gradient(160deg,var(--bg-elev-1) 0%,var(--bg-elev-2) 100%);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px 24px;display:flex;flex-direction:column;justify-content:space-between;gap:14px;min-height:240px}
 .wf-job.running{border-color:rgba(99,102,241,.4);background:linear-gradient(160deg,rgba(99,102,241,.07) 0%,rgba(79,70,229,.14) 100%)}
 .wf-job.done{border-color:rgba(5,150,105,.34);background:linear-gradient(160deg,rgba(16,185,129,.08) 0%,rgba(5,150,105,.15) 100%)}
 .wf-job.err{border-color:rgba(225,29,72,.36);background:linear-gradient(160deg,rgba(225,29,72,.05) 0%,rgba(225,29,72,.11) 100%)}
-.wf-job .wf-acts{margin-top:auto}
 .wf-job-h{display:flex;align-items:center;gap:10px}
 .wf-job-file{font-size:15.5px;font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:62%}
 .wf-job-d{font-size:12px;color:var(--text-muted)}
@@ -544,11 +543,11 @@ a.btn:hover{text-decoration:none}
 .wf-job-s.sok{color:#047857}
 .wf-job-s.serr{color:var(--red)}
 /* Done — hero verified count */
-.wf-result{display:flex;align-items:center;gap:11px;color:#047857}
-.wf-result svg{width:24px;height:24px;flex-shrink:0}
-.wf-result-n{font-size:32px;font-weight:800;letter-spacing:-.02em;line-height:1}
-.wf-result-l{font-size:14.5px;font-weight:700}
-.wf-result-sub{font-size:12.5px;font-weight:600;color:var(--text-muted);margin-top:-4px}
+.wf-result{display:flex;align-items:center;gap:12px;color:#047857}
+.wf-result svg{width:26px;height:26px;flex-shrink:0}
+.wf-result-n{font-size:40px;font-weight:800;letter-spacing:-.025em;line-height:1}
+.wf-result-l{font-size:15.5px;font-weight:700}
+.wf-result-sub{font-size:13px;font-weight:600;color:var(--text-muted)}
 /* Bottom action row — split download buttons (done) + the delete button (all states) */
 .wf-acts{display:flex;gap:10px;align-items:center}
 .wf-dlb{flex:1;justify-content:center;padding:11px 12px;font-size:13px;font-weight:700;border-radius:10px}
