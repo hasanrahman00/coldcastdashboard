@@ -530,7 +530,7 @@ a.btn:hover{text-decoration:none}
 .wf-job.running{border-color:rgba(99,102,241,.4);background:linear-gradient(160deg,rgba(99,102,241,.07) 0%,rgba(79,70,229,.14) 100%)}
 .wf-job.done{border-color:rgba(5,150,105,.34);background:linear-gradient(160deg,rgba(16,185,129,.08) 0%,rgba(5,150,105,.15) 100%)}
 .wf-job.err{border-color:rgba(225,29,72,.36);background:linear-gradient(160deg,rgba(225,29,72,.05) 0%,rgba(225,29,72,.11) 100%)}
-.wf-job .jc-p,.wf-job .wf-dl{margin-top:auto}
+.wf-job .wf-acts{margin-top:auto}
 .wf-job-h{display:flex;align-items:center;gap:10px}
 .wf-job-file{font-size:15.5px;font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:62%}
 .wf-job-d{font-size:12px;color:var(--text-muted)}
@@ -549,13 +549,13 @@ a.btn:hover{text-decoration:none}
 .wf-result-n{font-size:32px;font-weight:800;letter-spacing:-.02em;line-height:1}
 .wf-result-l{font-size:14.5px;font-weight:700}
 .wf-result-sub{font-size:12.5px;font-weight:600;color:var(--text-muted);margin-top:-4px}
-/* Download buttons — full-width split, colour-coded, fill on hover */
-.wf-dl{display:flex;gap:10px}
+/* Bottom action row — split download buttons (done) + the delete button (all states) */
+.wf-acts{display:flex;gap:10px;align-items:center}
 .wf-dlb{flex:1;justify-content:center;padding:11px 12px;font-size:13px;font-weight:700;border-radius:10px}
-.wf-dl .btn-csv{background:rgba(5,150,105,.13);color:#047857;border-color:rgba(5,150,105,.32)}
-.wf-dl .btn-csv:hover{background:#059669;color:#fff;border-color:#059669}
-.wf-dl .btn-xlsx{background:rgba(37,99,235,.13);color:#2563eb;border-color:rgba(37,99,235,.32)}
-.wf-dl .btn-xlsx:hover{background:#2563eb;color:#fff;border-color:#2563eb}
+.wf-acts .btn-csv{background:rgba(5,150,105,.13);color:#047857;border-color:rgba(5,150,105,.32)}
+.wf-acts .btn-csv:hover{background:#059669;color:#fff;border-color:#059669}
+.wf-acts .btn-xlsx{background:rgba(37,99,235,.13);color:#2563eb;border-color:rgba(37,99,235,.32)}
+.wf-acts .btn-xlsx:hover{background:#2563eb;color:#fff;border-color:#2563eb}
 
 /* ═══════════════════ BADGES ═══════════════════ */
 .bd{

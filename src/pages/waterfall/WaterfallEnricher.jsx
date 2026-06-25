@@ -36,9 +36,6 @@ function UploadJob({ job, enrichDownloadUrl, onRemove }) {
       <div className="wf-job-h">
         <span className="wf-job-file" title={job.fileName}>{job.fileName || 'upload.csv'}</span>
         <span className="wf-job-d">{fmtDate(job.createdAt)}</span>
-        <button className="wf-x" title="Remove from list" onClick={() => onRemove(job.enrichJobId)}>
-          <IconTrash />
-        </button>
       </div>
 
       {active && (
@@ -69,16 +66,24 @@ function UploadJob({ job, enrichDownloadUrl, onRemove }) {
             <span className="wf-result-l">verified email{valid === 1 ? '' : 's'}</span>
           </div>
           <div className="wf-result-sub">{used.toLocaleString()} credit{used === 1 ? '' : 's'} used{job.haltReason ? ` · ${job.haltReason}` : ''}</div>
-          <div className="wf-dl">
-            <button className="btn btn-csv wf-dlb" onClick={() => dl('csv')}><IconDownload /> Download CSV</button>
-            <button className="btn btn-xlsx wf-dlb" onClick={() => dl('xlsx')}><IconDownload /> XLSX</button>
-          </div>
         </>
       )}
 
       {errored && (
         <div className="wf-job-s serr"><IconWarn /> {job.error || 'Enrichment failed'}</div>
       )}
+
+      <div className="wf-acts">
+        {done && (
+          <>
+            <button className="btn btn-csv wf-dlb" onClick={() => dl('csv')}><IconDownload /> Download CSV</button>
+            <button className="btn btn-xlsx wf-dlb" onClick={() => dl('xlsx')}><IconDownload /> XLSX</button>
+          </>
+        )}
+        <button className="wf-x" title="Remove from list" onClick={() => onRemove(job.enrichJobId)}>
+          <IconTrash />
+        </button>
+      </div>
     </div>
   )
 }
