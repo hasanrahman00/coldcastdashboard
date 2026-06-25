@@ -33,16 +33,25 @@ export default function JobEnrich({ job, scrapeBusy, hasData }) {
   // Nothing to enrich yet (scrape produced no leads and no enrich exists).
   if (!hasData && !e) return null
 
-  // ── Active: live count + progress ──────────────────────────────────────
+  // ── Active: live VALID-email count + progress bar ──────────────────────
+  //    Headline shows verified emails found so far (climbs in real time); the bar
+  //    tracks overall processing progress. "Preparing…" until the run actually starts.
   if (active) {
-    const label = status === 'uploading' ? 'Preparing…' : 'Enriching'
+    const preparing = status === 'uploading' || status === 'queued'
+    const valid = e?.valid || 0
     return (
       <div className="jc-enrich">
         <div className="jc-enrich-h">
           <IconMailCheck />
-          <span>{label}</span>
-          <span className="n">{done.toLocaleString()}</span>
-          <span className="muted">/ {total.toLocaleString()}</span>
+          {preparing ? (
+            <span>Preparing…</span>
+          ) : (
+            <>
+              <span>Enriched</span>
+              <span className="n">{valid.toLocaleString()}</span>
+              <span className="muted">verified email{valid === 1 ? '' : 's'}</span>
+            </>
+          )}
         </div>
         <div className="jc-p">
           <div className="jc-pb" style={{ width: pct + '%' }} />
@@ -60,7 +69,7 @@ export default function JobEnrich({ job, scrapeBusy, hasData }) {
           <IconMailCheck />
           <span>Enriched</span>
           <span className="n">{valid.toLocaleString()}</span>
-          <span className="muted">valid{e.haltReason ? ` · ${e.haltReason}` : ''}</span>
+          <span className="muted">verified email{valid === 1 ? '' : 's'}{e.haltReason ? ` · ${e.haltReason}` : ''}</span>
         </div>
         {e.merging && <div style={{ fontSize: 11.5, fontWeight: 600, color: 'var(--text-muted)' }}>Adding emails to the job file…</div>}
         {e.merged && <div style={{ fontSize: 11.5, fontWeight: 700, color: '#047857' }}>✓ Emails added to the job CSV{typeof e.mergedCount === 'number' ? ` (${e.mergedCount})` : ''}</div>}
@@ -104,7 +113,7 @@ export default function JobEnrich({ job, scrapeBusy, hasData }) {
         title={scrapeBusy ? 'Wait for scraping to finish' : 'Find verified emails for these leads'}
         onClick={start}
       >
-        <IconMailCheck /> Enrich {total.toLocaleString()} Emails
+        <IconMailCheck /> Enrich {total.toLocaleString()} Rows
       </button>
     </div>
   )
