@@ -23,7 +23,9 @@ const AppCtx = createContext(null)
 export const useApp = () => useContext(AppCtx)
 
 // Enrich job statuses that count as FINISHED (stop polling, release the Run lock).
-const ENRICH_TERMINAL = ['done', 'completed', 'failed', 'error', 'stopped', 'paused', 'cancelled']
+// NOTE: the enricher writes meta status 'pause' / 'stop' (present tense) for a
+// credit halt / user stop — include both those and the past-tense forms.
+const ENRICH_TERMINAL = ['done', 'completed', 'failed', 'error', 'stop', 'stopped', 'pause', 'paused', 'cancelled']
 // In-flight enrich statuses — while one holds, this job's scrape Run is disabled.
 // NOTE: the enricher reports the running status as 'run' (not 'running'); both are
 // listed so the live panel matches whatever the engine sends.

@@ -17,11 +17,9 @@ const fmtDate = (ts) =>
 
 // One row in the jobs list — mirrors the lifecycle: running → done (download) → error.
 function UploadJob({ job, enrichDownloadUrl, onRemove }) {
-  const status = job.status || 'queued'
+  const status = (job.status || 'queued').toLowerCase()
   const active = ENRICH_ACTIVE.includes(status)
-  const done = status === 'done' || status === 'completed' || (['stopped', 'paused'].includes(status) && (job.done || 0) > 0)
-  const errored = status === 'error' || status === 'failed' || status === 'cancelled'
-  const preparing = status === 'queued' || status === 'uploading'
+  const preparing = status === 'queued' || status === 'queueing' || status === 'uploading'
   const valid = job.valid ?? 0
   const used = job.creditsUsed ?? 0
   const total = job.total ?? 0
@@ -30,12 +28,21 @@ function UploadJob({ job, enrichDownloadUrl, onRemove }) {
   // Main pass done (all rows scanned) but still running = the catch-all / waterfall-domain
   // cleaning phase, which doesn't advance the scanned counter. Show it as its own live phase.
   const cleaning = active && !preparing && total > 0 && processed >= total
+  // A hard failure that produced nothing → show the error. EVERYTHING else that's finished
+  // (done, OR paused/stopped — e.g. credits ran out mid-run) shows its PARTIAL result +
+  // downloads, so the enriched-so-far emails (+ all original rows) are never hidden/lost.
+  const hardFail = (status === 'error' || status === 'failed') && valid === 0 && processed === 0
+  const finished = !active && !hardFail && !!job.enrichJobId
+  const haltLabel = /credit/i.test(job.haltReason || '') ? 'stopped — out of credits'
+    : status === 'pause' || status === 'paused' ? 'paused'
+    : status === 'stop' || status === 'stopped' ? 'stopped'
+    : null
   // 'all' = the ORIGINAL uploaded rows preserved (none deleted) with Email/Status/Source
   // appended — rows without a valid email keep their row, just with an empty Email.
   const dl = (fmt) => window.open(enrichDownloadUrl(job.enrichJobId, 'all', fmt), '_blank')
 
   return (
-    <div className={'wf-job' + (active ? ' running' : done ? ' done' : errored ? ' err' : '')}>
+    <div className={'wf-job' + (active ? ' running' : hardFail ? ' err' : finished ? ' done' : '')}>
       <div className="wf-job-h">
         <span className="wf-job-file" title={job.fileName}>{job.fileName || 'upload.csv'}</span>
         <span className="wf-job-d">{fmtDate(job.createdAt)}</span>
@@ -71,23 +78,23 @@ function UploadJob({ job, enrichDownloadUrl, onRemove }) {
         </>
       )}
 
-      {done && (
+      {finished && (
         <>
           <div className="wf-result">
             <IconMailCheck />
             <span className="wf-result-n">{valid.toLocaleString()}</span>
             <span className="wf-result-l">verified email{valid === 1 ? '' : 's'}</span>
           </div>
-          <div className="wf-result-sub">{used.toLocaleString()} credit{used === 1 ? '' : 's'} used{job.haltReason ? ` · ${job.haltReason}` : ''}</div>
+          <div className="wf-result-sub">{used.toLocaleString()} credit{used === 1 ? '' : 's'} used{haltLabel ? ` · ${haltLabel}` : ''}</div>
         </>
       )}
 
-      {errored && (
+      {hardFail && (
         <div className="wf-job-s serr"><IconWarn /> {job.error || 'Enrichment failed'}</div>
       )}
 
       <div className="wf-acts">
-        {done && (
+        {finished && (
           <>
             <button className="btn btn-csv wf-dlb" onClick={() => dl('csv')}><IconDownload /> Download CSV</button>
             <button className="btn btn-xlsx wf-dlb" onClick={() => dl('xlsx')}><IconDownload /> XLSX</button>
