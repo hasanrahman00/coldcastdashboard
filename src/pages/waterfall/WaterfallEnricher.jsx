@@ -63,12 +63,15 @@ function UploadJob({ job, enrichDownloadUrl, onRemove }) {
 
       {done && (
         <>
-          <div className="wf-job-s sok">
-            <IconMailCheck /> <b>{valid.toLocaleString()}</b> verified email{valid === 1 ? '' : 's'} · {used.toLocaleString()} credit{used === 1 ? '' : 's'} used{job.haltReason ? ` · ${job.haltReason}` : ''}
+          <div className="wf-result">
+            <IconMailCheck />
+            <span className="wf-result-n">{valid.toLocaleString()}</span>
+            <span className="wf-result-l">verified email{valid === 1 ? '' : 's'}</span>
           </div>
+          <div className="wf-result-sub">{used.toLocaleString()} credit{used === 1 ? '' : 's'} used{job.haltReason ? ` · ${job.haltReason}` : ''}</div>
           <div className="wf-dl">
-            <button className="btn btn-csv btn-sm" onClick={() => dl('csv')}><IconDownload /> CSV</button>
-            <button className="btn btn-xlsx btn-sm" onClick={() => dl('xlsx')}><IconDownload /> XLSX</button>
+            <button className="btn btn-csv wf-dlb" onClick={() => dl('csv')}><IconDownload /> Download CSV</button>
+            <button className="btn btn-xlsx wf-dlb" onClick={() => dl('xlsx')}><IconDownload /> XLSX</button>
           </div>
         </>
       )}
