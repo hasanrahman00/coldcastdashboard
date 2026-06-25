@@ -1130,15 +1130,19 @@ body{flex-direction:column}
 /* ═══════════════════ STATS BOX (above the nav) ═══════════════════ */
 .statsbox{
   display:flex;align-items:center;gap:22px;flex-wrap:wrap;
-  background:var(--bg-elev-1);border:1px solid var(--border);
+  background:linear-gradient(150deg,var(--bg-elev-1) 0%,var(--bg-elev-2) 100%);border:1px solid var(--border);
   border-radius:var(--radius-lg);box-shadow:var(--shadow-md);
-  padding:18px 22px;margin-bottom:22px;
+  padding:16px 22px;margin-bottom:22px;
 }
-.sbx-stats{display:flex;align-items:center;gap:30px;flex-wrap:wrap}
-.sbx-stat{display:flex;flex-direction:column;gap:4px}
-.sbx-stat .l{display:flex;align-items:center;gap:7px;font-size:10.5px;text-transform:uppercase;letter-spacing:.6px;font-weight:700;color:var(--text-dim)}
-.sbx-stat .l svg{width:14px;height:14px;stroke-width:2.2}
-.sbx-stat .v{font-size:25px;font-weight:800;letter-spacing:-.02em;color:var(--text);line-height:1}
+.sbx-stats{display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+.sbx-stat{display:flex;align-items:center;gap:12px}
+.sbx-ic{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sbx-ic svg{width:19px;height:19px;stroke-width:2.2}
+.sbx-stat.b .sbx-ic{background:rgba(79,124,245,.14);color:var(--blue)}
+.sbx-stat.pr .sbx-ic{background:rgba(124,58,237,.14);color:#6d28d9}
+.sbx-stat-txt{display:flex;flex-direction:column;gap:3px}
+.sbx-stat .l{font-size:10.5px;text-transform:uppercase;letter-spacing:.6px;font-weight:700;color:var(--text-dim)}
+.sbx-stat .v{font-size:24px;font-weight:800;letter-spacing:-.02em;color:var(--text);line-height:1}
 .sbx-stat.b .v{color:var(--blue)} .sbx-stat.g .v{color:#047857} .sbx-stat.pr .v{color:#6d28d9}
 .sbx-divider{width:1px;align-self:stretch;background:var(--border);margin:3px 0}
 /* Profile connection slot — clickable, jumps to Settings */

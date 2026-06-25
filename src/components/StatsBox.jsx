@@ -47,19 +47,19 @@ export default function StatsBox({ nav }) {
     <div className="statsbox">
       <div className="sbx-stats">
         <div className="sbx-stat b">
-          <div className="l">
-            <IconGrid />
-            Total Jobs
+          <span className="sbx-ic"><IconGrid /></span>
+          <div className="sbx-stat-txt">
+            <div className="l">Total Jobs</div>
+            <div className="v">{totalJobs}</div>
           </div>
-          <div className="v">{totalJobs}</div>
         </div>
         <div className="sbx-divider" />
         <div className="sbx-stat pr">
-          <div className="l">
-            <IconPlay />
-            Running
+          <span className="sbx-ic"><IconPlay /></span>
+          <div className="sbx-stat-txt">
+            <div className="l">Running</div>
+            <div className="v">{running}</div>
           </div>
-          <div className="v">{running}</div>
         </div>
       </div>
 
