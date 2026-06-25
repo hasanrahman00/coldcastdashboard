@@ -289,12 +289,17 @@ export function AppProvider({ initialMe, onLogout, children }) {
       const s = await api.enrichStatus(enrichJobId)
       enrichErrs.current[jobId] = 0
       const total = s.totals?.totalRows ?? s.progress?.totalContacts ?? 0
-      const done = s.resultCount ?? s.progress?.processedContacts ?? 0
+      // Live "done" = rows PROCESSED so far (climbs during the run). resultCount is
+      // only the final processed total, so it can't drive a live counter.
+      const done = s.progress?.processedContacts ?? s.resultCount ?? 0
+      // Actual emails found = the valid-status count, NOT resultCount (= rows processed).
+      const validCount = s.progress?.statusCounts?.valid
       const status = String(s.status || 'running').toLowerCase()
       const terminal = ENRICH_TERMINAL.includes(status) || !!s.completedAt
       patchEnrich(jobId, {
         status, total, done,
-        valid: typeof s.resultCount === 'number' ? s.resultCount : null,
+        valid: typeof validCount === 'number' ? validCount
+          : (typeof s.resultCount === 'number' ? s.resultCount : null),
         haltReason: s.haltReason || null,
         completedAt: s.completedAt || null,
       })
