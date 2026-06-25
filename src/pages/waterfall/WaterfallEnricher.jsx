@@ -7,7 +7,9 @@
 import { useRef, useState } from 'react'
 import { useApp, ENRICH_ACTIVE } from '../../store/AppStore.jsx'
 import { useToast } from '../../store/ToastProvider.jsx'
-import { IconLayers, IconMailCheck, IconDownload, IconTrash, IconWarn } from '../../lib/icons.jsx'
+import { IconUpload, IconMailCheck, IconDownload, IconTrash, IconWarn } from '../../lib/icons.jsx'
+
+const MAX_BYTES = 10 * 1024 * 1024 // 10 MB
 
 const fmtDate = (ts) =>
   ts ? new Date(ts).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : ''
@@ -83,7 +85,11 @@ export default function WaterfallEnricher() {
   const [drag, setDrag] = useState(false)
   const inputRef = useRef(null)
 
-  const pick = (f) => { if (f) setFile(f) }
+  const pick = (f) => {
+    if (!f) return
+    if (f.size > MAX_BYTES) { toast('That file is over 10MB — please split it into smaller batches.', 'err'); return }
+    setFile(f)
+  }
   const clear = () => { setFile(null); if (inputRef.current) inputRef.current.value = '' }
   const onDrop = (e) => { e.preventDefault(); setDrag(false); pick(e.dataTransfer.files?.[0]) }
 
@@ -104,34 +110,30 @@ export default function WaterfallEnricher() {
 
   return (
     <div className="wf">
-      <div className="wf-head">
-        <h2>Waterfall Email Enricher</h2>
-        <p>
-          Upload a CSV/XLSX of leads (name + company or website) → verified, deliverable emails.
-          The waterfall chains providers until a valid address is found. <b>1 credit per valid email</b>;
-          it stops automatically when your credits run out.
-        </p>
-      </div>
+      <div className="wf-card">
+        <h3 className="wf-card-t">Upload a CSV</h3>
+        <div className="wf-card-s">Max: 5000 rows · 10MB. Name + company/website → verified emails — 1 credit per valid email, stops when your credits run out.</div>
 
-      <div
-        className={'wf-drop' + (drag ? ' over' : '') + (file ? ' has' : '')}
-        onDragOver={(e) => { e.preventDefault(); setDrag(true) }}
-        onDragLeave={() => setDrag(false)}
-        onDrop={onDrop}
-        onClick={() => inputRef.current?.click()}
-      >
-        <input ref={inputRef} type="file" accept=".csv,.xlsx,.xls" hidden onChange={(e) => pick(e.target.files?.[0])} />
-        <IconLayers />
-        <div className="wf-drop-t">{file ? file.name : 'Drop a CSV / XLSX here, or click to choose'}</div>
-        <div className="wf-drop-s">{file ? 'Ready to enrich' : 'Columns: First / Last name + Company or Website'}</div>
-      </div>
+        <div
+          className={'wf-drop' + (drag ? ' over' : '') + (file ? ' has' : '')}
+          onDragOver={(e) => { e.preventDefault(); setDrag(true) }}
+          onDragLeave={() => setDrag(false)}
+          onDrop={onDrop}
+          onClick={() => inputRef.current?.click()}
+        >
+          <input ref={inputRef} type="file" accept=".csv,.xlsx,.xls" hidden onChange={(e) => pick(e.target.files?.[0])} />
+          <IconUpload />
+          <span className="wf-drop-t">{file ? file.name : 'Choose a CSV file'}</span>
+        </div>
 
-      <div className="wf-actions">
-        <button className="btn btn-p" disabled={!file || busy} onClick={run}>
-          {busy ? 'Starting…' : <><IconMailCheck /> Enrich file</>}
+        <button className="btn btn-s wf-btn" disabled={!file || busy} onClick={run}>
+          {busy ? 'Starting…' : 'Upload and enrich'}
         </button>
-        {file && !busy && <button className="btn btn-g btn-sm" onClick={clear}>Clear</button>}
-        <span className="wf-credits">{(credits ?? 0).toLocaleString()} credits left</span>
+
+        <div className="wf-card-foot">
+          <span>{(credits ?? 0).toLocaleString()} credits left</span>
+          {file && !busy && <button className="wf-clear" onClick={clear}>Clear</button>}
+        </div>
       </div>
 
       <div className="wf-jobs">

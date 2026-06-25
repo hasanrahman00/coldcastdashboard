@@ -505,22 +505,25 @@ a.btn:hover{text-decoration:none}
 
 /* ═══════════════════ Waterfall Email Enricher (standalone tab) ═══════════════════ */
 .wf{display:flex;flex-direction:column;gap:18px;max-width:760px;margin:0 auto;width:100%}
-.wf-head h2{font-size:20px;font-weight:800;margin:0 0 6px;color:var(--text)}
-.wf-head p{font-size:13px;color:var(--text-muted);line-height:1.55;margin:0;max-width:640px}
-.wf-head p b{color:#4f46e5}
+.wf-card{background:var(--bg-elev-1);border:1px solid var(--border);border-radius:14px;padding:22px 24px;display:flex;flex-direction:column;gap:14px}
+.wf-card-t{font-size:17px;font-weight:800;margin:0;color:var(--text)}
+.wf-card-s{font-size:12.5px;color:var(--text-muted);line-height:1.5;margin:-8px 0 0}
 .wf-drop{
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
-  padding:34px 20px;border:2px dashed rgba(99,102,241,.35);border-radius:14px;
-  background:rgba(99,102,241,.04);cursor:pointer;text-align:center;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  padding:26px 20px;border:1.5px dashed var(--border-strong);border-radius:10px;
+  background:var(--bg-elev-2);cursor:pointer;text-align:center;
   transition:border-color .15s,background .15s;
 }
-.wf-drop:hover,.wf-drop.over{border-color:#4f46e5;background:rgba(99,102,241,.08)}
-.wf-drop.has{border-style:solid;border-color:rgba(99,102,241,.5)}
-.wf-drop svg{width:30px;height:30px;color:#4f46e5;opacity:.85}
-.wf-drop-t{font-size:14px;font-weight:700;color:var(--text)}
-.wf-drop-s{font-size:12px;color:var(--text-muted)}
-.wf-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.wf-credits{margin-left:auto;font-size:12.5px;font-weight:700;color:var(--text-muted)}
+.wf-drop:hover,.wf-drop.over{border-color:var(--brand);background:rgba(79,124,245,.06)}
+.wf-drop.has{border-style:solid;border-color:rgba(16,185,129,.5);background:rgba(16,185,129,.06)}
+.wf-drop svg{width:18px;height:18px;color:var(--text-muted)}
+.wf-drop.has svg{color:#059669}
+.wf-drop-t{font-size:13.5px;font-weight:600;color:var(--text-muted)}
+.wf-drop.has .wf-drop-t{color:var(--text)}
+.wf-btn{width:100%;justify-content:center;padding:12px;font-size:14px}
+.wf-card-foot{display:flex;align-items:center;gap:12px;font-size:12px;color:var(--text-muted);font-weight:600}
+.wf-clear{margin-left:auto;background:none;border:none;color:var(--brand);font-weight:700;cursor:pointer;font-size:12px;padding:0}
+.wf-clear:hover{text-decoration:underline}
 .wf-jobs{display:flex;flex-direction:column;gap:10px}
 .wf-job{background:var(--bg-elev-1);border:1px solid var(--border);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
 .wf-job.running{border-color:rgba(99,102,241,.3);background:rgba(99,102,241,.05)}
