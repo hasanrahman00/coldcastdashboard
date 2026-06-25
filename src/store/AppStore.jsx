@@ -34,7 +34,7 @@ export const ENRICH_ACTIVE = ['uploading', 'queued', 'running', 'processing', 's
 // emails" result — instead of anything vanishing. Written on every state change and
 // hydrated by the useState initializer + the resume effect below.
 const ENRICH_STATE_KEY = 'vk_enrich_state'
-const ENRICH_PERSIST_FIELDS = ['status', 'enrichJobId', 'total', 'done', 'valid', 'merged', 'mergedCount', 'haltReason', 'completedAt', 'error']
+const ENRICH_PERSIST_FIELDS = ['status', 'enrichJobId', 'total', 'done', 'valid', 'creditsUsed', 'merged', 'mergedCount', 'haltReason', 'completedAt', 'error']
 function readEnrichState() {
   try { return JSON.parse(localStorage.getItem(ENRICH_STATE_KEY) || '{}') || {} } catch { return {} }
 }
@@ -311,6 +311,7 @@ export function AppProvider({ initialMe, onLogout, children }) {
         status, total, done,
         valid: typeof validCount === 'number' ? validCount
           : (typeof s.resultCount === 'number' ? s.resultCount : null),
+        creditsUsed: typeof s.creditsUsed === 'number' ? s.creditsUsed : 0,
         haltReason: s.haltReason || null,
         completedAt: s.completedAt || null,
       })

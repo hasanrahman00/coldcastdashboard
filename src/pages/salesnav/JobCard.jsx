@@ -14,6 +14,7 @@ import {
   IconRetry,
   IconWarn,
   IconLink,
+  IconMailCheck,
 } from '../../lib/icons.jsx'
 
 function jobUrlOf(j) {
@@ -159,8 +160,13 @@ export default function JobCard({ job, onOpenLogs }) {
 
       <div className="jc-a">
         {scrapeIdle && (
-          <button className="btn btn-s btn-sm" disabled={anotherRunning || enriching} title={runTitle} onClick={run}>
-            <IconPlay /> Run
+          <button
+            className={'btn btn-s btn-sm' + (enriching ? ' is-locked' : '')}
+            disabled={anotherRunning || enriching}
+            title={runTitle}
+            onClick={run}
+          >
+            {enriching ? <><IconMailCheck /> Enriching…</> : <><IconPlay /> Run</>}
           </button>
         )}
         {scrapeRun && (

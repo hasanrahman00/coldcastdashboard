@@ -38,23 +38,28 @@ export default function JobEnrich({ job, scrapeBusy, hasData }) {
   if (active) {
     const preparing = status === 'uploading' || status === 'queued'
     const valid = e?.valid || 0
+    const used = e?.creditsUsed || 0
     return (
-      <div className="jc-enrich">
+      <div className="jc-enrich running">
         <div className="jc-enrich-h">
-          <IconMailCheck />
+          <span className="enrich-dot" aria-hidden />
           {preparing ? (
-            <span>Preparing…</span>
+            <span>Starting enrichment…</span>
           ) : (
             <>
-              <span>Enriched</span>
+              <span>Enriching</span>
               <span className="n">{valid.toLocaleString()}</span>
-              <span className="muted">verified email{valid === 1 ? '' : 's'}</span>
+              <span className="muted">verified email{valid === 1 ? '' : 's'} found</span>
             </>
           )}
         </div>
+        {!preparing && (
+          <div className="enrich-sub">{done.toLocaleString()} / {total.toLocaleString()} scanned · {used.toLocaleString()} credit{used === 1 ? '' : 's'} used</div>
+        )}
         <div className="jc-p">
           <div className="jc-pb" style={{ width: pct + '%' }} />
         </div>
+        <div className="enrich-note">Running in the background — scraping is locked until it finishes.</div>
       </div>
     )
   }
