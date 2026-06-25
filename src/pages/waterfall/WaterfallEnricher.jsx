@@ -4,12 +4,13 @@
 //  progress (count + credits) → download the verified-email result. No scrape job,
 //  no merge: the engine halts at the credit budget, so credits charged == valids.
 // ─────────────────────────────────────────────────────────────────────────────
-import { useRef, useState } from 'react'
+import { useRef, useState, useMemo, useEffect } from 'react'
 import { useApp, ENRICH_ACTIVE } from '../../store/AppStore.jsx'
 import { useToast } from '../../store/ToastProvider.jsx'
-import { IconUpload, IconMailCheck, IconDownload, IconTrash, IconWarn } from '../../lib/icons.jsx'
+import { IconUpload, IconMailCheck, IconDownload, IconTrash, IconWarn, IconChevronLeft, IconChevronRight } from '../../lib/icons.jsx'
 
 const MAX_BYTES = 10 * 1024 * 1024 // 10 MB
+const JOBS_PER_PAGE = 9 // 3 cols × 3 rows — same grid as the Sales Nav dashboard
 
 const fmtDate = (ts) =>
   ts ? new Date(ts).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : ''
@@ -83,6 +84,7 @@ export default function WaterfallEnricher() {
   const [file, setFile] = useState(null)
   const [busy, setBusy] = useState(false)
   const [drag, setDrag] = useState(false)
+  const [page, setPage] = useState(0)
   const inputRef = useRef(null)
 
   const pick = (f) => {
@@ -106,7 +108,19 @@ export default function WaterfallEnricher() {
     }
   }
 
-  const jobs = Object.values(enrichUploads || {}).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
+  const jobs = useMemo(
+    () => Object.values(enrichUploads || {}).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)),
+    [enrichUploads],
+  )
+  const pages = Math.max(1, Math.ceil(jobs.length / JOBS_PER_PAGE))
+  const safePage = Math.min(page, pages - 1)
+  useEffect(() => { if (page > pages - 1) setPage(pages - 1) }, [page, pages])
+  const slice = jobs.slice(safePage * JOBS_PER_PAGE, safePage * JOBS_PER_PAGE + JOBS_PER_PAGE)
+  const goPage = (delta) => {
+    setPage((p) => Math.min(Math.max(0, p + delta), pages - 1))
+    const cnt = document.querySelector('.cnt')
+    if (cnt) cnt.scrollTo({ top: 0, behavior: 'smooth' })
+  }
 
   return (
     <div className="wf">
@@ -136,15 +150,32 @@ export default function WaterfallEnricher() {
         </div>
       </div>
 
-      <div className="wf-jobs">
+      <div className="jg-head">
+        <h3>Enrichment Jobs</h3>
+        <span className="count">{jobs.length ? `${jobs.length} ${jobs.length === 1 ? 'job' : 'jobs'}` : ''}</span>
+      </div>
+
+      <div className="jg">
         {jobs.length === 0 ? (
-          <div className="empty">No enrichment jobs yet — upload a file to start.</div>
+          <div className="empty">No enrichment jobs yet — upload a file above to start.</div>
         ) : (
-          jobs.map((j) => (
+          slice.map((j) => (
             <UploadJob key={j.enrichJobId} job={j} enrichDownloadUrl={enrichDownloadUrl} onRemove={removeEnrichUpload} />
           ))
         )}
       </div>
+
+      {pages > 1 && (
+        <div className="jpag">
+          <button className="btn btn-g btn-sm" disabled={safePage <= 0} onClick={() => goPage(-1)}>
+            <IconChevronLeft /> Previous
+          </button>
+          <span className="jpag-info">Page {safePage + 1} of {pages}</span>
+          <button className="btn btn-g btn-sm" disabled={safePage >= pages - 1} onClick={() => goPage(1)}>
+            Next <IconChevronRight />
+          </button>
+        </div>
+      )}
     </div>
   )
 }
