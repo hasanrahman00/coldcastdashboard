@@ -36,12 +36,16 @@ export const ENRICH_ACTIVE = ['uploading', 'queued', 'queueing', 'run', 'running
 // Persist a compact snapshot of every Waterfall enrich UPLOAD (keyed by its enrichJobId)
 // so a browser reload restores the live "Enriching…" progress AND the finished result.
 // Written on every state change, hydrated by the useState initializer + resume effect.
-const ENRICH_STATE_KEY = 'vk_enrich_uploads'
 const ENRICH_PERSIST_FIELDS = ['status', 'enrichJobId', 'fileName', 'createdAt', 'total', 'done', 'valid', 'creditsUsed', 'haltReason', 'completedAt', 'error']
-function readEnrichState() {
-  try { return JSON.parse(localStorage.getItem(ENRICH_STATE_KEY) || '{}') || {} } catch { return {} }
+// SCOPE the persisted enrich jobs PER USER. localStorage is browser-global, so without a
+// per-user key a different account logging in on the same browser would see the previous
+// user's jobs. (The data itself is already safe — Core's download endpoint is ownership-
+// checked — but the list must not show another account's jobs.)
+const enrichKey = (uid) => 'vk_enrich_uploads:' + (uid || 'anon')
+function readEnrichState(uid) {
+  try { return JSON.parse(localStorage.getItem(enrichKey(uid)) || '{}') || {} } catch { return {} }
 }
-function persistEnrichState(map) {
+function persistEnrichState(uid, map) {
   try {
     const out = {}
     for (const [jid, e] of Object.entries(map || {})) {
@@ -50,13 +54,15 @@ function persistEnrichState(map) {
       for (const f of ENRICH_PERSIST_FIELDS) if (e[f] !== undefined) slim[f] = e[f]
       out[jid] = slim
     }
-    localStorage.setItem(ENRICH_STATE_KEY, JSON.stringify(out))
+    localStorage.setItem(enrichKey(uid), JSON.stringify(out))
   } catch { /* quota */ }
 }
 
 export function AppProvider({ initialMe, onLogout, children }) {
   const toast = useToast()
   const [me, setMe] = useState(initialMe)
+  // Stable per-user id used to namespace this account's enrich jobs in localStorage.
+  const uid = me?.user?.id || initialMe?.user?.id || ''
   const [jobs, setJobs] = useState([])
   const [profiles, setProfiles] = useState([])
   const [activeProfileId, setActiveProfileId] = useState(null)
@@ -77,7 +83,7 @@ export function AppProvider({ initialMe, onLogout, children }) {
   // Hydrate the persisted upload snapshot in the initializer so a reload shows the right
   // state from the FIRST frame — active progress OR the finished result. The resume
   // effect (below) re-attaches live polls to any still-running upload.
-  const [enrichUploads, setEnrichUploads] = useState(() => readEnrichState())
+  const [enrichUploads, setEnrichUploads] = useState(() => readEnrichState(uid))
   const enrichTimers = useRef({}) // enrichJobId -> setInterval handle
   const enrichErrs = useRef({})   // enrichJobId -> consecutive poll-error count
 
@@ -354,12 +360,12 @@ export function AppProvider({ initialMe, onLogout, children }) {
   }, [patchEnrich, startEnrichPoll, onLogout])
 
   // Persist the upload snapshot on every change so a reload restores it verbatim.
-  useEffect(() => { persistEnrichState(enrichUploads) }, [enrichUploads])
+  useEffect(() => { persistEnrichState(uid, enrichUploads) }, [uid, enrichUploads])
 
   // After a reload: re-attach a live poll to any still-running upload. Terminal/failed
   // states stay shown (hydrated above) — nothing re-polls needlessly or vanishes.
   useEffect(() => {
-    const snap = readEnrichState()
+    const snap = readEnrichState(uid)
     for (const [id, e] of Object.entries(snap)) {
       if (e && e.enrichJobId && ENRICH_ACTIVE.includes(e.status)) startEnrichPoll(id)
     }
