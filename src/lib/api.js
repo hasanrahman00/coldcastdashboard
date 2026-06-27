@@ -156,6 +156,9 @@ export const api = {
     return asJson('/api/enrich/start', { base: CORE_BASE, method: 'POST', body: fd })
   },
   enrichStatus: (id) => asJson(`/api/enrich/jobs/${encodeURIComponent(id)}`, { base: CORE_BASE }),
+  // Server-side, per-user enrich job history (cross-device — Core filters by the token's user).
+  enrichList: () => asJson('/api/enrich/jobs', { base: CORE_BASE }),
+  enrichDelete: (id) => del(`/api/enrich/jobs/${encodeURIComponent(id)}`, { base: CORE_BASE }),
   // Opened as a link → token rides in the query (Core's requireAuth accepts ?token=).
   enrichDownloadUrl: (id, type = 'valid', fmt = 'csv') =>
     coreUrl(`/api/enrich/download/${encodeURIComponent(id)}?type=${type}&format=${fmt}&token=${encodeURIComponent(getToken())}`),

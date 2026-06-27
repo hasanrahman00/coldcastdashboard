@@ -29,7 +29,7 @@ const ENRICH_TERMINAL = ['done', 'completed', 'failed', 'error', 'stop', 'stoppe
 // In-flight enrich statuses — while one holds, this job's scrape Run is disabled.
 // NOTE: the enricher reports the running status as 'run' (not 'running'); both are
 // listed so the live panel matches whatever the engine sends.
-export const ENRICH_ACTIVE = ['uploading', 'queued', 'queueing', 'run', 'running', 'processing', 'started']
+export const ENRICH_ACTIVE = ['uploading', 'queued', 'queueing', 'run', 'running', 'processing', 'started', 'stopping', 'pausing']
 
 // Persist scrapeJobId → enrichJobId so a page reload RESUMES the live enrich view
 // (and prevents an accidental double-charge re-run of an already-running job).
@@ -289,11 +289,14 @@ export function AppProvider({ initialMe, onLogout, children }) {
     delete enrichErrs.current[id]
   }, [])
 
-  // Drop an upload from the list (and stop polling it).
-  const removeEnrichUpload = useCallback((id) => {
+  // Delete an upload: stop polling, drop it locally, and delete it server-side (ownership-
+  // checked in Core) so it's gone everywhere — not just hidden in this browser.
+  const removeEnrichUpload = useCallback(async (id) => {
     stopEnrichPoll(id)
     setEnrichUploads((prev) => { const n = { ...prev }; delete n[id]; return n })
-  }, [stopEnrichPoll])
+    try { await api.enrichDelete(id) }
+    catch (e) { if (e instanceof AuthError) onLogout() /* else best-effort — a reload reconciles from the server */ }
+  }, [stopEnrichPoll, onLogout])
 
   // One status poll for a standalone enrich job (keyed by its own enrichJobId). Maps the
   // enricher's fields → live counts and stops on a terminal status.
@@ -362,15 +365,25 @@ export function AppProvider({ initialMe, onLogout, children }) {
   // Persist the upload snapshot on every change so a reload restores it verbatim.
   useEffect(() => { persistEnrichState(uid, enrichUploads) }, [uid, enrichUploads])
 
-  // After a reload: re-attach a live poll to any still-running upload. Terminal/failed
-  // states stay shown (hydrated above) — nothing re-polls needlessly or vanishes.
+  // On mount: load THIS user's jobs from the server (authoritative + cross-device), replace
+  // the localStorage cache, and re-attach a live poll to any still-running one. The
+  // useState init already rendered the cached snapshot instantly; this refreshes it. On a
+  // fetch failure we keep the cache (graceful offline).
   useEffect(() => {
-    const snap = readEnrichState(uid)
-    for (const [id, e] of Object.entries(snap)) {
-      if (e && e.enrichJobId && ENRICH_ACTIVE.includes(e.status)) startEnrichPoll(id)
-    }
+    let cancelled = false
+    api.enrichList()
+      .then((res) => {
+        if (cancelled || !res || !Array.isArray(res.jobs)) return
+        const map = {}
+        for (const j of res.jobs) if (j && j.enrichJobId) map[j.enrichJobId] = j
+        setEnrichUploads(map)
+        for (const j of res.jobs) {
+          if (j && j.enrichJobId && ENRICH_ACTIVE.includes(String(j.status || '').toLowerCase())) startEnrichPoll(j.enrichJobId)
+        }
+      })
+      .catch((e) => { if (e instanceof AuthError) onLogout() })
     const timers = enrichTimers.current
-    return () => { for (const t of Object.values(timers)) clearInterval(t) }
+    return () => { cancelled = true; for (const t of Object.values(timers)) clearInterval(t) }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
