@@ -46,6 +46,10 @@ export const clearAuth = () => {
   localStorage.removeItem(TOKEN_KEY)
   localStorage.removeItem(KEY_KEY)
   localStorage.removeItem(ME_KEY)
+  // Also drop the admin session (in-memory + sessionStorage) so the NEXT user in this tab
+  // can't inherit a previous admin's access. 'cc_admin_pw' matches Admin.jsx's PW_KEY.
+  setAdminPassword('')
+  try { sessionStorage.removeItem('cc_admin_pw') } catch { /* ignore */ }
 }
 
 // Thrown on HTTP 401 so the app can force a logout from one place.
