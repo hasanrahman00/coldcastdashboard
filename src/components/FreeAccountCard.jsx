@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { getFreeAccount } from '../lib/freeAccounts.js'
+import { getCachedMe } from '../lib/api.js'
 import { useToast } from '../store/ToastProvider.jsx'
 
 const LOGIN_URLS = {
@@ -8,11 +9,15 @@ const LOGIN_URLS = {
   ContactOut: 'https://contactout.com/login',
 }
 
-// Persist the last fetched account per source so it survives page reloads and
-// navigating away/back — the user keeps their credential until they Refetch.
-const storeKey = (source) => `cc_free_acct_${source}`
+// Persist the last fetched account per source so it survives page reloads. SCOPED per
+// user — localStorage is browser-global, so without the user id a different account on the
+// same browser would see the previous user's fetched credentials.
+const storeKey = (source) => `cc_free_acct_${source}_${(getCachedMe()?.user?.id) || 'anon'}`
 function loadStored(source) {
-  try { return JSON.parse(localStorage.getItem(storeKey(source)) || 'null') } catch { return null }
+  try {
+    localStorage.removeItem(`cc_free_acct_${source}`) // drop the legacy browser-global key (held another user's creds)
+    return JSON.parse(localStorage.getItem(storeKey(source)) || 'null')
+  } catch { return null }
 }
 
 // One source card on the Setup page. First click "Get a free account" → reveals
