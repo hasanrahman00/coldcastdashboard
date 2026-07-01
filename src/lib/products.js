@@ -34,7 +34,7 @@ export const PRODUCTS = [
   {
     id: 'apollo',
     label: 'Apollo Scraper',
-    soon: true,
+    soon: false,
     icon: IconFeather,
     title: 'Apollo Scraper',
     body: 'Export targeted contact and company lists straight from your Apollo searches — names, titles, verified emails, and firmographics — with the same one-click flow as the Sales Nav scraper.',

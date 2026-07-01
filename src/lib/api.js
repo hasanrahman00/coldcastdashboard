@@ -17,6 +17,12 @@ const CORE_BASE = (import.meta.env.VITE_CORE_URL || '').replace(/\/$/, '') || BA
 export const apiUrl = (path) => BASE + path
 export const coreUrl = (path) => CORE_BASE + path
 
+// The Apollo scraper runs on its OWN server (separate VPS). Point the dashboard at
+// it via VITE_APOLLO_SCRAPER_URL. Empty until you deploy it — the Apollo tab shows a
+// setup hint instead of silently hitting the Sales Nav server.
+const APOLLO_BASE = (import.meta.env.VITE_APOLLO_SCRAPER_URL || '').replace(/\/$/, '')
+export const apolloUrl = (path) => APOLLO_BASE + path
+
 // ── token + key storage (same localStorage keys the old dashboard used) ──────
 const TOKEN_KEY = 'vk_token'
 const KEY_KEY = 'vk_key'
@@ -168,6 +174,17 @@ export const api = {
     coreUrl(`/api/enrich/download/${encodeURIComponent(id)}?type=${type}&format=${fmt}&token=${encodeURIComponent(getToken())}`),
   // Live credit wallet (persisted − in-flight usage) for the header/credit pill.
   creditsBalance: () => asJson('/api/credits/balance', { base: CORE_BASE }),
+
+  // ── Apollo scraper (its OWN server; same Bearer auth + shared Core billing) ──
+  apolloConfigured: () => Boolean(APOLLO_BASE),
+  apolloJobs: () => asJson('/api/jobs', { base: APOLLO_BASE }),
+  apolloCreate: (payload) => postJson('/api/jobs', payload, { base: APOLLO_BASE }),
+  apolloStart: (id) => postJson(`/api/jobs/${id}/start`, undefined, { base: APOLLO_BASE }),
+  apolloStop: (id) => postJson(`/api/jobs/${id}/stop`, undefined, { base: APOLLO_BASE }),
+  apolloDelete: (id) => del(`/api/jobs/${id}`, { base: APOLLO_BASE }),
+  apolloLogs: (id) => asJson(`/api/jobs/${id}/logs`, { base: APOLLO_BASE }),
+  apolloEvents: () => new EventSource(apolloUrl(`/api/events?token=${encodeURIComponent(getToken())}`)),
+  apolloDownloadUrl: (id) => apolloUrl(`/api/jobs/${id}/csv?token=${encodeURIComponent(getToken())}`),
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
