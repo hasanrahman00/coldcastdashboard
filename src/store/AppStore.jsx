@@ -64,6 +64,7 @@ export function AppProvider({ initialMe, onLogout, children }) {
   // Stable per-user id used to namespace this account's enrich jobs in localStorage.
   const uid = me?.user?.id || initialMe?.user?.id || ''
   const [jobs, setJobs] = useState([])
+  const [apolloJobs, setApolloJobs] = useState([]) // Apollo scraper jobs (separate server) — see the SSE slice below
   const [profiles, setProfiles] = useState([])
   const [activeProfileId, setActiveProfileId] = useState(null)
   const [connectorOnline, setConnectorOnline] = useState(false)
@@ -159,6 +160,57 @@ export function AppProvider({ initialMe, onLogout, children }) {
       if (es) es.close()
     }
   }, [])
+
+  // ── Apollo scraper jobs (its OWN server) — live for the GLOBAL counters ──
+  // Apollo runs on a separate backend, so the header's Total/Running counters
+  // can't see it through the Sales Nav SSE above. Stream Apollo's jobs here (SSE
+  // + 5s poll) so StatsBox — and the Apollo tab — read ONE shared, always-live
+  // source, instead of the tab opening its own duplicate stream only while it's
+  // mounted. No-op when the Apollo server isn't configured.
+  const upsertApolloJob = useCallback((job) => {
+    if (!job || !job.id) return
+    setApolloJobs((prev) => {
+      const i = prev.findIndex((j) => j.id === job.id)
+      if (i === -1) return [job, ...prev]
+      const next = prev.slice()
+      next[i] = job
+      return next
+    })
+  }, [])
+  const removeApolloJob = useCallback((id) => {
+    setApolloJobs((prev) => prev.filter((j) => j.id !== id))
+  }, [])
+
+  useEffect(() => {
+    if (!api.apolloConfigured()) return
+    let alive = true
+    let es
+    const load = async () => {
+      try {
+        const list = await api.apolloJobs()
+        if (alive) setApolloJobs(Array.isArray(list) ? list : [])
+      } catch {
+        /* keep last-known; the 5s poll reconciles */
+      }
+    }
+    load()
+    try {
+      es = api.apolloEvents()
+      es.addEventListener('init', (e) => {
+        try { const d = JSON.parse(e.data); if (alive) setApolloJobs(Array.isArray(d) ? d : []) } catch {}
+      })
+      es.addEventListener('job:update', (e) => {
+        try { upsertApolloJob(JSON.parse(e.data)) } catch {}
+      })
+      es.addEventListener('job:delete', (e) => {
+        try { const { id } = JSON.parse(e.data); if (alive) setApolloJobs((p) => p.filter((j) => j.id !== id)) } catch {}
+      })
+    } catch {
+      /* EventSource unavailable → poll only */
+    }
+    const poll = setInterval(() => { if (!document.hidden) load() }, 5000)
+    return () => { alive = false; clearInterval(poll); try { es?.close() } catch {} }
+  }, [upsertApolloJob])
 
   // ── profiles + extension status (poll, focus-refresh) ──────────────────
   const refreshProfiles = useCallback(async () => {
@@ -390,6 +442,9 @@ export function AppProvider({ initialMe, onLogout, children }) {
   const value = {
     me,
     jobs,
+    apolloJobs,
+    upsertApolloJob,
+    removeApolloJob,
     profiles,
     activeProfileId,
     connectorOnline,

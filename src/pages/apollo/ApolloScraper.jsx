@@ -1,5 +1,6 @@
-import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { api } from '../../lib/api.js'
+import { useApp } from '../../store/AppStore.jsx'
 import { useToast } from '../../store/ToastProvider.jsx'
 import Modal from '../../components/Modal.jsx'
 import ApolloJobCard from './ApolloJobCard.jsx'
@@ -8,77 +9,18 @@ import { IconPlus, IconChevronLeft, IconChevronRight } from '../../lib/icons.jsx
 
 const JOBS_PER_PAGE = 9 // 3 cols × 3 rows — matches the Sales Nav grid
 
-// Apollo runs on its OWN server, so this tab owns its data end-to-end: it lists +
-// live-streams jobs straight from the Apollo backend (SSE, with a polling fallback)
-// rather than the shared AppStore (which is wired to the Sales Nav server).
+// Apollo runs on its OWN server. Its jobs are streamed once, globally, by the shared
+// AppStore (so the header's Total/Running counters stay live from any tab); this tab
+// just renders that shared list + owns the Apollo-specific UI (grid, paging, modals).
 export default function ApolloScraper() {
   const toast = useToast()
   const configured = api.apolloConfigured()
 
-  const [jobs, setJobs] = useState([])
+  const { apolloJobs, upsertApolloJob, removeApolloJob } = useApp()
+  const jobs = apolloJobs || []
   const [page, setPage] = useState(0)
   const [showNew, setShowNew] = useState(false)
   const [logsJob, setLogsJob] = useState(null)
-  const esRef = useRef(null)
-
-  const upsert = useCallback((job) => {
-    if (!job || !job.id) return
-    setJobs((prev) => {
-      const i = prev.findIndex((j) => j.id === job.id)
-      if (i === -1) return [job, ...prev]
-      const next = prev.slice()
-      next[i] = job
-      return next
-    })
-  }, [])
-
-  useEffect(() => {
-    if (!configured) return
-    let alive = true
-    const load = async () => {
-      try {
-        const list = await api.apolloJobs()
-        if (alive) setJobs(Array.isArray(list) ? list : [])
-      } catch {
-        /* surfaced via the empty state */
-      }
-    }
-    load()
-
-    // Live updates from the Apollo server. If SSE never connects the 5s poll covers it.
-    try {
-      const es = api.apolloEvents()
-      esRef.current = es
-      es.addEventListener('init', (e) => {
-        try {
-          const d = JSON.parse(e.data)
-          if (alive) setJobs(Array.isArray(d) ? d : [])
-        } catch {}
-      })
-      es.addEventListener('job:update', (e) => {
-        try {
-          upsert(JSON.parse(e.data))
-        } catch {}
-      })
-      es.addEventListener('job:delete', (e) => {
-        try {
-          const { id } = JSON.parse(e.data)
-          setJobs((p) => p.filter((j) => j.id !== id))
-        } catch {}
-      })
-    } catch {
-      /* EventSource unavailable → poll only */
-    }
-    const poll = setInterval(load, 5000)
-
-    return () => {
-      alive = false
-      clearInterval(poll)
-      try {
-        esRef.current?.close()
-      } catch {}
-    }
-  }, [configured, upsert])
 
   const sorted = useMemo(
     () => [...jobs].sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0)),
@@ -119,7 +61,7 @@ export default function ApolloScraper() {
     if (!window.confirm(msg)) return
     try {
       await api.apolloDelete(job.id)
-      setJobs((p) => p.filter((j) => j.id !== job.id))
+      removeApolloJob(job.id)
     } catch (e) {
       toast(e.message || 'Delete failed', 'err')
     }
@@ -209,7 +151,7 @@ export default function ApolloScraper() {
         </div>
       )}
 
-      <ApolloNewJobModal open={showNew} onClose={() => setShowNew(false)} onCreated={upsert} />
+      <ApolloNewJobModal open={showNew} onClose={() => setShowNew(false)} onCreated={upsertApolloJob} />
       <ApolloLogsModal job={logsJob} onClose={() => setLogsJob(null)} />
     </div>
   )

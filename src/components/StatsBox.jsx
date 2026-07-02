@@ -4,14 +4,17 @@ import { getSavedKey } from '../lib/api.js'
 import { IconGrid, IconPlay, IconDownload, IconCopy } from '../lib/icons.jsx'
 
 export default function StatsBox({ nav }) {
-  const { jobs, profiles, connectorOnline, activeProfileId, enrichUploads } = useApp()
+  const { jobs, apolloJobs, profiles, connectorOnline, activeProfileId, enrichUploads } = useApp()
   const toast = useToast()
 
-  // Jobs + Running span BOTH products: scrape jobs and Waterfall enrich uploads.
+  // Jobs + Running span ALL products: Sales Nav scrape jobs, Apollo scrape jobs,
+  // and Waterfall enrich uploads.
   const enrichJobs = Object.values(enrichUploads || {})
-  const totalJobs = jobs.length + enrichJobs.length
+  const apollo = apolloJobs || []
+  const totalJobs = jobs.length + apollo.length + enrichJobs.length
   const running =
     jobs.filter((j) => j.status === 'running').length +
+    apollo.filter((j) => j.status === 'running' || j.status === 'stopping').length +
     enrichJobs.filter((e) => ENRICH_ACTIVE.includes(e.status)).length
 
   // connection slot (mirrors updateProfileSlot)
