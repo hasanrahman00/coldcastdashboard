@@ -23,6 +23,11 @@ export const coreUrl = (path) => CORE_BASE + path
 const APOLLO_BASE = (import.meta.env.VITE_APOLLO_SCRAPER_URL || '').replace(/\/$/, '')
 export const apolloUrl = (path) => APOLLO_BASE + path
 
+// The LinkedIn URL Enricher also runs on its OWN server. Point the dashboard at it
+// via VITE_LINKEDIN_ENRICHER_URL. Empty until deployed — the tab shows a setup hint.
+const ENRICHER_BASE = (import.meta.env.VITE_LINKEDIN_ENRICHER_URL || '').replace(/\/$/, '')
+export const enricherUrl = (path) => ENRICHER_BASE + path
+
 // ── token + key storage (same localStorage keys the old dashboard used) ──────
 const TOKEN_KEY = 'vk_token'
 const KEY_KEY = 'vk_key'
@@ -185,6 +190,27 @@ export const api = {
   apolloLogs: (id) => asJson(`/api/jobs/${id}/logs`, { base: APOLLO_BASE }),
   apolloEvents: () => new EventSource(apolloUrl(`/api/events?token=${encodeURIComponent(getToken())}`)),
   apolloDownloadUrl: (id) => apolloUrl(`/api/jobs/${id}/csv?token=${encodeURIComponent(getToken())}`),
+
+  // ── LinkedIn URL Enricher (its OWN server; same Bearer auth + shared Core billing) ──
+  // Jobs are created by UPLOADING a CSV / pasting URLs (multipart), logs are plain
+  // text, and downloads split into enriched vs issues-only.
+  enricherConfigured: () => Boolean(ENRICHER_BASE),
+  enricherJobs: async () => {
+    const d = await asJson('/api/jobs', { base: ENRICHER_BASE })
+    return d && Array.isArray(d.jobs) ? d.jobs : []
+  },
+  enricherUpload: (formData) => asJson('/api/upload', { base: ENRICHER_BASE, method: 'POST', body: formData }),
+  enricherPause: (id) => postJson(`/api/pause/${id}`, undefined, { base: ENRICHER_BASE }),
+  enricherResume: (id) => postJson(`/api/resume/${id}`, undefined, { base: ENRICHER_BASE }),
+  enricherCancel: (id) => postJson(`/api/cancel/${id}`, undefined, { base: ENRICHER_BASE }),
+  enricherDelete: (id) => del(`/api/jobs/${id}`, { base: ENRICHER_BASE }),
+  enricherProviders: () => asJson('/api/providers', { base: ENRICHER_BASE }),
+  enricherLogsText: async (id) => {
+    const res = await request(`/api/logs/${id}`, { base: ENRICHER_BASE })
+    return res.ok ? res.text() : ''
+  },
+  enricherDownloadUrl: (id, issues = false) =>
+    enricherUrl(`/api/export/${id}?${issues ? 'issues=1&' : ''}token=${encodeURIComponent(getToken())}`),
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

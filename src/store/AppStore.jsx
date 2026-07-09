@@ -65,6 +65,7 @@ export function AppProvider({ initialMe, onLogout, children }) {
   const uid = me?.user?.id || initialMe?.user?.id || ''
   const [jobs, setJobs] = useState([])
   const [apolloJobs, setApolloJobs] = useState([]) // Apollo scraper jobs (separate server) — see the SSE slice below
+  const [enricherJobs, setEnricherJobs] = useState([]) // LinkedIn URL Enricher jobs (separate server) — polled below
   const [profiles, setProfiles] = useState([])
   const [activeProfileId, setActiveProfileId] = useState(null)
   const [connectorOnline, setConnectorOnline] = useState(false)
@@ -211,6 +212,25 @@ export function AppProvider({ initialMe, onLogout, children }) {
     const poll = setInterval(() => { if (!document.hidden) load() }, 5000)
     return () => { alive = false; clearInterval(poll); try { es?.close() } catch {} }
   }, [upsertApolloJob])
+
+  // ── LinkedIn URL Enricher jobs (its OWN server) — polled for the GLOBAL counters ──
+  // No global SSE (its stream is per-job), so a light 6s poll keeps the header's
+  // Total/Running live from any tab. No-op when the enricher server isn't configured.
+  useEffect(() => {
+    if (!api.enricherConfigured()) return
+    let alive = true
+    const load = async () => {
+      try {
+        const list = await api.enricherJobs()
+        if (alive) setEnricherJobs(Array.isArray(list) ? list : [])
+      } catch {
+        /* keep last-known */
+      }
+    }
+    load()
+    const poll = setInterval(() => { if (!document.hidden) load() }, 6000)
+    return () => { alive = false; clearInterval(poll) }
+  }, [])
 
   // ── profiles + extension status (poll, focus-refresh) ──────────────────
   const refreshProfiles = useCallback(async () => {
@@ -445,6 +465,7 @@ export function AppProvider({ initialMe, onLogout, children }) {
     apolloJobs,
     upsertApolloJob,
     removeApolloJob,
+    enricherJobs,
     profiles,
     activeProfileId,
     connectorOnline,

@@ -7,6 +7,7 @@ import ProductNav from './ProductNav.jsx'
 import SalesNav from '../pages/salesnav/SalesNav.jsx'
 import WaterfallEnricher from '../pages/waterfall/WaterfallEnricher.jsx'
 import ApolloScraper from '../pages/apollo/ApolloScraper.jsx'
+import LinkedInEnricher from '../pages/enricher/LinkedInEnricher.jsx'
 import ComingSoon from '../pages/ComingSoon.jsx'
 import Settings from '../pages/Settings.jsx'
 import Setup from '../pages/Setup.jsx'
@@ -34,6 +35,7 @@ export default function Dashboard({ onLogout }) {
     const product = getProduct(route)
     if (route === 'waterfall') page = <WaterfallEnricher />
     else if (route === 'apollo') page = <ApolloScraper />
+    else if (route === 'linkedin') page = <LinkedInEnricher />
     else if (product && !product.soon) page = <SalesNav />
     else if (product) page = <ComingSoon product={product} nav={nav} />
     else page = <SalesNav /> // fallback for the brief frame before the redirect lands

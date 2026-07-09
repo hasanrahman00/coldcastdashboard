@@ -5,6 +5,7 @@ import {
   IconSearchPlus,
   IconMailCheck,
   IconAtSign,
+  IconLink,
 } from './icons.jsx'
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -38,6 +39,14 @@ export const PRODUCTS = [
     icon: IconFeather,
     title: 'Apollo Scraper',
     body: 'Export targeted contact and company lists straight from your Apollo searches — names, titles, verified emails, and firmographics — with the same one-click flow as the Sales Nav scraper.',
+  },
+  {
+    id: 'linkedin',
+    label: 'LinkedIn URL Enricher',
+    soon: false,
+    icon: IconLink,
+    title: 'LinkedIn URL Enricher',
+    body: 'Upload a list of LinkedIn profile URLs and get back names, titles, verified business emails, phones, and company firmographics — enriched in your own connected browser across Lusha, ContactOut, and SalesQL, then merged into one clean CSV.',
   },
   {
     id: 'zoominfo',
