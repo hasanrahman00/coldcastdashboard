@@ -8,6 +8,7 @@ import SalesNav from '../pages/salesnav/SalesNav.jsx'
 import WaterfallEnricher from '../pages/waterfall/WaterfallEnricher.jsx'
 import ApolloScraper from '../pages/apollo/ApolloScraper.jsx'
 import LinkedInEnricher from '../pages/enricher/LinkedInEnricher.jsx'
+import ProductsHome from '../pages/ProductsHome.jsx'
 import ComingSoon from '../pages/ComingSoon.jsx'
 import Settings from '../pages/Settings.jsx'
 import Setup from '../pages/Setup.jsx'
@@ -16,18 +17,19 @@ import Extension from '../pages/Extension.jsx'
 
 // Every route the logged-in app recognizes: the product tabs + the config pages.
 // Anything else (typo, stale #/login, #/dash, bare hash) → bounce to salesnav.
-const VALID_ROUTES = new Set([...PRODUCTS.map((p) => p.id), 'set', 'setup', 'api', 'ext'])
+const VALID_ROUTES = new Set([...PRODUCTS.map((p) => p.id), 'home', 'set', 'setup', 'api', 'ext'])
 
 export default function Dashboard({ onLogout }) {
-  const [route, nav] = useHashRoute('salesnav')
+  const [route, nav] = useHashRoute('home')
 
-  // Logged in + unknown/wrong path → redirect to the default product.
+  // Logged in + unknown/wrong path → bounce to the products home.
   useEffect(() => {
-    if (!VALID_ROUTES.has(route)) nav('salesnav')
+    if (!VALID_ROUTES.has(route)) nav('home')
   }, [route, nav])
 
   let page
-  if (route === 'set') page = <Settings />
+  if (route === 'home') page = <ProductsHome nav={nav} />
+  else if (route === 'set') page = <Settings />
   else if (route === 'setup') page = <Setup />
   else if (route === 'api') page = <ApiKey />
   else if (route === 'ext') page = <Extension />
@@ -38,7 +40,7 @@ export default function Dashboard({ onLogout }) {
     else if (route === 'linkedin') page = <LinkedInEnricher />
     else if (product && !product.soon) page = <SalesNav />
     else if (product) page = <ComingSoon product={product} nav={nav} />
-    else page = <SalesNav /> // fallback for the brief frame before the redirect lands
+    else page = <ProductsHome nav={nav} /> // fallback matches the default landing → no flash before the redirect
   }
 
   return (
@@ -47,7 +49,9 @@ export default function Dashboard({ onLogout }) {
       <main className="mn">
         <div className="cnt">
           <StatsBox nav={nav} />
-          <ProductNav route={route} nav={nav} />
+          {/* On the Tools home the grid IS the product picker — hide the tab bar so
+              the two don't duplicate (and the tablist isn't shown selectionless). */}
+          {route !== 'home' && <ProductNav route={route} nav={nav} />}
           {page}
         </div>
       </main>

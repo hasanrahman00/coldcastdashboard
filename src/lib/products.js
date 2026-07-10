@@ -23,6 +23,8 @@ export const PRODUCTS = [
     label: 'Sales Nav Scraper',
     soon: false,
     icon: IconGlobe,
+    title: 'Sales Nav Scraper',
+    body: 'Export clean, enriched lead lists from your LinkedIn Sales Navigator searches — names, titles, verified emails, and company firmographics — in one click.',
   },
   {
     id: 'waterfall',
