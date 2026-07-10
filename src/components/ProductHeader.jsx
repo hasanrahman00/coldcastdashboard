@@ -9,10 +9,7 @@ export default function ProductHeader({ product }) {
       <div className="phead-ic">
         <Icon />
       </div>
-      <div className="phead-txt">
-        <h2 className="phead-name">{product.label}</h2>
-        {product.body && <p className="phead-desc">{product.body}</p>}
-      </div>
+      <h2 className="phead-name">{product.label}</h2>
     </div>
   )
 }
