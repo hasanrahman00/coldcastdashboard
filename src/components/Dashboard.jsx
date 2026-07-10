@@ -51,9 +51,7 @@ export default function Dashboard({ onLogout }) {
       <main className="mn">
         <div className="cnt">
           <StatsBox nav={nav} />
-          {/* On the Tools home the grid IS the product picker — hide the tab bar so
-              the two don't duplicate (and the tablist isn't shown selectionless). */}
-          {route !== 'home' && <ProductNav route={route} nav={nav} />}
+          <ProductNav route={route} nav={nav} />
           {page}
         </div>
       </main>

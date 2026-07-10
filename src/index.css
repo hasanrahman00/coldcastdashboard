@@ -1195,6 +1195,7 @@ body{flex-direction:column}
 .ptab[data-p="verify"] svg{color:#059669}
 .ptab[data-p="domain"] svg{color:#db2777}
 .ptab[data-p="company"] svg{color:#4338ca}
+.ptab[data-p="home"] svg{color:#3257d6}
 .ptab.on[data-p="salesnav"]{color:#3257d6;background:rgba(79,124,245,.13);box-shadow:inset 0 0 0 1px rgba(79,124,245,.26),0 1px 3px rgba(12,18,45,.06)}
 .ptab.on[data-p="waterfall"]{color:#0e7490;background:rgba(8,145,178,.13);box-shadow:inset 0 0 0 1px rgba(8,145,178,.26),0 1px 3px rgba(12,18,45,.06)}
 .ptab.on[data-p="apollo"]{color:#c2410c;background:rgba(234,88,12,.13);box-shadow:inset 0 0 0 1px rgba(234,88,12,.26),0 1px 3px rgba(12,18,45,.06)}
@@ -1202,6 +1203,7 @@ body{flex-direction:column}
 .ptab.on[data-p="verify"]{color:#047857;background:rgba(5,150,105,.13);box-shadow:inset 0 0 0 1px rgba(5,150,105,.26),0 1px 3px rgba(12,18,45,.06)}
 .ptab.on[data-p="domain"]{color:#be185d;background:rgba(219,39,119,.13);box-shadow:inset 0 0 0 1px rgba(219,39,119,.26),0 1px 3px rgba(12,18,45,.06)}
 .ptab.on[data-p="company"]{color:#3730a3;background:rgba(67,56,202,.13);box-shadow:inset 0 0 0 1px rgba(67,56,202,.26),0 1px 3px rgba(12,18,45,.06)}
+.ptab.on[data-p="home"]{color:#3257d6;background:rgba(50,87,214,.13);box-shadow:inset 0 0 0 1px rgba(50,87,214,.26),0 1px 3px rgba(12,18,45,.06)}
 
 /* ═══════════════════ PRODUCTS HOME (Tools grid) ═══════════════════ */
 .phome{padding:4px 0 40px}
@@ -1209,8 +1211,8 @@ body{flex-direction:column}
 .phome-head h2{font-size:21px;font-weight:800;letter-spacing:-.02em;color:var(--text)}
 .phome-head p{font-size:13.5px;color:var(--text-muted);margin-top:5px;line-height:1.55}
 .phome-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(288px,100%),1fr));gap:18px}
-.pcard{display:flex;flex-direction:column;background:var(--bg-elev-1);border:1px solid var(--border);border-radius:16px;padding:22px 22px 20px;box-shadow:0 2px 12px rgba(12,18,45,.05);transition:transform .16s var(--ease),box-shadow .16s var(--ease),border-color .16s}
-.pcard:hover{transform:translateY(-3px);box-shadow:0 14px 30px -12px rgba(20,30,80,.24);border-color:var(--border-strong)}
+.pcard{display:flex;flex-direction:column;background:var(--bg-elev-1);border:1px solid var(--border);border-top:4px solid var(--pc,var(--brand));border-radius:16px;padding:20px 22px;box-shadow:0 2px 12px rgba(12,18,45,.05);transition:transform .16s var(--ease),box-shadow .16s var(--ease),border-color .16s}
+.pcard:hover{transform:translateY(-4px);box-shadow:0 16px 32px -14px rgba(20,30,80,.26);border-color:var(--pc)}
 .pcard-top{display:flex;align-items:center;gap:12px;margin-bottom:15px}
 .pcard-ic{width:46px;height:46px;flex:none;border-radius:13px;display:flex;align-items:center;justify-content:center;background:var(--brand-grad-soft);color:var(--brand)}
 .pcard-ic svg{width:23px;height:23px;stroke-width:2}
@@ -1218,6 +1220,15 @@ body{flex-direction:column}
 .pcard h3{font-size:17px;font-weight:800;letter-spacing:-.01em;color:var(--text);line-height:1.28;margin-bottom:9px}
 .pcard-body{font-size:13px;color:var(--text-muted);line-height:1.62;flex:1;margin-bottom:18px}
 .pcard .btn{width:100%;justify-content:center;padding:11px}
+.pcard .btn-p{background:var(--pc);box-shadow:0 5px 16px -6px var(--pc)}
+.pcard[data-p="salesnav"]{--pc:#4f7cf5}
+.pcard[data-p="waterfall"]{--pc:#0891b2}
+.pcard[data-p="apollo"]{--pc:#ea580c}
+.pcard[data-p="linkedin"]{--pc:#3257d6}
+.pcard[data-p="company"]{--pc:#4338ca}
+.pcard[data-p="zoominfo"]{--pc:#7c3aed}
+.pcard[data-p="verify"]{--pc:#059669}
+.pcard[data-p="domain"]{--pc:#db2777}
 .pcard[data-p="salesnav"] .pcard-ic{background:rgba(79,124,245,.13);color:#3257d6}
 .pcard[data-p="waterfall"] .pcard-ic{background:rgba(8,145,178,.13);color:#0e7490}
 .pcard[data-p="apollo"] .pcard-ic{background:rgba(234,88,12,.13);color:#c2410c}

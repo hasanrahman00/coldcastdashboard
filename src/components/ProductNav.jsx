@@ -1,9 +1,10 @@
 import { PRODUCTS } from '../lib/products.js'
+import { IconGrid } from '../lib/icons.jsx'
 
-// Product tabs — centered and wrapping (the ported CSS colours each tab by its
-// data-p attribute and draws the active underline). Live products fill the first
-// row; the coming-soon ones wrap onto a centered SECOND row (the .pnav-break forces
-// the wrap), so every product is visible instead of scrolling off the right edge.
+// Product tabs — a "Dashboard" (home) entry first so you can jump back to the Tools
+// grid from anywhere, then live products on the first row and coming-soon on a second
+// (the .pnav-break forces the wrap). Justified edge-to-edge via .pnav. Shown on every
+// route (incl. home, where "Dashboard" is the active tab).
 export default function ProductNav({ route, nav }) {
   const live = PRODUCTS.filter((p) => !p.soon)
   const soon = PRODUCTS.filter((p) => p.soon)
@@ -30,6 +31,16 @@ export default function ProductNav({ route, nav }) {
 
   return (
     <div className="pnav" role="tablist" aria-label="Products">
+      <button
+        className={'ptab ptab-home' + (route === 'home' ? ' on' : '')}
+        data-p="home"
+        role="tab"
+        aria-selected={route === 'home' ? 'true' : 'false'}
+        onClick={() => nav('home')}
+      >
+        <IconGrid />
+        Dashboard
+      </button>
       {live.map(renderTab)}
       {soon.length > 0 && <div className="pnav-break" aria-hidden="true" />}
       {soon.map(renderTab)}
