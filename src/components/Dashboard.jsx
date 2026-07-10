@@ -10,6 +10,7 @@ import ApolloScraper from '../pages/apollo/ApolloScraper.jsx'
 import LinkedInEnricher from '../pages/enricher/LinkedInEnricher.jsx'
 import CompanyScraper from '../pages/company/CompanyScraper.jsx'
 import ProductsHome from '../pages/ProductsHome.jsx'
+import ProductHeader from './ProductHeader.jsx'
 import ComingSoon from '../pages/ComingSoon.jsx'
 import Settings from '../pages/Settings.jsx'
 import Setup from '../pages/Setup.jsx'
@@ -45,6 +46,10 @@ export default function Dashboard({ onLogout }) {
     else page = <ProductsHome nav={nav} /> // fallback matches the default landing → no flash before the redirect
   }
 
+  // The product whose page is showing (drives the per-product header). Undefined on the
+  // home + config routes; skipped for coming-soon (which has its own hero).
+  const activeProduct = getProduct(route)
+
   return (
     <>
       <Topbar route={route} nav={nav} onLogout={onLogout} />
@@ -52,6 +57,7 @@ export default function Dashboard({ onLogout }) {
         <div className="cnt">
           <StatsBox nav={nav} />
           <ProductNav route={route} nav={nav} />
+          {activeProduct && !activeProduct.soon && <ProductHeader product={activeProduct} />}
           {page}
         </div>
       </main>
