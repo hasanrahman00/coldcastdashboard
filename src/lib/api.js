@@ -28,6 +28,10 @@ export const apolloUrl = (path) => APOLLO_BASE + path
 const ENRICHER_BASE = (import.meta.env.VITE_LINKEDIN_ENRICHER_URL || '').replace(/\/$/, '')
 export const enricherUrl = (path) => ENRICHER_BASE + path
 
+// The Company (Sales Nav account/company search) scraper — its OWN server too.
+const COMPANY_BASE = (import.meta.env.VITE_COMPANY_SCRAPER_URL || '').replace(/\/$/, '')
+export const companyUrl = (path) => COMPANY_BASE + path
+
 // ── token + key storage (same localStorage keys the old dashboard used) ──────
 const TOKEN_KEY = 'vk_token'
 const KEY_KEY = 'vk_key'
@@ -211,6 +215,18 @@ export const api = {
   },
   enricherDownloadUrl: (id, issues = false) =>
     enricherUrl(`/api/export/${id}?${issues ? 'issues=1&' : ''}token=${encodeURIComponent(getToken())}`),
+
+  // ── Company scraper (Sales Nav account/company search; its OWN server) ──
+  // Same job API as Apollo — create from a URL, SSE, csv download (+ xlsx server-side).
+  companyConfigured: () => Boolean(COMPANY_BASE),
+  companyJobs: () => asJson('/api/jobs', { base: COMPANY_BASE }),
+  companyCreate: (payload) => postJson('/api/jobs', payload, { base: COMPANY_BASE }),
+  companyStart: (id) => postJson(`/api/jobs/${id}/start`, undefined, { base: COMPANY_BASE }),
+  companyStop: (id) => postJson(`/api/jobs/${id}/stop`, undefined, { base: COMPANY_BASE }),
+  companyDelete: (id) => del(`/api/jobs/${id}`, { base: COMPANY_BASE }),
+  companyLogs: (id) => asJson(`/api/jobs/${id}/logs`, { base: COMPANY_BASE }),
+  companyEvents: () => new EventSource(companyUrl(`/api/events?token=${encodeURIComponent(getToken())}`)),
+  companyDownloadUrl: (id, fmt = 'csv') => companyUrl(`/api/jobs/${id}/${fmt}?token=${encodeURIComponent(getToken())}`),
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

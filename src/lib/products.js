@@ -6,6 +6,7 @@ import {
   IconMailCheck,
   IconAtSign,
   IconLink,
+  IconUsers,
 } from './icons.jsx'
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -49,6 +50,14 @@ export const PRODUCTS = [
     icon: IconLink,
     title: 'LinkedIn URL Enricher',
     body: 'Upload a list of LinkedIn profile URLs and get back names, titles, verified business emails, phones, and company firmographics — enriched in your own connected browser across Lusha, ContactOut, and SalesQL, then merged into one clean CSV.',
+  },
+  {
+    id: 'company',
+    label: 'Company Scraper',
+    soon: false,
+    icon: IconUsers,
+    title: 'Company Scraper',
+    body: 'Export company & account lists straight from your LinkedIn Sales Navigator account searches — company names, domains, size, industry, and firmographics — with the same one-click flow as the lead scrapers.',
   },
   {
     id: 'zoominfo',

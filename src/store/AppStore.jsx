@@ -66,6 +66,7 @@ export function AppProvider({ initialMe, onLogout, children }) {
   const [jobs, setJobs] = useState([])
   const [apolloJobs, setApolloJobs] = useState([]) // Apollo scraper jobs (separate server) — see the SSE slice below
   const [enricherJobs, setEnricherJobs] = useState([]) // LinkedIn URL Enricher jobs (separate server) — polled below
+  const [companyJobs, setCompanyJobs] = useState([]) // Company scraper jobs (separate server) — SSE below
   const [profiles, setProfiles] = useState([])
   const [activeProfileId, setActiveProfileId] = useState(null)
   const [connectorOnline, setConnectorOnline] = useState(false)
@@ -231,6 +232,54 @@ export function AppProvider({ initialMe, onLogout, children }) {
     const poll = setInterval(() => { if (!document.hidden) load() }, 6000)
     return () => { alive = false; clearInterval(poll) }
   }, [])
+
+  // ── Company scraper jobs (its OWN server) — live for the tab + GLOBAL counters ──
+  // Same shape as the Apollo slice (global SSE + 5s poll); the Company tab reads this
+  // shared store. No-op when the Company server isn't configured.
+  const upsertCompanyJob = useCallback((job) => {
+    if (!job || !job.id) return
+    setCompanyJobs((prev) => {
+      const i = prev.findIndex((j) => j.id === job.id)
+      if (i === -1) return [job, ...prev]
+      const next = prev.slice()
+      next[i] = job
+      return next
+    })
+  }, [])
+  const removeCompanyJob = useCallback((id) => {
+    setCompanyJobs((prev) => prev.filter((j) => j.id !== id))
+  }, [])
+
+  useEffect(() => {
+    if (!api.companyConfigured()) return
+    let alive = true
+    let es
+    const load = async () => {
+      try {
+        const list = await api.companyJobs()
+        if (alive) setCompanyJobs(Array.isArray(list) ? list : [])
+      } catch {
+        /* keep last-known; the 5s poll reconciles */
+      }
+    }
+    load()
+    try {
+      es = api.companyEvents()
+      es.addEventListener('init', (e) => {
+        try { const d = JSON.parse(e.data); if (alive) setCompanyJobs(Array.isArray(d) ? d : []) } catch {}
+      })
+      es.addEventListener('job:update', (e) => {
+        try { upsertCompanyJob(JSON.parse(e.data)) } catch {}
+      })
+      es.addEventListener('job:delete', (e) => {
+        try { const { id } = JSON.parse(e.data); if (alive) setCompanyJobs((p) => p.filter((j) => j.id !== id)) } catch {}
+      })
+    } catch {
+      /* EventSource unavailable → poll only */
+    }
+    const poll = setInterval(() => { if (!document.hidden) load() }, 5000)
+    return () => { alive = false; clearInterval(poll); try { es?.close() } catch {} }
+  }, [upsertCompanyJob])
 
   // ── profiles + extension status (poll, focus-refresh) ──────────────────
   const refreshProfiles = useCallback(async () => {
@@ -466,6 +515,9 @@ export function AppProvider({ initialMe, onLogout, children }) {
     upsertApolloJob,
     removeApolloJob,
     enricherJobs,
+    companyJobs,
+    upsertCompanyJob,
+    removeCompanyJob,
     profiles,
     activeProfileId,
     connectorOnline,
