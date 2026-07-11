@@ -1209,8 +1209,30 @@ body{flex-direction:column}
 .phome-head h2{font-size:22px;font-weight:800;letter-spacing:-.02em;color:var(--text)}
 .phome-head p{font-size:13.5px;color:var(--text-muted);margin-top:5px;line-height:1.55}
 .phome-sec{margin-bottom:30px}
-.phome-sec-title{font-size:14px;font-weight:700;letter-spacing:-.01em;color:var(--text);margin:0 2px 14px}
+.phome-sec-title{display:flex;align-items:center;gap:9px;font-size:14px;font-weight:700;letter-spacing:-.01em;color:var(--text);margin:0 2px 14px}
+.phome-sec-count{font-size:11px;font-weight:700;color:var(--text-muted);background:var(--bg-elev-2);border:1px solid var(--border);border-radius:999px;min-width:20px;padding:1px 7px;text-align:center;line-height:1.5}
 .phome-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(258px,100%),1fr));gap:16px}
+
+/* Search bar — filters the whole catalog live */
+.phome-search{position:relative;display:flex;align-items:center;margin:0 0 26px}
+.phome-search svg{position:absolute;left:15px;width:17px;height:17px;color:var(--text-faint);stroke-width:2;pointer-events:none}
+.phome-search input{width:100%;padding:12px 40px 12px 42px;background:var(--bg-elev-1);border:1px solid var(--border-strong);border-radius:12px;color:var(--text);font-size:14px;font-family:var(--font)}
+.phome-search input::placeholder{color:var(--text-faint)}
+.phome-search input:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(99,102,241,.15);background:var(--bg-elev-1)}
+.phome-search-x{position:absolute;right:8px;width:26px;height:26px;display:flex;align-items:center;justify-content:center;border:none;background:transparent;color:var(--text-muted);font-size:20px;line-height:1;cursor:pointer;border-radius:8px}
+.phome-search-x:hover{background:var(--bg-elev-2);color:var(--text)}
+.phome-empty{font-size:13.5px;color:var(--text-muted);padding:8px 2px 40px}
+
+/* Featured hero — flagship product as a wide banner card */
+.pcard-feat{display:flex;align-items:center;gap:22px;width:100%;text-align:left;font-family:var(--font);cursor:pointer;margin-bottom:30px;border:1px solid color-mix(in srgb,var(--pc,#4f7cf5) 24%,var(--border));border-radius:18px;padding:24px 26px;background:linear-gradient(120deg,color-mix(in srgb,var(--pc,#4f7cf5) 13%,var(--bg-elev-1)),color-mix(in srgb,var(--pc,#4f7cf5) 4%,var(--bg-elev-1)));transition:transform .15s var(--ease),box-shadow .15s var(--ease),border-color .15s}
+.pcard-feat:hover{transform:translateY(-3px);box-shadow:0 20px 42px -18px color-mix(in srgb,var(--pc,#4f7cf5) 60%,transparent);border-color:color-mix(in srgb,var(--pc,#4f7cf5) 48%,transparent)}
+.pcard-feat:focus-visible{outline:2px solid var(--pc,var(--brand));outline-offset:2px}
+.pcard-feat-ic{width:64px;height:64px;flex:none;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:30px;background:color-mix(in srgb,var(--pc,#4f7cf5) 18%,var(--bg-elev-1));color:var(--pc,var(--brand));box-shadow:0 6px 18px -8px color-mix(in srgb,var(--pc,#4f7cf5) 70%,transparent)}
+.pcard-feat-ic svg{width:30px;height:30px;stroke-width:2}
+.pcard-feat-body{min-width:0}
+.pcard-feat-name{font-size:20px;font-weight:800;letter-spacing:-.02em;color:var(--text);line-height:1.2;margin:9px 0 7px}
+.pcard-feat-desc{font-size:13px;color:var(--text-muted);line-height:1.55;margin:0;max-width:64ch;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.pcard-feat-cta{display:inline-block;margin-top:12px;font-size:13px;font-weight:700;color:var(--pc,var(--brand))}
 /* Snov.io-style product card — the WHOLE card is a button, softly tinted with its own
    accent (--pc), with a status badge. */
 .pcard{display:flex;flex-direction:column;align-items:stretch;width:100%;text-align:left;font-family:var(--font);cursor:pointer;border:1px solid color-mix(in srgb,var(--pc,#4f7cf5) 16%,var(--border));border-radius:16px;padding:16px 18px 18px;background:color-mix(in srgb,var(--pc,#4f7cf5) 6%,var(--bg-elev-1));transition:transform .15s var(--ease),box-shadow .15s var(--ease),border-color .15s}
