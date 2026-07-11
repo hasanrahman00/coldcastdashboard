@@ -1108,8 +1108,9 @@ body{flex-direction:column}
 .snav-item:hover{background:var(--bg-elev-2);color:var(--text)}
 .snav-ic{width:20px;height:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15.5px;line-height:1}
 .snav-label{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-/* Active = solid accent pill (full accent fill + white label + soft accent shadow). */
-.snav-item.on,.snav-item.on:hover{background:var(--pc,var(--brand));color:#fff;font-weight:700;box-shadow:0 8px 18px -8px color-mix(in srgb,var(--pc,var(--brand)) 75%,transparent)}
+/* Active = a single ORANGE pill for EVERY item (consistent, à la the reference) —
+   not the per-product accent. */
+.snav-item.on,.snav-item.on:hover{background:linear-gradient(135deg,#e8622a,#c9481c);color:#fff;font-weight:700;box-shadow:0 8px 18px -8px rgba(201,72,28,.7)}
 .snav-item.soon{color:var(--text-dim);opacity:.72}
 .snav-item.soon:hover{opacity:1}
 .snav-soon{margin-left:auto;font-size:8.5px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--text-dim);background:var(--bg-elev-3);border:1px solid var(--border);padding:2px 5px;border-radius:5px;line-height:1.3}
