@@ -23,7 +23,7 @@ export default function ProductsHome({ nav }) {
                 {p.soon && <span className="pcard-soon">Soon</span>}
               </div>
               <h3>{p.label}</h3>
-              <p className="pcard-body">{p.body || ''}</p>
+              <p className="pcard-body">{p.short || p.body || ''}</p>
               <button
                 className={p.soon ? 'btn btn-g' : 'btn btn-p'}
                 aria-label={p.soon ? `${p.label} — coming soon` : `Open ${p.label}`}

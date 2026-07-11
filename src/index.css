@@ -1197,7 +1197,11 @@ body{flex-direction:column}
 .ptab[data-p="domain"] svg{color:#db2777}
 .ptab[data-p="company"] svg{color:#4338ca}
 .ptab[data-p="home"] svg{color:#3257d6}
-/* Active tab colour comes from --pc (see .ptab.on above) — one rule per data-p, not eight. */
+/* Active tab = solid --pc pill. Force WHITE text + icon so BOTH stay legible on the fill —
+   these must beat .ptab.soon (dim grey, for an active coming-soon tab) and the per-product
+   svg accent above (which would otherwise tint the icon its own colour → invisible). */
+.ptab.on,.ptab.on.soon{color:#fff}
+.ptab.on svg,.ptab.on[data-p] svg{color:#fff}
 
 /* ═══════════════════ PRODUCTS HOME (Tools grid) ═══════════════════ */
 .phome{padding:4px 0 40px}
