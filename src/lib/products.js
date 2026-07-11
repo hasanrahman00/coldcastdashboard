@@ -67,6 +67,7 @@ export const PRODUCTS = [
   {
     id: 'company',
     label: 'Sales Nav Company Scraper',
+    navLabel: 'Company Scraper',
     soon: false,
     icon: IconUsers,
     emoji: '🏢',

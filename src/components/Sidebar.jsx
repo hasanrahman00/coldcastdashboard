@@ -1,5 +1,5 @@
 import { PRODUCTS } from '../lib/products.js'
-import { IconLogo, IconGrid } from '../lib/icons.jsx'
+import { IconLogo } from '../lib/icons.jsx'
 
 // Left sidebar — the brand plus the FULL product list, always visible (no scrolling
 // row that hides tools). Dashboard first, then the live products, a divider, and the
@@ -11,19 +11,19 @@ export default function Sidebar({ route, nav }) {
 
   const item = (p) => {
     const on = route === p.id
-    const Icon = p.icon
+    const label = p.navLabel || p.label
     return (
       <button
         key={p.id}
         className={'snav-item' + (on ? ' on' : '') + (p.soon ? ' soon' : '')}
         data-p={p.id}
         aria-current={on ? 'page' : undefined}
-        aria-label={p.soon ? `${p.label} — coming soon` : p.label}
-        title={p.label}
+        aria-label={p.soon ? `${label} — coming soon` : label}
+        title={label}
         onClick={() => nav(p.id)}
       >
-        <span className="snav-ic"><Icon /></span>
-        <span className="snav-label">{p.label}</span>
+        <span className="snav-ic" aria-hidden="true">{p.emoji}</span>
+        <span className="snav-label">{label}</span>
         {p.soon && <span className="snav-soon">Soon</span>}
       </button>
     )
@@ -45,7 +45,7 @@ export default function Sidebar({ route, nav }) {
           title="Dashboard"
           onClick={() => nav('home')}
         >
-          <span className="snav-ic"><IconGrid /></span>
+          <span className="snav-ic" aria-hidden="true">🏠</span>
           <span className="snav-label">Dashboard</span>
         </button>
 
