@@ -1113,7 +1113,7 @@ body{flex-direction:column}
 .ug-chip svg{width:15px;height:15px;stroke-width:2;color:var(--text-faint);flex-shrink:0}
 .ug-col{display:flex;flex-direction:column;gap:4px;justify-content:center}
 .ug-val{font-size:12.5px;font-weight:700;color:var(--text);line-height:1}
-.ug-val em{font-style:normal;font-weight:500;color:var(--text-faint);margin-left:1px}
+.ug-val em{font-style:normal;font-weight:500;color:var(--text-muted)}
 .ug-val.muted{font-weight:600;color:var(--text-muted)}
 .ug-val.warn{color:var(--amber)}
 .ug-track{width:62px;height:3px;border-radius:999px;background:var(--border);overflow:hidden}

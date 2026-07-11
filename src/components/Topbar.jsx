@@ -92,7 +92,8 @@ export default function Topbar({ route, nav, onLogout }) {
             <IconChartBar />
             <span className="ug-col">
               <span className="ug-val">
-                {scrapeLeft.toLocaleString()} <em>left</em>
+                {scrapeLeft.toLocaleString()}
+                <em>{scrapeLimit > 0 ? ` left of ${scrapeLimit.toLocaleString()}` : ' left'}</em>
               </span>
               <span className="ug-track">
                 <i style={{ width: scrapePct.toFixed(1) + '%', background: scrapeBar }} />
@@ -107,7 +108,9 @@ export default function Topbar({ route, nav, onLogout }) {
             title="Credits for email enrichment & verification — 1 credit = 1 valid email · 2 verifications · ⅓ of a domain/LinkedIn enrichment (3 credits each)"
           >
             <IconZap />
-            <span className={'ug-val' + (lowCredits ? ' warn' : '')}>{creditBal.toLocaleString()}</span>
+            <span className={'ug-val' + (lowCredits ? ' warn' : '')}>
+              {creditBal.toLocaleString()}<em> credits</em>
+            </span>
           </span>
 
           {resetsDaily && (
