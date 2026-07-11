@@ -1,9 +1,8 @@
 import { useApp, ENRICH_ACTIVE } from '../store/AppStore.jsx'
 import { IconGrid, IconPlay } from '../lib/icons.jsx'
 
-// A light, at-a-glance activity caption above the product nav. It used to also carry
-// the connection pill, a Get-extension button, and the API-key field — those moved to
-// the top bar / account menu so this reads as one clean line, not a busy card.
+// At-a-glance activity metrics — rendered as a rounded pill group on the LEFT of the top
+// bar (it replaced the page title). Labels collapse on narrow screens.
 export default function StatsBox() {
   const { jobs, apolloJobs, enricherJobs, companyJobs, enrichUploads } = useApp()
 
@@ -25,12 +24,12 @@ export default function StatsBox() {
     <div className="statsbar">
       <span className="sb-metric">
         <span className="sb-ic b"><IconGrid /></span>
-        <b>{totalJobs}</b> Total jobs
+        <b>{totalJobs}</b> <span className="sb-lbl">Total jobs</span>
       </span>
       <span className="sb-sep" />
       <span className="sb-metric">
         <span className="sb-ic pr"><IconPlay /></span>
-        <b>{running}</b> Running
+        <b>{running}</b> <span className="sb-lbl">Running</span>
       </span>
     </div>
   )

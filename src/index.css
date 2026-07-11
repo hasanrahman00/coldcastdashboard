@@ -1130,7 +1130,6 @@ body{flex-direction:column}
   background:var(--bg-elev-1);border-bottom:1px solid var(--border);
   position:relative;z-index:5;flex-shrink:0;
 }
-.tb-title{font-size:15px;font-weight:700;color:var(--text);letter-spacing:-.01em;white-space:nowrap}
 .tb-right{display:flex;align-items:center;gap:10px;min-width:0}
 /* Brand lockup — still used by the standalone Admin header. */
 .tb-brand{display:flex;align-items:center;gap:11px;cursor:pointer}
@@ -1142,7 +1141,6 @@ body{flex-direction:column}
    off-screen (the shell has no horizontal scroll). The usage-group can also shrink/clip as
    a last-resort safety net (min-width:0 + overflow:hidden above). */
 @media (max-width:880px){
-  .tb-title{display:none}
   .ug-val em{display:none}
   .ug-reset{display:none}
   .conn-pill span:last-child{display:none}
@@ -1194,18 +1192,19 @@ body{flex-direction:column}
 .acct-item.danger:hover{background:var(--redglow)}
 .acct-sep{height:1px;background:var(--border);margin:6px 4px}
 
-/* ═══════════════════ ACTIVITY CAPTION (above the nav) ═══════════════════ */
-/* Slimmed from the old 4-in-one stats card down to just the two job metrics — a
-   light, left-aligned caption. Connection / Get-extension / API-key moved to the
-   top bar + account menu. */
-.statsbar{display:flex;align-items:center;gap:16px;margin:2px 2px 16px}
-.sb-metric{display:inline-flex;align-items:center;gap:9px;font-size:13px;font-weight:500;color:var(--text-muted);white-space:nowrap}
-.sb-metric b{font-size:18px;font-weight:800;letter-spacing:-.02em;color:var(--text);line-height:1}
-.sb-ic{width:28px;height:28px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
-.sb-ic svg{width:15px;height:15px;stroke-width:2.2}
+/* ═══════════════════ ACTIVITY METRICS (top-bar left) ═══════════════════ */
+/* Total jobs + Running as a rounded pill group on the left of the top bar (replaced the
+   page title). Matches the height/radius of the right-side usage group. */
+.statsbar{display:inline-flex;align-items:center;height:36px;border:1px solid var(--border);border-radius:11px;background:var(--bg-elev-2);padding:0 4px;min-width:0}
+.sb-metric{display:inline-flex;align-items:center;gap:8px;padding:0 10px;font-size:12px;font-weight:500;color:var(--text-muted);white-space:nowrap}
+.sb-metric b{font-size:14px;font-weight:800;letter-spacing:-.01em;color:var(--text);line-height:1}
+.sb-ic{width:24px;height:24px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+.sb-ic svg{width:14px;height:14px;stroke-width:2.2}
 .sb-ic.b{background:rgba(79,124,245,.13);color:var(--blue)}
 .sb-ic.pr{background:rgba(124,58,237,.13);color:#6d28d9}
-.sb-sep{width:1px;height:20px;background:var(--border)}
+.sb-sep{width:1px;height:18px;background:var(--border)}
+@media (max-width:820px){ .sb-lbl{display:none} }
+@media (max-width:600px){ .statsbar{display:none} }
 
 /* ═══════════════════ NEW JOB BAR (sticky, inside job pages) ═══════════════════ */
 /* Centered New Job button — sticky at the top of the scroll area so it stays

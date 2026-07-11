@@ -2,7 +2,6 @@ import { useEffect } from 'react'
 import { useHashRoute } from '../lib/useHashRoute.js'
 import { PRODUCTS, getProduct } from '../lib/products.js'
 import Topbar from './Topbar.jsx'
-import StatsBox from './StatsBox.jsx'
 import Sidebar from './Sidebar.jsx'
 import SalesNav from '../pages/salesnav/SalesNav.jsx'
 import WaterfallEnricher from '../pages/waterfall/WaterfallEnricher.jsx'
@@ -57,7 +56,6 @@ export default function Dashboard({ onLogout }) {
         <Topbar route={route} nav={nav} onLogout={onLogout} />
         <main className="mn">
           <div className="cnt">
-            <StatsBox />
             {activeProduct && !activeProduct.soon && <ProductHeader product={activeProduct} />}
             {page}
           </div>

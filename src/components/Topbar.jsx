@@ -11,10 +11,7 @@ import {
   IconClock,
   IconDownload,
 } from '../lib/icons.jsx'
-import { getProduct } from '../lib/products.js'
-
-// The left side of the top bar names the current page (the brand now lives in the sidebar).
-const PAGE_TITLES = { home: 'Dashboard', set: 'Settings', setup: 'Setup', api: 'API key', ext: 'Browser extension' }
+import StatsBox from './StatsBox.jsx'
 
 function fmtTtl(secs) {
   if (secs <= 0) return 'Expired'
@@ -77,11 +74,10 @@ export default function Topbar({ route, nav, onLogout }) {
     ? `${onlineCount}/${profiles.length} connected`
     : connectorOnline ? 'Connected' : 'Not connected'
 
-  const pageTitle = PAGE_TITLES[route] || getProduct(route)?.label || 'Dashboard'
 
   return (
     <header className="topbar">
-      <div className="tb-title">{pageTitle}</div>
+      <StatsBox />
 
       <div className="tb-right">
         {/* One calm, neutral container holds all account resources — scrape budget,
