@@ -18,6 +18,8 @@ export default function Sidebar({ route, nav }) {
         className={'snav-item' + (on ? ' on' : '') + (p.soon ? ' soon' : '')}
         data-p={p.id}
         aria-current={on ? 'page' : undefined}
+        aria-label={p.soon ? `${p.label} — coming soon` : p.label}
+        title={p.label}
         onClick={() => nav(p.id)}
       >
         <span className="snav-ic"><Icon /></span>
@@ -39,6 +41,8 @@ export default function Sidebar({ route, nav }) {
           className={'snav-item' + (route === 'home' ? ' on' : '')}
           data-p="home"
           aria-current={route === 'home' ? 'page' : undefined}
+          aria-label="Dashboard"
+          title="Dashboard"
           onClick={() => nav('home')}
         >
           <span className="snav-ic"><IconGrid /></span>

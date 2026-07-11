@@ -1108,7 +1108,9 @@ body{flex-direction:column}
 .snav-ic svg{width:18px;height:18px;stroke-width:2;color:var(--text-faint)}
 .snav-item:hover .snav-ic svg{color:var(--text-dim)}
 .snav-label{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.snav-item.on{background:color-mix(in srgb,var(--pc,var(--brand)) 12%,transparent);color:var(--pc,var(--brand));font-weight:700}
+/* Active row: soft accent tint bg + a DARKENED accent for the label so it clears WCAG AA
+   even for the lighter accents (Apollo/Sales Nav); the icon + left bar keep the full accent. */
+.snav-item.on{background:color-mix(in srgb,var(--pc,var(--brand)) 12%,transparent);color:color-mix(in srgb,var(--pc,var(--brand)) 70%,#0b1020);font-weight:700}
 .snav-item.on .snav-ic svg{color:var(--pc,var(--brand))}
 .snav-item.on::before{content:'';position:absolute;left:-12px;top:8px;bottom:8px;width:3px;border-radius:0 3px 3px 0;background:var(--pc,var(--brand))}
 .snav-item.soon{color:var(--text-dim);opacity:.72}
@@ -1133,23 +1135,31 @@ body{flex-direction:column}
   position:relative;z-index:5;flex-shrink:0;
 }
 .tb-title{font-size:15px;font-weight:700;color:var(--text);letter-spacing:-.01em;white-space:nowrap}
-.tb-right{display:flex;align-items:center;gap:10px}
+.tb-right{display:flex;align-items:center;gap:10px;min-width:0}
 /* Brand lockup — still used by the standalone Admin header. */
 .tb-brand{display:flex;align-items:center;gap:11px;cursor:pointer}
 .tb-logo{width:38px;height:38px;border-radius:11px;background:var(--brand-grad);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(79,124,245,.45);position:relative;flex-shrink:0}
 .tb-logo::after{content:'';position:absolute;inset:0;border-radius:11px;background:linear-gradient(135deg,rgba(255,255,255,.28),transparent 55%)}
 .tb-logo svg{width:26px;height:26px;color:#fff;position:relative;z-index:1;filter:drop-shadow(0 1px 2px rgba(0,0,0,.25))}
 .tb-brand h1{font-size:19px;font-weight:800;background:linear-gradient(135deg,#3257d6,#4f7cf5);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-.02em}
-@media (max-width:640px){
+/* Trim the top-bar resource cluster progressively so the account button is never pushed
+   off-screen (the shell has no horizontal scroll). The usage-group can also shrink/clip as
+   a last-resort safety net (min-width:0 + overflow:hidden above). */
+@media (max-width:880px){
   .tb-title{display:none}
+  .ug-val em{display:none}
+  .ug-reset{display:none}
   .conn-pill span:last-child{display:none}
   .conn-pill{padding:0 11px}
+}
+@media (max-width:560px){
+  .acct-btn .uname{display:none}
 }
 
 /* Usage group — one neutral, hairline-bordered container holding the scrape budget,
    credits, and reset countdown as matched segments. Replaces three loud colored pills;
    the only color is the tiny progress-track fill (+ an amber warn state). */
-.usage-group{display:inline-flex;align-items:stretch;height:36px;border:1px solid var(--border);border-radius:10px;background:var(--bg-elev-2)}
+.usage-group{display:inline-flex;align-items:stretch;height:36px;border:1px solid var(--border);border-radius:10px;background:var(--bg-elev-2);min-width:0;overflow:hidden}
 .ug-chip{display:inline-flex;align-items:center;gap:8px;padding:0 12px;white-space:nowrap}
 .ug-chip svg{width:15px;height:15px;stroke-width:2;color:var(--text-faint);flex-shrink:0}
 .ug-col{display:flex;flex-direction:column;gap:4px;justify-content:center}
@@ -1160,6 +1170,9 @@ body{flex-direction:column}
 .ug-track{width:62px;height:3px;border-radius:999px;background:var(--border);overflow:hidden}
 .ug-track i{display:block;height:100%;border-radius:999px;background:var(--blue);transition:width .4s ease}
 .ug-div{width:1px;background:var(--border);margin:8px 0}
+/* The reset segment carries its own divider (a left border) so it can be hidden cleanly
+   on narrow screens without leaving a dangling separator. */
+.ug-reset{border-left:1px solid var(--border)}
 
 .conn-pill{display:flex;align-items:center;gap:7px;font-family:var(--font);font-size:12.5px;font-weight:600;color:var(--text-muted);padding:0 13px;height:36px;border:1px solid var(--border);border-radius:10px;background:var(--bg-elev-2);cursor:pointer;transition:background .15s,border-color .15s}
 .conn-pill:hover{background:var(--bg-hover)}
@@ -1169,7 +1182,7 @@ body{flex-direction:column}
 .tb-icon{width:36px;height:36px;border-radius:10px;border:1px solid var(--border);background:var(--bg-elev-2);color:var(--text-muted);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s}
 .tb-icon:hover{background:var(--bg-hover);color:var(--text)}
 .tb-icon svg{width:18px;height:18px;stroke-width:2}
-.acct{position:relative}
+.acct{position:relative;flex:0 0 auto}
 .acct-btn{display:flex;align-items:center;gap:9px;padding:5px 10px 5px 5px;border:1px solid var(--border);border-radius:999px;background:var(--bg-elev-2);cursor:pointer;transition:all .15s}
 .acct-btn:hover{background:var(--bg-hover)}
 .acct-btn .avatar{width:28px;height:28px;border-radius:50%;background:var(--brand-grad);color:#fff;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}

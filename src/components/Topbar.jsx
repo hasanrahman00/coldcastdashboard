@@ -114,18 +114,20 @@ export default function Topbar({ route, nav, onLogout }) {
           </span>
 
           {resetsDaily && (
-            <>
-              <span className="ug-div" />
-              <span className="ug-chip" title={`Scrape budget resets in ${resetTxt} — daily at 00:00 UTC`}>
-                <IconClock />
-                <span className="ug-val muted">{resetTxt}</span>
-              </span>
-            </>
+            <span className="ug-chip ug-reset" title={`Scrape budget resets in ${resetTxt} — daily at 00:00 UTC`}>
+              <IconClock />
+              <span className="ug-val muted">{resetTxt}</span>
+            </span>
           )}
         </div>
 
         {/* Connection status lives here and ONLY here now. */}
-        <button className="conn-pill" onClick={() => nav('set')} title="Manage extensions & connection">
+        <button
+          className="conn-pill"
+          onClick={() => nav('set')}
+          title={`${connText} · manage extensions`}
+          aria-label={`Extensions: ${connText}`}
+        >
           <span className={'dot' + (connectorOnline ? '' : ' off')} />
           <span>{connText}</span>
         </button>
