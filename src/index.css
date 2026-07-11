@@ -48,6 +48,7 @@
   --radius-xl:20px;
 
   --font:'Inter',system-ui,-apple-system,sans-serif;
+  --font-nav:'Plus Jakarta Sans','Inter',system-ui,sans-serif;
   --mono:'JetBrains Mono',ui-monospace,monospace;
 
   --ease:cubic-bezier(.4,0,.2,1);
@@ -1099,11 +1100,11 @@ body{flex-direction:column}
 .side-logo{width:36px;height:36px;border-radius:11px;background:var(--brand-grad);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(79,124,245,.45);flex-shrink:0;position:relative}
 .side-logo::after{content:'';position:absolute;inset:0;border-radius:11px;background:linear-gradient(135deg,rgba(255,255,255,.28),transparent 55%)}
 .side-logo svg{width:24px;height:24px;color:#fff;position:relative;z-index:1;filter:drop-shadow(0 1px 2px rgba(0,0,0,.25))}
-.side-brand h1{font-size:18px;font-weight:800;background:linear-gradient(135deg,#3257d6,#4f7cf5);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-.02em;white-space:nowrap}
+.side-brand h1{font-family:var(--font-nav);font-size:18px;font-weight:800;background:linear-gradient(135deg,#3257d6,#4f7cf5);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-.02em;white-space:nowrap}
 .side-nav{display:flex;flex-direction:column;gap:2px}
-.side-cap{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--text-faint);padding:4px 11px 6px}
+.side-cap{font-family:var(--font-nav);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--text-faint);padding:4px 11px 6px}
 .side-sep{height:1px;background:var(--border);margin:12px 6px 4px}
-.snav-item{position:relative;display:flex;align-items:center;gap:11px;width:100%;text-align:left;padding:10px 12px;border:none;background:transparent;border-radius:11px;cursor:pointer;font-family:var(--font);font-size:13.5px;font-weight:600;color:var(--text-muted);transition:background .15s,color .15s,box-shadow .15s}
+.snav-item{position:relative;display:flex;align-items:center;gap:11px;width:100%;text-align:left;padding:10px 12px;border:none;background:transparent;border-radius:11px;cursor:pointer;font-family:var(--font-nav);font-size:13.5px;font-weight:600;letter-spacing:-.005em;color:var(--text-muted);transition:background .15s,color .15s,box-shadow .15s}
 .snav-item:hover{background:var(--bg-elev-2);color:var(--text)}
 .snav-ic{width:20px;height:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15.5px;line-height:1}
 .snav-label{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
