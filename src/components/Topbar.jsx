@@ -38,6 +38,18 @@ export default function Topbar({ route, nav, onLogout }) {
   const scrapePct   = scrapeLimit > 0 ? Math.min(100, (scrapeUsed / scrapeLimit) * 100) : 0
   const scrapeLeft  = Math.max(0, scrapeLimit - scrapeUsed)
   const scrapeBar   = scrapePct >= 100 ? '#dc2626' : scrapePct >= 90 ? '#d97706' : '#2563eb'
+  // Daily scrape quota resets at 00:00 UTC (PAID accounts only — free = hard total, no
+  // reset). Show how long until it refills so users know when they get more rows. The
+  // topbar re-renders every second (session countdown), so this recomputes live.
+  const resetsDaily = !!usage?.resetsDaily && scrapeLimit > 0
+  let resetTxt = ''
+  if (resetsDaily) {
+    const now = new Date()
+    const ms = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1) - now.getTime()
+    const h = Math.floor(ms / 3600000)
+    const m = Math.floor((ms % 3600000) / 60000)
+    resetTxt = h >= 1 ? `${h}h ${m}m` : `${m}m`
+  }
 
   return (
     <header className="topbar">
@@ -52,7 +64,7 @@ export default function Topbar({ route, nav, onLogout }) {
         <span
           className="scrape-pill"
           title={scrapeLimit > 0
-            ? `Scraping rows — ${scrapeUsed.toLocaleString()} used of ${scrapeLimit.toLocaleString()} (${scrapePct.toFixed(0)}%) · ${scrapeLeft.toLocaleString()} left. One budget shared across ALL your scrapers; ticks down live as a job runs. ${usage?.resetsDaily ? 'Resets daily at 00:00 UTC.' : 'Total allowance.'}`
+            ? `Scraping rows — ${scrapeUsed.toLocaleString()} used of ${scrapeLimit.toLocaleString()} (${scrapePct.toFixed(0)}%) · ${scrapeLeft.toLocaleString()} left. One budget shared across ALL your scrapers; ticks down live as a job runs. ${resetsDaily ? `Resets in ${resetTxt} — daily at 00:00 UTC.` : 'Total allowance (no daily reset).'}`
             : 'Scrape limit not loaded — /api/agent/status returned no scrapeLimit. Check you are logged in and the scraper API is reachable.'}
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 8,
@@ -66,6 +78,16 @@ export default function Topbar({ route, nav, onLogout }) {
             <span style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: scrapePct.toFixed(1) + '%', background: scrapeBar, transition: 'width .4s ease' }} />
           </span>
           <span>{scrapeLimit.toLocaleString()} / {scrapeLeft.toLocaleString()} <span style={{ fontWeight: 500, opacity: .8 }}>left</span></span>
+          {resetsDaily && (
+            <span
+              title={`Resets in ${resetTxt} — daily at 00:00 UTC`}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 4, paddingLeft: 9, borderLeft: '1px solid rgba(37,99,235,.30)' }}
+            >
+              <span aria-hidden style={{ fontSize: 13, lineHeight: 1 }}>↻</span>
+              <span>{resetTxt}</span>
+              <span style={{ fontWeight: 500, opacity: .75 }}>to reset</span>
+            </span>
+          )}
         </span>
 
         <span
