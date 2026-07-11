@@ -3,7 +3,7 @@ import { useHashRoute } from '../lib/useHashRoute.js'
 import { PRODUCTS, getProduct } from '../lib/products.js'
 import Topbar from './Topbar.jsx'
 import StatsBox from './StatsBox.jsx'
-import ProductNav from './ProductNav.jsx'
+import Sidebar from './Sidebar.jsx'
 import SalesNav from '../pages/salesnav/SalesNav.jsx'
 import WaterfallEnricher from '../pages/waterfall/WaterfallEnricher.jsx'
 import ApolloScraper from '../pages/apollo/ApolloScraper.jsx'
@@ -51,16 +51,18 @@ export default function Dashboard({ onLogout }) {
   const activeProduct = getProduct(route)
 
   return (
-    <>
-      <Topbar route={route} nav={nav} onLogout={onLogout} />
-      <main className="mn">
-        <div className="cnt">
-          <StatsBox nav={nav} />
-          <ProductNav route={route} nav={nav} />
-          {activeProduct && !activeProduct.soon && <ProductHeader product={activeProduct} />}
-          {page}
-        </div>
-      </main>
-    </>
+    <div className="shell">
+      <Sidebar route={route} nav={nav} />
+      <div className="shell-main">
+        <Topbar route={route} nav={nav} onLogout={onLogout} />
+        <main className="mn">
+          <div className="cnt">
+            <StatsBox />
+            {activeProduct && !activeProduct.soon && <ProductHeader product={activeProduct} />}
+            {page}
+          </div>
+        </main>
+      </div>
+    </div>
   )
 }

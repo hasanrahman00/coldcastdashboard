@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { useApp } from '../store/AppStore.jsx'
 import {
-  IconLogo,
   IconGear,
   IconChevronDown,
   IconKeyOutline,
@@ -12,6 +11,10 @@ import {
   IconClock,
   IconDownload,
 } from '../lib/icons.jsx'
+import { getProduct } from '../lib/products.js'
+
+// The left side of the top bar names the current page (the brand now lives in the sidebar).
+const PAGE_TITLES = { home: 'Dashboard', set: 'Settings', setup: 'Setup', api: 'API key', ext: 'Browser extension' }
 
 function fmtTtl(secs) {
   if (secs <= 0) return 'Expired'
@@ -74,14 +77,11 @@ export default function Topbar({ route, nav, onLogout }) {
     ? `${onlineCount}/${profiles.length} connected`
     : connectorOnline ? 'Connected' : 'Not connected'
 
+  const pageTitle = PAGE_TITLES[route] || getProduct(route)?.label || 'Dashboard'
+
   return (
     <header className="topbar">
-      <div className="tb-brand" onClick={() => nav('home')} title="Home">
-        <div className="tb-logo">
-          <IconLogo />
-        </div>
-        <h1>Coldcast</h1>
-      </div>
+      <div className="tb-title">{pageTitle}</div>
 
       <div className="tb-right">
         {/* One calm, neutral container holds all account resources — scrape budget,
