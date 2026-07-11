@@ -1,10 +1,13 @@
-import { PRODUCTS } from '../lib/products.js'
-import { IconChevronRight } from '../lib/icons.jsx'
+import { getProduct } from '../lib/products.js'
 
-// Products home ("Tools") — the dashboard's landing view. Every Coldcast product as
-// a card; "Use" opens that product's own tab (its in-app dashboard). Coming-soon
-// products get a muted button that opens their teaser page instead. The Coldcast
-// logo in the topbar returns here.
+// Products home ("Tools") — the dashboard's landing view, grouped into sections like an
+// enterprise console. Each card is a whole-card button (soft-tinted with the product
+// accent + a status badge); it opens that product's tab, or its teaser page if soon.
+const SECTIONS = [
+  { title: 'Lead & company scraping', ids: ['salesnav', 'apollo', 'company', 'zoominfo'] },
+  { title: 'Enrichment & verification', ids: ['linkedin', 'waterfall', 'verify', 'domain'] },
+]
+
 export default function ProductsHome({ nav }) {
   return (
     <div className="phome">
@@ -13,29 +16,36 @@ export default function ProductsHome({ nav }) {
         <p>Every Coldcast product in one place — open one to start a job.</p>
       </div>
 
-      <div className="phome-grid">
-        {PRODUCTS.map((p) => {
-          const Icon = p.icon
-          return (
-            <div className="pcard" data-p={p.id} key={p.id}>
-              <div className="pcard-top">
-                <div className="pcard-ic"><Icon /></div>
-                {p.soon && <span className="pcard-soon">Soon</span>}
-              </div>
-              <h3>{p.label}</h3>
-              <p className="pcard-body">{p.short || p.body || ''}</p>
-              <button
-                className={p.soon ? 'btn btn-g' : 'btn btn-p'}
-                aria-label={p.soon ? `${p.label} — coming soon` : `Open ${p.label}`}
-                onClick={() => nav(p.id)}
-                title={p.soon ? `${p.label} — coming soon` : `Open ${p.label}`}
-              >
-                {p.soon ? 'Coming soon' : <>Use <IconChevronRight /></>}
-              </button>
-            </div>
-          )
-        })}
-      </div>
+      {SECTIONS.map((sec) => (
+        <section className="phome-sec" key={sec.title}>
+          <h3 className="phome-sec-title">{sec.title}</h3>
+          <div className="phome-grid">
+            {sec.ids.map((id) => {
+              const p = getProduct(id)
+              if (!p) return null
+              const Icon = p.icon
+              return (
+                <button
+                  key={p.id}
+                  className="pcard"
+                  data-p={p.id}
+                  onClick={() => nav(p.id)}
+                  aria-label={p.soon ? `${p.label} — coming soon` : `Open ${p.label}`}
+                >
+                  <div className="pcard-top">
+                    <span className="pcard-ic">
+                      <Icon />
+                    </span>
+                    <span className={'pcard-badge ' + (p.soon ? 'soon' : 'live')}>{p.soon ? 'Soon' : 'Active'}</span>
+                  </div>
+                  <h4 className="pcard-name">{p.label}</h4>
+                  <p className="pcard-desc">{p.short || p.body || ''}</p>
+                </button>
+              )
+            })}
+          </div>
+        </section>
+      ))}
     </div>
   )
 }
