@@ -6,6 +6,9 @@
   --bg-elev-2:#f0f3fc;
   --bg-elev-3:#e7ecfb;
   --bg-hover:#dfe6f8;
+  /* Glossy chip fills for the top-bar controls (Snov.io-style gradient depth). */
+  --chip:linear-gradient(180deg,#ffffff 0%,#e9eefb 100%);
+  --chip-hover:linear-gradient(180deg,#f3f6ff 0%,#dce4f7 100%);
 
   /* Borders — dark hairlines on light */
   --border:rgba(12,18,45,.10);
@@ -1127,8 +1130,8 @@ body{flex-direction:column}
 /* ═══════════════════ TOP BAR (main-column header) ═══════════════════ */
 .topbar{
   display:flex;align-items:center;justify-content:space-between;gap:16px;
-  padding:12px 28px;
-  background:var(--bg-elev-1);border-bottom:1px solid var(--border);
+  padding:14px 28px;
+  background:linear-gradient(180deg,#ffffff 0%,#f4f7ff 100%);border-bottom:1px solid var(--border);
   position:relative;z-index:5;flex-shrink:0;
 }
 .tb-right{display:flex;align-items:center;gap:10px;min-width:0}
@@ -1154,35 +1157,35 @@ body{flex-direction:column}
 /* Usage group — one neutral, hairline-bordered container holding the scrape budget,
    credits, and reset countdown as matched segments. Replaces three loud colored pills;
    the only color is the tiny progress-track fill (+ an amber warn state). */
-.usage-group{display:inline-flex;align-items:stretch;height:36px;border:1px solid var(--border);border-radius:10px;background:var(--bg-elev-2);min-width:0;overflow:hidden}
-.ug-chip{display:inline-flex;align-items:center;gap:8px;padding:0 12px;white-space:nowrap}
-.ug-chip svg{width:15px;height:15px;stroke-width:2;color:var(--text-faint);flex-shrink:0}
-.ug-col{display:flex;flex-direction:column;gap:4px;justify-content:center}
-.ug-val{font-size:12.5px;font-weight:700;color:var(--text);line-height:1}
+.usage-group{display:inline-flex;align-items:stretch;height:42px;border:1px solid var(--border-strong);border-radius:14px;background:var(--chip);box-shadow:0 1px 2px rgba(12,18,45,.05);min-width:0;overflow:hidden}
+.ug-chip{display:inline-flex;align-items:center;gap:9px;padding:0 14px;white-space:nowrap}
+.ug-chip svg{width:16px;height:16px;stroke-width:2;color:var(--text-faint);flex-shrink:0}
+.ug-col{display:flex;flex-direction:column;gap:5px;justify-content:center}
+.ug-val{font-size:13.5px;font-weight:700;color:var(--text);line-height:1}
 .ug-val em{font-style:normal;font-weight:500;color:var(--text-muted)}
 .ug-val.muted{font-weight:600;color:var(--text-muted)}
 .ug-val.warn{color:var(--amber)}
-.ug-track{width:62px;height:3px;border-radius:999px;background:var(--border);overflow:hidden}
+.ug-track{width:66px;height:4px;border-radius:999px;background:var(--border-strong);overflow:hidden}
 .ug-track i{display:block;height:100%;border-radius:999px;background:var(--blue);transition:width .4s ease}
-.ug-div{width:1px;background:var(--border);margin:8px 0}
+.ug-div{width:1px;background:var(--border-strong);margin:9px 0}
 /* The reset segment carries its own divider (a left border) so it can be hidden cleanly
    on narrow screens without leaving a dangling separator. */
-.ug-reset{border-left:1px solid var(--border)}
+.ug-reset{border-left:1px solid var(--border-strong)}
 
-.conn-pill{display:flex;align-items:center;gap:7px;font-family:var(--font);font-size:12.5px;font-weight:600;color:var(--text-muted);padding:0 13px;height:36px;border:1px solid var(--border);border-radius:10px;background:var(--bg-elev-2);cursor:pointer;transition:background .15s,border-color .15s}
-.conn-pill:hover{background:var(--bg-hover)}
-.conn-pill .dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);transition:background .3s,box-shadow .3s;flex-shrink:0}
+.conn-pill{display:flex;align-items:center;gap:8px;font-family:var(--font);font-size:13px;font-weight:600;color:var(--text-muted);padding:0 15px;height:42px;border:1px solid var(--border-strong);border-radius:14px;background:var(--chip);box-shadow:0 1px 2px rgba(12,18,45,.05);cursor:pointer;transition:background .15s,border-color .15s}
+.conn-pill:hover{background:var(--chip-hover)}
+.conn-pill .dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);transition:background .3s,box-shadow .3s;flex-shrink:0}
 .conn-pill .dot.off{background:#f59e0b;box-shadow:none}
 .conn-pill .dot.wait{background:var(--text-faint);box-shadow:none}
-.tb-icon{width:36px;height:36px;border-radius:10px;border:1px solid var(--border);background:var(--bg-elev-2);color:var(--text-muted);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s}
-.tb-icon:hover{background:var(--bg-hover);color:var(--text)}
-.tb-icon svg{width:18px;height:18px;stroke-width:2}
+.tb-icon{width:42px;height:42px;border-radius:13px;border:1px solid var(--border-strong);background:var(--chip);box-shadow:0 1px 2px rgba(12,18,45,.05);color:var(--text-muted);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s}
+.tb-icon:hover{background:var(--chip-hover);color:var(--text)}
+.tb-icon svg{width:19px;height:19px;stroke-width:2}
 .acct{position:relative;flex:0 0 auto}
-.acct-btn{display:flex;align-items:center;gap:9px;padding:5px 10px 5px 5px;border:1px solid var(--border);border-radius:999px;background:var(--bg-elev-2);cursor:pointer;transition:all .15s}
-.acct-btn:hover{background:var(--bg-hover)}
-.acct-btn .avatar{width:28px;height:28px;border-radius:50%;background:var(--brand-grad);color:#fff;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.acct-btn .uname{font-size:13px;font-weight:600;color:var(--text);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.acct-btn .chev{width:15px;height:15px;color:var(--text-dim);stroke-width:2.4}
+.acct-btn{display:flex;align-items:center;gap:10px;height:42px;padding:0 12px 0 5px;border:1px solid var(--border-strong);border-radius:999px;background:var(--chip);box-shadow:0 1px 2px rgba(12,18,45,.05);cursor:pointer;transition:all .15s}
+.acct-btn:hover{background:var(--chip-hover)}
+.acct-btn .avatar{width:31px;height:31px;border-radius:50%;background:var(--brand-grad);color:#fff;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.acct-btn .uname{font-size:14px;font-weight:600;color:var(--text);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.acct-btn .chev{width:16px;height:16px;color:var(--text-dim);stroke-width:2.4}
 .acct-menu{position:absolute;top:calc(100% + 8px);right:0;min-width:210px;background:var(--bg-elev-1);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-lg);padding:6px;opacity:0;visibility:hidden;transform:translateY(-6px);transition:all .16s var(--ease-out);z-index:20}
 .acct-menu.on{opacity:1;visibility:visible;transform:translateY(0)}
 .acct-menu .ttl{padding:8px 10px 6px;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-faint);font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -1196,14 +1199,14 @@ body{flex-direction:column}
 /* ═══════════════════ ACTIVITY METRICS (top-bar left) ═══════════════════ */
 /* Total jobs + Running as a rounded pill group on the left of the top bar (replaced the
    page title). Matches the height/radius of the right-side usage group. */
-.statsbar{display:inline-flex;align-items:center;height:36px;border:1px solid var(--border);border-radius:11px;background:var(--bg-elev-2);padding:0 4px;min-width:0}
-.sb-metric{display:inline-flex;align-items:center;gap:8px;padding:0 10px;font-size:12px;font-weight:500;color:var(--text-muted);white-space:nowrap}
-.sb-metric b{font-size:14px;font-weight:800;letter-spacing:-.01em;color:var(--text);line-height:1}
-.sb-ic{width:24px;height:24px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
-.sb-ic svg{width:14px;height:14px;stroke-width:2.2}
-.sb-ic.b{background:rgba(79,124,245,.13);color:var(--blue)}
-.sb-ic.pr{background:rgba(124,58,237,.13);color:#6d28d9}
-.sb-sep{width:1px;height:18px;background:var(--border)}
+.statsbar{display:inline-flex;align-items:center;height:42px;border:1px solid var(--border-strong);border-radius:14px;background:var(--chip);box-shadow:0 1px 2px rgba(12,18,45,.05);padding:0 5px;min-width:0}
+.sb-metric{display:inline-flex;align-items:center;gap:9px;padding:0 12px;font-size:13px;font-weight:600;color:var(--text-muted);white-space:nowrap}
+.sb-metric b{font-size:16px;font-weight:800;letter-spacing:-.01em;color:var(--text);line-height:1}
+.sb-ic{width:28px;height:28px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+.sb-ic svg{width:15px;height:15px;stroke-width:2.2}
+.sb-ic.b{background:rgba(79,124,245,.15);color:var(--blue)}
+.sb-ic.pr{background:rgba(124,58,237,.15);color:#6d28d9}
+.sb-sep{width:1px;height:20px;background:var(--border-strong)}
 @media (max-width:820px){ .sb-lbl{display:none} }
 @media (max-width:600px){ .statsbar{display:none} }
 
