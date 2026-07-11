@@ -2,9 +2,10 @@ import { PRODUCTS } from '../lib/products.js'
 import { IconGrid } from '../lib/icons.jsx'
 
 // Product tabs — a "Dashboard" (home) entry first so you can jump back to the Tools
-// grid from anywhere, then live products on the first row and coming-soon on a second
-// (the .pnav-break forces the wrap). Justified edge-to-edge via .pnav. Shown on every
-// route (incl. home, where "Dashboard" is the active tab).
+// grid from anywhere, then the live products, a hairline divider, and the coming-soon
+// products grouped at the end (dimmed but still navigable). Left-aligned single row
+// that scrolls horizontally on overflow. Shown on every route (incl. home, where
+// "Dashboard" is the active tab).
 export default function ProductNav({ route, nav }) {
   const live = PRODUCTS.filter((p) => !p.soon)
   const soon = PRODUCTS.filter((p) => p.soon)
@@ -42,7 +43,7 @@ export default function ProductNav({ route, nav }) {
         Dashboard
       </button>
       {live.map(renderTab)}
-      {soon.length > 0 && <div className="pnav-break" aria-hidden="true" />}
+      {soon.length > 0 && <span className="pnav-sep" aria-hidden="true" />}
       {soon.map(renderTab)}
     </div>
   )

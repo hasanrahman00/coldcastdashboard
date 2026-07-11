@@ -1,6 +1,17 @@
 import { useState, useRef, useEffect } from 'react'
 import { useApp } from '../store/AppStore.jsx'
-import { IconLogo, IconGear, IconChevronDown, IconKeyOutline, IconSignout, IconChain } from '../lib/icons.jsx'
+import {
+  IconLogo,
+  IconGear,
+  IconChevronDown,
+  IconKeyOutline,
+  IconSignout,
+  IconChain,
+  IconChartBar,
+  IconZap,
+  IconClock,
+  IconDownload,
+} from '../lib/icons.jsx'
 
 function fmtTtl(secs) {
   if (secs <= 0) return 'Expired'
@@ -51,6 +62,18 @@ export default function Topbar({ route, nav, onLogout }) {
     resetTxt = h >= 1 ? `${h}h ${m}m` : `${m}m`
   }
 
+  const scrapeTitle = scrapeLimit > 0
+    ? `Scraping rows — ${scrapeUsed.toLocaleString()} used of ${scrapeLimit.toLocaleString()} (${scrapePct.toFixed(0)}%) · ${scrapeLeft.toLocaleString()} left. One budget shared across ALL your scrapers; ticks down live as a job runs. ${resetsDaily ? `Resets in ${resetTxt} — daily at 00:00 UTC.` : 'Total allowance (no daily reset).'}`
+    : 'Scrape limit not loaded — check you are logged in and the scraper API is reachable.'
+  const creditBal = credits ?? 0
+  const lowCredits = creditBal > 0 && creditBal < 50
+
+  // Connection status — shown ONCE here (the middle strip no longer duplicates it).
+  const onlineCount = profiles.filter((p) => p.online).length
+  const connText = profiles.length > 1
+    ? `${onlineCount}/${profiles.length} connected`
+    : connectorOnline ? 'Connected' : 'Not connected'
+
   return (
     <header className="topbar">
       <div className="tb-brand" onClick={() => nav('home')} title="Home">
@@ -61,59 +84,48 @@ export default function Topbar({ route, nav, onLogout }) {
       </div>
 
       <div className="tb-right">
-        <span
-          className="scrape-pill"
-          title={scrapeLimit > 0
-            ? `Scraping rows — ${scrapeUsed.toLocaleString()} used of ${scrapeLimit.toLocaleString()} (${scrapePct.toFixed(0)}%) · ${scrapeLeft.toLocaleString()} left. One budget shared across ALL your scrapers; ticks down live as a job runs. ${resetsDaily ? `Resets in ${resetTxt} — daily at 00:00 UTC.` : 'Total allowance (no daily reset).'}`
-            : 'Scrape limit not loaded — /api/agent/status returned no scrapeLimit. Check you are logged in and the scraper API is reachable.'}
-          style={{
-            display: 'inline-flex', alignItems: 'center', gap: 8,
-            padding: '6px 12px', borderRadius: 999, whiteSpace: 'nowrap',
-            background: 'rgba(37,99,235,.10)', border: '1px solid rgba(37,99,235,.28)',
-            color: '#1d4ed8', fontSize: 12.5, fontWeight: 700,
-          }}
-        >
-          <span aria-hidden style={{ fontSize: 14, lineHeight: 1 }}>📊</span>
-          <span style={{ position: 'relative', width: 64, height: 6, borderRadius: 999, background: 'rgba(37,99,235,.18)', overflow: 'hidden', flex: '0 0 auto' }}>
-            <span style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: scrapePct.toFixed(1) + '%', background: scrapeBar, transition: 'width .4s ease' }} />
-          </span>
-          <span>{scrapeLimit.toLocaleString()} / {scrapeLeft.toLocaleString()} <span style={{ fontWeight: 500, opacity: .8 }}>left</span></span>
-          {resetsDaily && (
-            <span
-              title={`Resets in ${resetTxt} — daily at 00:00 UTC`}
-              style={{ display: 'inline-flex', alignItems: 'center', gap: 4, paddingLeft: 9, borderLeft: '1px solid rgba(37,99,235,.30)' }}
-            >
-              <span aria-hidden style={{ fontSize: 13, lineHeight: 1 }}>↻</span>
-              <span>{resetTxt}</span>
-              <span style={{ fontWeight: 500, opacity: .75 }}>to reset</span>
+        {/* One calm, neutral container holds all account resources — scrape budget,
+            credits, and (when applicable) the reset countdown — instead of three
+            competing colored pills. Accent shows only in the tiny progress track. */}
+        <div className="usage-group">
+          <span className="ug-chip" title={scrapeTitle}>
+            <IconChartBar />
+            <span className="ug-col">
+              <span className="ug-val">
+                {scrapeLeft.toLocaleString()} <em>left</em>
+              </span>
+              <span className="ug-track">
+                <i style={{ width: scrapePct.toFixed(1) + '%', background: scrapeBar }} />
+              </span>
             </span>
-          )}
-        </span>
-
-        <span
-          className="credit-pill"
-          title="Credits for email enrichment & verification — 1 credit = 1 valid email · 2 verifications · ⅓ of a domain/LinkedIn enrichment (3 credits each)"
-          style={{
-            display: 'inline-flex', alignItems: 'center', gap: 6,
-            padding: '6px 12px', borderRadius: 999, whiteSpace: 'nowrap',
-            background: 'rgba(217,119,6,.10)', border: '1px solid rgba(217,119,6,.28)',
-            color: '#b45309', fontSize: 13, fontWeight: 700,
-          }}
-        >
-          <span aria-hidden style={{ fontSize: 14, lineHeight: 1 }}>⚡</span>
-          {(credits ?? 0).toLocaleString()} credits
-        </span>
-
-        <span className="conn-pill">
-          <span className={'dot' + (connectorOnline ? '' : ' off')} />
-          <span>
-            {/* With several browsers connected, "Extension connected" is
-                ambiguous (connected WHERE?) — show the count instead. */}
-            {profiles.length > 1
-              ? `${profiles.filter((p) => p.online).length}/${profiles.length} extensions connected`
-              : connectorOnline ? 'Extension connected' : 'Extension not connected'}
           </span>
-        </span>
+
+          <span className="ug-div" />
+
+          <span
+            className="ug-chip"
+            title="Credits for email enrichment & verification — 1 credit = 1 valid email · 2 verifications · ⅓ of a domain/LinkedIn enrichment (3 credits each)"
+          >
+            <IconZap />
+            <span className={'ug-val' + (lowCredits ? ' warn' : '')}>{creditBal.toLocaleString()}</span>
+          </span>
+
+          {resetsDaily && (
+            <>
+              <span className="ug-div" />
+              <span className="ug-chip" title={`Scrape budget resets in ${resetTxt} — daily at 00:00 UTC`}>
+                <IconClock />
+                <span className="ug-val muted">{resetTxt}</span>
+              </span>
+            </>
+          )}
+        </div>
+
+        {/* Connection status lives here and ONLY here now. */}
+        <button className="conn-pill" onClick={() => nav('set')} title="Manage extensions & connection">
+          <span className={'dot' + (connectorOnline ? '' : ' off')} />
+          <span>{connText}</span>
+        </button>
 
         <button className="tb-icon" onClick={() => nav('set')} title="Settings">
           <IconGear />
@@ -141,6 +153,9 @@ export default function Topbar({ route, nav, onLogout }) {
             )}
             <button className="acct-item" onClick={() => { setOpen(false); nav('setup') }}>
               <IconChain /> Setup
+            </button>
+            <button className="acct-item" onClick={() => { setOpen(false); nav('ext') }}>
+              <IconDownload /> Get extension
             </button>
             <button className="acct-item" onClick={() => { setOpen(false); nav('api') }}>
               <IconKeyOutline /> API key

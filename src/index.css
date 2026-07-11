@@ -1103,9 +1103,26 @@ body{flex-direction:column}
 .tb-logo::after{content:'';position:absolute;inset:0;border-radius:11px;background:linear-gradient(135deg,rgba(255,255,255,.28),transparent 55%)}
 .tb-logo svg{width:26px;height:26px;color:#fff;position:relative;z-index:1;filter:drop-shadow(0 1px 2px rgba(0,0,0,.25))}
 .tb-brand h1{font-size:19px;font-weight:800;background:linear-gradient(135deg,#3257d6,#4f7cf5);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-.02em}
-.tb-right{display:flex;align-items:center;gap:11px}
-.conn-pill{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:600;color:var(--text-muted);padding:6px 12px;border:1px solid var(--border);border-radius:999px;background:var(--bg-elev-2)}
-.conn-pill .dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);transition:background .3s,box-shadow .3s}
+.tb-right{display:flex;align-items:center;gap:10px}
+
+/* Usage group — one neutral, hairline-bordered container holding the scrape budget,
+   credits, and reset countdown as matched segments. Replaces three loud colored pills;
+   the only color is the tiny progress-track fill (+ an amber warn state). */
+.usage-group{display:inline-flex;align-items:stretch;height:36px;border:1px solid var(--border);border-radius:10px;background:var(--bg-elev-2)}
+.ug-chip{display:inline-flex;align-items:center;gap:8px;padding:0 12px;white-space:nowrap}
+.ug-chip svg{width:15px;height:15px;stroke-width:2;color:var(--text-faint);flex-shrink:0}
+.ug-col{display:flex;flex-direction:column;gap:4px;justify-content:center}
+.ug-val{font-size:12.5px;font-weight:700;color:var(--text);line-height:1}
+.ug-val em{font-style:normal;font-weight:500;color:var(--text-faint);margin-left:1px}
+.ug-val.muted{font-weight:600;color:var(--text-muted)}
+.ug-val.warn{color:var(--amber)}
+.ug-track{width:62px;height:3px;border-radius:999px;background:var(--border);overflow:hidden}
+.ug-track i{display:block;height:100%;border-radius:999px;background:var(--blue);transition:width .4s ease}
+.ug-div{width:1px;background:var(--border);margin:8px 0}
+
+.conn-pill{display:flex;align-items:center;gap:7px;font-family:var(--font);font-size:12.5px;font-weight:600;color:var(--text-muted);padding:0 13px;height:36px;border:1px solid var(--border);border-radius:10px;background:var(--bg-elev-2);cursor:pointer;transition:background .15s,border-color .15s}
+.conn-pill:hover{background:var(--bg-hover)}
+.conn-pill .dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);transition:background .3s,box-shadow .3s;flex-shrink:0}
 .conn-pill .dot.off{background:#f59e0b;box-shadow:none}
 .conn-pill .dot.wait{background:var(--text-faint);box-shadow:none}
 .tb-icon{width:36px;height:36px;border-radius:10px;border:1px solid var(--border);background:var(--bg-elev-2);color:var(--text-muted);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s}
@@ -1127,81 +1144,47 @@ body{flex-direction:column}
 .acct-item.danger:hover{background:var(--redglow)}
 .acct-sep{height:1px;background:var(--border);margin:6px 4px}
 
-/* ═══════════════════ STATS BOX (above the nav) ═══════════════════ */
-.statsbox{
-  display:flex;align-items:center;gap:22px;flex-wrap:wrap;
-  background:linear-gradient(150deg,var(--bg-elev-1) 0%,var(--bg-elev-2) 100%);border:1px solid var(--border);
-  border-radius:var(--radius-lg);box-shadow:var(--shadow-md);
-  padding:16px 22px;margin-bottom:22px;
-}
-.sbx-stats{display:flex;align-items:center;gap:24px;flex-wrap:wrap}
-.sbx-stat{display:flex;align-items:center;gap:12px}
-.sbx-ic{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.sbx-ic svg{width:19px;height:19px;stroke-width:2.2}
-.sbx-stat.b .sbx-ic{background:rgba(79,124,245,.14);color:var(--blue)}
-.sbx-stat.pr .sbx-ic{background:rgba(124,58,237,.14);color:#6d28d9}
-.sbx-stat-txt{display:flex;flex-direction:column;gap:3px}
-.sbx-stat .l{font-size:10.5px;text-transform:uppercase;letter-spacing:.6px;font-weight:700;color:var(--text-dim)}
-.sbx-stat .v{font-size:24px;font-weight:800;letter-spacing:-.02em;color:var(--text);line-height:1}
-.sbx-stat.b .v{color:var(--blue)} .sbx-stat.g .v{color:#047857} .sbx-stat.pr .v{color:#6d28d9}
-.sbx-divider{width:1px;align-self:stretch;background:var(--border);margin:3px 0}
-/* Profile connection slot — clickable, jumps to Settings */
-.sbx-conn{display:flex;align-items:center;gap:10px;margin-left:auto;cursor:pointer;padding:7px 13px;border:1px solid var(--border);border-radius:999px;background:var(--bg-elev-2);transition:background .15s,border-color .15s}
-.sbx-conn:hover{background:var(--bg-hover)}
-.sbx-conn.ok{border-color:rgba(4,120,87,.30);background:var(--greenglow)}
-.sbx-conn.bad{border-color:rgba(180,83,9,.30);background:var(--amberglow)}
-.sbx-conn-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;background:var(--text-faint)}
-.sbx-conn-dot.on{background:var(--green);box-shadow:0 0 8px var(--green)}
-.sbx-conn-dot.off{background:#f59e0b}
-.sbx-conn-txt{display:flex;flex-direction:column;gap:2px;min-width:0}
-.sbx-conn-l{font-size:9.5px;text-transform:uppercase;letter-spacing:.6px;font-weight:700;color:var(--text-dim);line-height:1}
-.sbx-conn-v{font-size:12.5px;font-weight:700;color:var(--text);line-height:1.2;max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-/* Get-extension button — sits right next to the connection slot */
-.sbx-ext{display:flex;align-items:center;gap:7px;cursor:pointer;padding:9px 15px;border:1px solid rgba(79,124,245,.28);border-radius:999px;background:var(--brand-grad-soft);font-family:var(--font);font-size:12.5px;font-weight:700;color:var(--brand);white-space:nowrap;transition:all .15s}
-.sbx-ext:hover{background:rgba(79,124,245,.18);color:#3257d6;transform:translateY(-1px)}
-.sbx-ext svg{width:15px;height:15px;stroke-width:2.2;flex-shrink:0;color:var(--brand)}
-.sbx-key{display:flex;align-items:center;gap:11px;background:var(--bg-elev-1);border:1px solid var(--border-strong);box-shadow:0 1px 3px rgba(12,18,45,.05);border-radius:var(--radius);padding:7px 7px 7px 14px;max-width:100%}
-.sbx-key .kl{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--text-muted);flex-shrink:0}
-.sbx-key .kv{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:190px;cursor:pointer}
-.sbx-key .kc{width:32px;height:32px;border-radius:8px;border:none;background:var(--brand-grad);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;box-shadow:0 4px 12px -4px rgba(79,124,245,.5)}
-.sbx-key .kc svg{width:15px;height:15px;stroke-width:2}
+/* ═══════════════════ ACTIVITY CAPTION (above the nav) ═══════════════════ */
+/* Slimmed from the old 4-in-one stats card down to just the two job metrics — a
+   light, left-aligned caption. Connection / Get-extension / API-key moved to the
+   top bar + account menu. */
+.statsbar{display:flex;align-items:center;gap:16px;margin:2px 2px 16px}
+.sb-metric{display:inline-flex;align-items:center;gap:9px;font-size:13px;font-weight:500;color:var(--text-muted);white-space:nowrap}
+.sb-metric b{font-size:18px;font-weight:800;letter-spacing:-.02em;color:var(--text);line-height:1}
+.sb-ic{width:28px;height:28px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+.sb-ic svg{width:15px;height:15px;stroke-width:2.2}
+.sb-ic.b{background:rgba(79,124,245,.13);color:var(--blue)}
+.sb-ic.pr{background:rgba(124,58,237,.13);color:#6d28d9}
+.sb-sep{width:1px;height:20px;background:var(--border)}
 
 /* ═══════════════════ PRODUCT NAV (horizontal tabs) ═══════════════════ */
-/* All tabs on ONE line; scroll horizontally on screens too narrow to fit them. */
-.pnav{display:flex;align-items:center;justify-content:center;gap:8px 6px;flex-wrap:wrap;background:var(--bg-elev-1);border:1px solid var(--border);border-radius:14px;padding:9px 14px;margin-bottom:22px;box-shadow:0 2px 12px rgba(12,18,45,.05);position:relative}
-/* Forces the coming-soon tabs onto a SECOND row (see ProductNav). Both rows are
-   justified space-between, so each sits flush against the left + right edges. */
-.pnav-break{flex-basis:100%;height:0;margin:-4px 0}
+/* One quiet segmented bar: left-aligned, single row, scrolls horizontally when it can't
+   fit. Live products first, a hairline divider, then the coming-soon tabs grouped at the
+   end. Icons are a single neutral tone — accent survives ONLY on the active tab fill. */
+.pnav{display:flex;align-items:center;justify-content:flex-start;gap:4px;flex-wrap:nowrap;overflow-x:auto;background:var(--bg-elev-1);border:1px solid var(--border);border-radius:14px;padding:6px 8px;margin-bottom:20px;box-shadow:0 2px 12px rgba(12,18,45,.05);position:relative;scrollbar-width:thin}
+.pnav::-webkit-scrollbar{height:6px}
+.pnav::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:999px}
+/* Hairline divider that segregates the coming-soon group at the right end. */
+.pnav-sep{flex:0 0 auto;width:1px;align-self:stretch;background:var(--border);margin:4px 6px}
 .ptab{flex-shrink:0}
 /* Centered New Job button — sticky at the top of the scroll area so it stays
    visible on every job page (it sits above the jobs in the Sales Nav module). */
 .newjob-bar{display:flex;justify-content:center;position:sticky;top:0;z-index:5;background:var(--bg);padding:6px 0 16px;box-shadow:0 9px 12px -11px rgba(20,30,80,.12)}
 .newjob-bar .btn{min-width:200px;justify-content:center}
-.ptab{position:relative;display:flex;align-items:center;gap:7px;padding:9px 14px;border:none;background:transparent;cursor:pointer;font-family:var(--font);font-size:13px;font-weight:600;color:var(--text-muted);border-radius:10px;transition:color .18s,background .18s,box-shadow .18s;white-space:nowrap}
-.ptab svg{width:17px;height:17px;stroke-width:2;flex-shrink:0}
+.ptab{position:relative;display:flex;align-items:center;gap:7px;padding:8px 13px;border:none;background:transparent;cursor:pointer;font-family:var(--font);font-size:13px;font-weight:600;color:var(--text-muted);border-radius:9px;transition:color .18s,background .18s,box-shadow .18s;white-space:nowrap}
+.ptab svg{width:17px;height:17px;stroke-width:2;flex-shrink:0;color:var(--text-faint)}
 .ptab:hover{color:var(--text);background:var(--bg-elev-2)}
-.ptab.on{color:#fff;background:var(--pc,var(--brand));box-shadow:0 4px 12px -3px var(--pc,var(--brand));font-weight:700}
-.ptab.on svg{color:#fff}
-.ptab.soon{color:var(--text-dim)}
-.ptab.soon:hover{color:var(--text);background:var(--bg-elev-2)}
+.ptab:hover svg{color:var(--text-dim)}
+.ptab.on{color:#fff;background:var(--pc,var(--brand));box-shadow:0 3px 9px -4px var(--pc,var(--brand));font-weight:700}
+.ptab.soon{color:var(--text-dim);opacity:.6}
+.ptab.soon:hover{color:var(--text);opacity:1;background:var(--bg-elev-2)}
 .soon-b{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--text-dim);background:var(--bg-elev-3);border:1px solid var(--border);padding:2px 6px;border-radius:5px;line-height:1.3}
 .ptab.on .soon-b{color:#fff;background:rgba(255,255,255,.22);border-color:transparent}
 .pnav-new{margin-left:auto;align-self:center}
-/* Colorful product tabs — each module has its own accent: the icon always shows
-   it, and the text + underline pick it up when the tab is active. */
-.ptab[data-p="salesnav"] svg{color:#4f7cf5}
-.ptab[data-p="waterfall"] svg{color:#0891b2}
-.ptab[data-p="apollo"] svg{color:#ea580c}
-.ptab[data-p="zoominfo"] svg{color:#7c3aed}
-.ptab[data-p="verify"] svg{color:#059669}
-.ptab[data-p="domain"] svg{color:#db2777}
-.ptab[data-p="company"] svg{color:#4338ca}
-.ptab[data-p="home"] svg{color:#3257d6}
-/* Active tab = solid --pc pill. Force WHITE text + icon so BOTH stay legible on the fill —
-   these must beat .ptab.soon (dim grey, for an active coming-soon tab) and the per-product
-   svg accent above (which would otherwise tint the icon its own colour → invisible). */
+/* Active tab = solid --pc pill; force WHITE text + icon so both stay legible on the fill
+   (must beat .ptab.soon for an active coming-soon tab, and the neutral icon tone above). */
 .ptab.on,.ptab.on.soon{color:#fff}
-.ptab.on svg,.ptab.on[data-p] svg{color:#fff}
+.ptab.on svg{color:#fff}
 
 /* ═══════════════════ PRODUCTS HOME (Tools grid) ═══════════════════ */
 .phome{padding:4px 0 44px}
