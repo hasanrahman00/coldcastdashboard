@@ -216,7 +216,10 @@ input,button,textarea,select{font-family:var(--font)}
 .top-left p{font-size:12.5px;color:var(--text-muted);margin-top:2px;font-weight:400}
 /* Content fills the main column (the sidebar provides the left structure now). */
 .cnt{flex:1;overflow-y:auto;padding:26px 32px 48px;position:relative;scroll-behavior:smooth}
-.cnt > *{max-width:1320px}
+/* Center every content block in the column so the product-name chip, the New Job button,
+   and each page's content all share the same centered axis (was left-aligned → the New
+   Job button drifted left of the centered title on wide screens). */
+.cnt > *{max-width:1320px;margin-inline:auto}
 
 /* ═══════════════════ BUTTONS ═══════════════════ */
 .btn{
@@ -519,8 +522,8 @@ a.btn:hover{text-decoration:none}
 /* ═══════════════════ Waterfall Email Enricher (standalone tab) ═══════════════════ */
 .wf{display:flex;flex-direction:column;gap:16px;width:100%}
 .wf-card{background:var(--bg-elev-1);border:1px solid var(--border);border-radius:14px;padding:22px 24px;display:flex;flex-direction:column;gap:14px}
-.wf-card-t{font-size:17px;font-weight:800;margin:0;color:var(--text)}
-.wf-card-s{font-size:12.5px;color:var(--text-muted);line-height:1.5;margin:-8px 0 0}
+.wf-card-t{font-size:17px;font-weight:800;margin:0;color:var(--text);text-align:center}
+.wf-card-s{font-size:12.5px;color:var(--text-muted);line-height:1.5;margin:-8px 0 0;text-align:center;max-width:620px;align-self:center}
 .wf-card-s b{color:var(--text);font-weight:700}
 .wf-drop{
   display:flex;align-items:center;justify-content:center;gap:10px;
