@@ -1090,32 +1090,34 @@ body{flex-direction:column}
 .shell{flex:1;display:flex;min-height:0;overflow:hidden}
 .shell-main{flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden}
 
-/* Left sidebar — brand + the FULL product list, always visible. */
-.side{flex:0 0 244px;width:244px;display:flex;flex-direction:column;background:var(--bg-elev-1);border-right:1px solid var(--border);overflow-y:auto;padding:0 12px 18px;scrollbar-width:thin}
+/* Left sidebar — a premium DARK navy panel against the light content, so the two areas
+   read as clearly different surfaces. Foreground is light for crisp contrast. */
+.side{flex:0 0 244px;width:244px;display:flex;flex-direction:column;background:linear-gradient(185deg,#1b2338 0%,#111828 100%);overflow-y:auto;padding:0 12px 18px;scrollbar-width:thin;box-shadow:8px 0 24px -16px rgba(9,14,28,.55)}
 .side::-webkit-scrollbar{width:6px}
-.side::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:999px}
-.side-brand{display:flex;align-items:center;gap:11px;cursor:pointer;padding:16px 8px 14px;position:sticky;top:0;background:var(--bg-elev-1);z-index:1}
-.side-logo{width:36px;height:36px;border-radius:11px;background:var(--brand-grad);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(79,124,245,.45);flex-shrink:0;position:relative}
+.side::-webkit-scrollbar-thumb{background:rgba(255,255,255,.14);border-radius:999px}
+.side-brand{display:flex;align-items:center;gap:11px;cursor:pointer;padding:16px 8px 14px;position:sticky;top:0;background:#1b2338;z-index:1}
+.side-logo{width:36px;height:36px;border-radius:11px;background:var(--brand-grad);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(79,124,245,.5);flex-shrink:0;position:relative}
 .side-logo::after{content:'';position:absolute;inset:0;border-radius:11px;background:linear-gradient(135deg,rgba(255,255,255,.28),transparent 55%)}
 .side-logo svg{width:24px;height:24px;color:#fff;position:relative;z-index:1;filter:drop-shadow(0 1px 2px rgba(0,0,0,.25))}
-.side-brand h1{font-size:18px;font-weight:800;background:linear-gradient(135deg,#3257d6,#4f7cf5);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-.02em;white-space:nowrap}
+.side-brand h1{font-size:18px;font-weight:800;background:linear-gradient(135deg,#9bbcff,#e9f1ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-.02em;white-space:nowrap}
 .side-nav{display:flex;flex-direction:column;gap:2px}
-.side-cap{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--text-faint);padding:4px 11px 6px}
-.side-sep{height:1px;background:var(--border);margin:12px 6px 4px}
-.snav-item{position:relative;display:flex;align-items:center;gap:11px;width:100%;text-align:left;padding:9px 11px;border:none;background:transparent;border-radius:10px;cursor:pointer;font-family:var(--font);font-size:13.5px;font-weight:600;color:var(--text-muted);transition:background .15s,color .15s}
-.snav-item:hover{background:var(--bg-elev-2);color:var(--text)}
+.side-cap{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:rgba(255,255,255,.34);padding:4px 11px 6px}
+.side-sep{height:1px;background:rgba(255,255,255,.09);margin:12px 6px 4px}
+.snav-item{position:relative;display:flex;align-items:center;gap:11px;width:100%;text-align:left;padding:9px 11px;border:none;background:transparent;border-radius:10px;cursor:pointer;font-family:var(--font);font-size:13.5px;font-weight:600;color:rgba(255,255,255,.74);transition:background .15s,color .15s}
+.snav-item:hover{background:rgba(255,255,255,.07);color:#fff}
 .snav-ic{width:20px;height:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.snav-ic svg{width:18px;height:18px;stroke-width:2;color:var(--text-faint)}
-.snav-item:hover .snav-ic svg{color:var(--text-dim)}
+.snav-ic svg{width:18px;height:18px;stroke-width:2;color:rgba(255,255,255,.5)}
+.snav-item:hover .snav-ic svg{color:rgba(255,255,255,.9)}
 .snav-label{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-/* Active row: soft accent tint bg + a DARKENED accent for the label so it clears WCAG AA
-   even for the lighter accents (Apollo/Sales Nav); the icon + left bar keep the full accent. */
-.snav-item.on{background:color-mix(in srgb,var(--pc,var(--brand)) 12%,transparent);color:color-mix(in srgb,var(--pc,var(--brand)) 70%,#0b1020);font-weight:700}
-.snav-item.on .snav-ic svg{color:var(--pc,var(--brand))}
-.snav-item.on::before{content:'';position:absolute;left:-12px;top:8px;bottom:8px;width:3px;border-radius:0 3px 3px 0;background:var(--pc,var(--brand))}
-.snav-item.soon{color:var(--text-dim);opacity:.72}
-.snav-item.soon:hover{opacity:1}
-.snav-soon{margin-left:auto;font-size:8.5px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--text-dim);background:var(--bg-elev-3);border:1px solid var(--border);padding:2px 5px;border-radius:5px;line-height:1.3}
+/* Active row: accent-tinted dark bg + a white label, with a bright accent icon + left bar. */
+.snav-item.on{background:color-mix(in srgb,var(--pc,var(--brand)) 30%,transparent);color:#fff;font-weight:700}
+.snav-item.on:hover{background:color-mix(in srgb,var(--pc,var(--brand)) 36%,transparent)}
+.snav-item.on .snav-ic svg{color:color-mix(in srgb,var(--pc,var(--brand)) 52%,#ffffff)}
+.snav-item.on::before{content:'';position:absolute;left:-12px;top:8px;bottom:8px;width:3px;border-radius:0 3px 3px 0;background:color-mix(in srgb,var(--pc,var(--brand)) 55%,#ffffff)}
+.snav-item.soon{color:rgba(255,255,255,.42)}
+.snav-item.soon .snav-ic svg{color:rgba(255,255,255,.3)}
+.snav-item.soon:hover{color:#fff}
+.snav-soon{margin-left:auto;font-size:8.5px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:rgba(255,255,255,.5);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);padding:2px 5px;border-radius:5px;line-height:1.3}
 
 /* Collapse the sidebar to an icon rail on narrow screens. */
 @media (max-width:880px){
