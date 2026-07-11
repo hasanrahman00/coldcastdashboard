@@ -524,7 +524,8 @@ a.btn:hover{text-decoration:none}
 .wf-card-s b{color:var(--text);font-weight:700}
 .wf-drop{
   display:flex;align-items:center;justify-content:center;gap:10px;
-  padding:26px 20px;border:1.5px dashed var(--border-strong);border-radius:10px;
+  align-self:center;width:100%;max-width:520px;
+  padding:15px 20px;border:1.5px dashed var(--border-strong);border-radius:12px;
   background:var(--bg-elev-2);cursor:pointer;text-align:center;
   transition:border-color .15s,background .15s;
 }
@@ -534,8 +535,8 @@ a.btn:hover{text-decoration:none}
 .wf-drop.has svg{color:#059669}
 .wf-drop-t{font-size:13.5px;font-weight:600;color:var(--text-muted)}
 .wf-drop.has .wf-drop-t{color:var(--text)}
-.wf-btn{width:100%;justify-content:center;padding:12px;font-size:14px}
-.wf-card-foot{display:flex;align-items:center;gap:12px;font-size:12px;color:var(--text-muted);font-weight:600}
+.wf-btn{align-self:center;width:100%;max-width:520px;justify-content:center;padding:12px;font-size:14px}
+.wf-card-foot{display:flex;align-items:center;justify-content:center;gap:12px;font-size:12px;color:var(--text-muted);font-weight:600;align-self:center}
 .wf-clear{margin-left:auto;background:none;border:none;color:var(--brand);font-weight:700;cursor:pointer;font-size:12px;padding:0}
 .wf-clear:hover{text-decoration:underline}
 .wf-jobs{display:flex;flex-direction:column;gap:10px}
