@@ -14,6 +14,9 @@ import {
 //  coming-soon copy. `id` doubles as the route and the CSS data-p key (the
 //  ported stylesheet colours each tab via .ptab[data-p="<id>"]).
 //
+//  `icon`  — line icon used in the nav tabs + cards.
+//  `emoji` — real emoji used in the big centered per-product page header.
+//
 //  Add a product → add an entry. While soon:true it renders the shared
 //  ComingSoon page automatically.
 // ─────────────────────────────────────────────────────────────────────────────
@@ -24,6 +27,7 @@ export const PRODUCTS = [
     label: 'Sales Nav Scraper',
     soon: false,
     icon: IconGlobe,
+    emoji: '🧭',
     title: 'Sales Nav Scraper',
     body: 'Export clean, enriched lead lists from your LinkedIn Sales Navigator searches — names, titles, verified emails, and company firmographics — in one click.',
   },
@@ -32,6 +36,7 @@ export const PRODUCTS = [
     label: 'Waterfall Email Enricher',
     soon: false,
     icon: IconLayers,
+    emoji: '🌊',
     title: 'Waterfall Email Enricher',
     body: 'Chain your providers in a waterfall to maximize verified-email coverage. Each lead falls through to the next source until a valid, deliverable address is found — then runs through the built-in verifier.',
   },
@@ -40,6 +45,7 @@ export const PRODUCTS = [
     label: 'Apollo Scraper',
     soon: false,
     icon: IconFeather,
+    emoji: '🚀',
     title: 'Apollo Scraper',
     body: 'Export targeted contact and company lists straight from your Apollo searches — names, titles, verified emails, and firmographics — with the same one-click flow as the Sales Nav scraper.',
   },
@@ -48,15 +54,17 @@ export const PRODUCTS = [
     label: 'LinkedIn URL Enricher',
     soon: false,
     icon: IconLink,
+    emoji: '🔗',
     title: 'LinkedIn URL Enricher',
     body: 'Upload a list of LinkedIn profile URLs and get back names, titles, verified business emails, phones, and company firmographics — enriched in your own connected browser across Lusha, ContactOut, and SalesQL, then merged into one clean CSV.',
   },
   {
     id: 'company',
-    label: 'Company Scraper',
+    label: 'Sales Nav Company Scraper',
     soon: false,
     icon: IconUsers,
-    title: 'Company Scraper',
+    emoji: '🏢',
+    title: 'Sales Nav Company Scraper',
     body: 'Export company & account lists straight from your LinkedIn Sales Navigator account searches — company names, domains, size, industry, and firmographics — with the same one-click flow as the lead scrapers.',
   },
   {
@@ -64,6 +72,7 @@ export const PRODUCTS = [
     label: 'ZoomInfo Scraper',
     soon: true,
     icon: IconSearchPlus,
+    emoji: '🔎',
     title: 'ZoomInfo Scraper',
     body: 'Pull contacts and accounts from ZoomInfo into clean, enriched CSVs — direct dials, work emails, and company data — without manual exports or seat limits.',
   },
@@ -72,6 +81,7 @@ export const PRODUCTS = [
     label: 'Email Verify',
     soon: true,
     icon: IconMailCheck,
+    emoji: '✅',
     title: 'Email Verify',
     body: 'Validate any email list in bulk — syntax, MX, SMTP, catch-all, and risk scoring — so you only send to deliverable addresses and protect your sender reputation. This is the engine that powers the waterfall enricher.',
   },
@@ -80,6 +90,7 @@ export const PRODUCTS = [
     label: 'Domain Enrichment',
     soon: true,
     icon: IconAtSign,
+    emoji: '🌐',
     title: 'Domain Enrichment',
     body: 'Turn a list of company domains into full firmographics — company name, industry, size, location, socials, and key contacts — in one upload. The same enrichment engine behind the scraper, pointed straight at domains.',
   },
