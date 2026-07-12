@@ -1125,10 +1125,10 @@ body{flex-direction:column}
 .side-nav{display:flex;flex-direction:column;gap:2px}
 .side-cap{font-family:var(--font-nav);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:rgba(255,255,255,.45);padding:4px 11px 6px}
 .side-sep{height:1px;background:rgba(255,255,255,.14);margin:12px 6px 4px}
-.snav-item{position:relative;display:flex;align-items:center;gap:11px;width:100%;text-align:left;padding:10px 12px;border:none;background:transparent;border-radius:11px;cursor:pointer;font-family:var(--font-nav);font-size:13.5px;font-weight:600;letter-spacing:-.005em;color:rgba(255,255,255,.82);transition:background .15s,color .15s,box-shadow .15s}
+.snav-item{position:relative;display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:10px 11px;border:none;background:transparent;border-radius:11px;cursor:pointer;font-family:var(--font-nav);font-size:12px;font-weight:600;letter-spacing:-.005em;color:rgba(255,255,255,.82);transition:background .15s,color .15s,box-shadow .15s}
 .snav-item:hover{background:rgba(255,255,255,.10);color:#fff}
 .snav-ic{width:20px;height:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15.5px;line-height:1}
-.snav-label{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-transform:uppercase;letter-spacing:.03em}
+.snav-label{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-transform:uppercase;letter-spacing:.015em}
 /* Active = a single ORANGE pill for EVERY item (consistent, à la the reference) —
    not the per-product accent. */
 .snav-item.on,.snav-item.on:hover{background:linear-gradient(135deg,#e8622a,#c9481c);color:#fff;font-weight:700;box-shadow:0 8px 18px -8px rgba(201,72,28,.7)}
@@ -1179,7 +1179,7 @@ body{flex-direction:column}
 .ug-chip{display:inline-flex;align-items:center;gap:9px;padding:0 14px;white-space:nowrap}
 .ug-chip svg{width:16px;height:16px;stroke-width:2;color:var(--text-faint);flex-shrink:0}
 .ug-col{display:flex;flex-direction:column;gap:5px;justify-content:center}
-.ug-val{font-size:13.5px;font-weight:700;color:var(--text);line-height:1}
+.ug-val{font-size:13.5px;font-weight:700;color:var(--text);line-height:1;text-transform:uppercase;letter-spacing:.01em}
 .ug-val em{font-style:normal;font-weight:500;color:var(--text-muted)}
 .ug-val.muted{font-weight:600;color:var(--text-muted)}
 .ug-val.warn{color:var(--amber)}
@@ -1190,7 +1190,7 @@ body{flex-direction:column}
    on narrow screens without leaving a dangling separator. */
 .ug-reset{border-left:1px solid var(--border-strong)}
 
-.conn-pill{display:flex;align-items:center;gap:8px;font-family:var(--font);font-size:13px;font-weight:600;color:var(--text-muted);padding:0 15px;height:42px;border:1px solid var(--border-strong);border-radius:14px;background:var(--chip);box-shadow:0 1px 2px rgba(12,18,45,.05);cursor:pointer;transition:background .15s,border-color .15s}
+.conn-pill{display:flex;align-items:center;gap:8px;font-family:var(--font);font-size:12.5px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.02em;padding:0 15px;height:42px;border:1px solid var(--border-strong);border-radius:14px;background:var(--chip);box-shadow:0 1px 2px rgba(12,18,45,.05);cursor:pointer;transition:background .15s,border-color .15s}
 .conn-pill:hover{background:var(--chip-hover)}
 .conn-pill .dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);transition:background .3s,box-shadow .3s;flex-shrink:0}
 .conn-pill .dot.off{background:#f59e0b;box-shadow:none}
@@ -1202,7 +1202,7 @@ body{flex-direction:column}
 .acct-btn{display:flex;align-items:center;gap:10px;height:42px;padding:0 12px 0 5px;border:1px solid var(--border-strong);border-radius:999px;background:var(--chip);box-shadow:0 1px 2px rgba(12,18,45,.05);cursor:pointer;transition:all .15s}
 .acct-btn:hover{background:var(--chip-hover)}
 .acct-btn .avatar{width:31px;height:31px;border-radius:50%;background:var(--brand-grad);color:#fff;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.acct-btn .uname{font-size:14px;font-weight:600;color:var(--text);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.acct-btn .uname{font-size:13.5px;font-weight:600;color:var(--text);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-transform:uppercase;letter-spacing:.02em}
 .acct-btn .chev{width:16px;height:16px;color:var(--text-dim);stroke-width:2.4}
 .acct-menu{position:absolute;top:calc(100% + 8px);right:0;min-width:210px;background:var(--bg-elev-1);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-lg);padding:6px;opacity:0;visibility:hidden;transform:translateY(-6px);transition:all .16s var(--ease-out);z-index:20}
 .acct-menu.on{opacity:1;visibility:visible;transform:translateY(0)}
@@ -1218,7 +1218,7 @@ body{flex-direction:column}
 /* Total jobs + Running as a rounded pill group on the left of the top bar (replaced the
    page title). Matches the height/radius of the right-side usage group. */
 .statsbar{display:inline-flex;align-items:center;height:42px;border:1px solid var(--border-strong);border-radius:14px;background:var(--chip);box-shadow:0 1px 2px rgba(12,18,45,.05);padding:0 5px;min-width:0}
-.sb-metric{display:inline-flex;align-items:center;gap:9px;padding:0 12px;font-size:13px;font-weight:600;color:var(--text-muted);white-space:nowrap}
+.sb-metric{display:inline-flex;align-items:center;gap:9px;padding:0 12px;font-size:12.5px;font-weight:600;color:var(--text-muted);white-space:nowrap;text-transform:uppercase;letter-spacing:.02em}
 .sb-metric b{font-size:16px;font-weight:800;letter-spacing:-.01em;color:var(--text);line-height:1}
 .sb-ic{width:28px;height:28px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
 .sb-ic svg{width:15px;height:15px;stroke-width:2.2}
