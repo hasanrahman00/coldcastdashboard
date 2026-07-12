@@ -1,54 +1,65 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  /* Surfaces — light "soft gradient" theme (matches coldcast.io) */
-  --bg:#f6f8ff;
+  /* Surfaces — near-neutral COOL-GRAY ramp (Radix Slate / Untitled UI), whisper of cool,
+     zero lavender. Elevation comes from white cards + soft shadow, not tint. */
+  --bg:#f6f7f9;
   --bg-elev-1:#ffffff;
-  --bg-elev-2:#f0f3fc;
-  --bg-elev-3:#e7ecfb;
-  --bg-hover:#dfe6f8;
-  /* Glossy chip fills for the top-bar controls (Snov.io-style gradient depth). */
-  --chip:linear-gradient(180deg,#ffffff 0%,#e9eefb 100%);
-  --chip-hover:linear-gradient(180deg,#f3f6ff 0%,#dce4f7 100%);
+  --bg-elev-2:#f1f2f4;
+  --bg-elev-3:#e8e9ec;
+  --bg-hover:#e6e8ec;
+  /* Chip fills for the top-bar controls — neutral gradient depth (de-lavendered). */
+  --chip:linear-gradient(180deg,#ffffff 0%,#f0f1f4 100%);
+  --chip-hover:linear-gradient(180deg,#f7f8fa 0%,#e6e8ec 100%);
 
-  /* Borders — dark hairlines on light */
-  --border:rgba(12,18,45,.10);
-  --border-strong:rgba(12,18,45,.16);
+  /* Borders — de-tinted near-neutral ink (was a blue ink that read faintly purple) */
+  --border:rgba(16,20,32,.08);
+  --border-strong:rgba(16,20,32,.14);
   --border-focus:rgba(79,124,245,.6);
 
-  /* Text — dark ink on light */
-  --text:#0c1228;
-  --text-muted:#586079;
-  --text-dim:#6b7490;
-  --text-faint:#97a0ba;
+  /* Text — cool near-black ramp, every role AA on white + --bg */
+  --text:#14161c;
+  --text-muted:#344054;
+  --text-dim:#667085;
+  --text-faint:#9aa1ac;
 
-  /* Brand & accents — Coldcast blue */
+  /* Brand & accents — Coldcast blue (unchanged) */
   --brand:#4f7cf5;
   --brand-2:#6d8ef7;
   --brand-3:#22d3ee;
   --accent:#3257d6;
   --surface:#ffffff;
-  --surface-2:#f0f3fc;
+  --surface-2:#f1f2f4;
   --brand-grad:linear-gradient(135deg,#4f7cf5 0%,#3257d6 100%);
   --brand-grad-soft:linear-gradient(135deg,rgba(79,124,245,.12),rgba(50,87,214,.08));
 
-  --blue:#2563eb;--blueglow:rgba(37,99,235,.10);
+  /* Status TEXT colors — deepened so they clear AA on their own light tints */
+  --blue:#1849a9;--blueglow:rgba(37,99,235,.10);
   --purple:#7c3aed;--purpleglow:rgba(124,58,237,.10);
-  --green:#047857;--greenglow:rgba(4,120,87,.10);
+  --green:#067647;--greenglow:rgba(4,120,87,.10);
   --teal:#0e7490;
   --amber:#b45309;--amberglow:rgba(180,83,9,.10);
-  --red:#e11d48;--redglow:rgba(225,29,72,.10);
+  --red:#be123c;--redglow:rgba(225,29,72,.10);
   --orange:#ea580c;--orangeglow:rgba(234,88,12,.10);
 
-  /* Shadows — soft, layered for light theme */
-  --shadow-sm:0 1px 2px rgba(20,30,80,.06);
-  --shadow-md:0 10px 28px -12px rgba(20,30,80,.18);
-  --shadow-lg:0 30px 70px -34px rgba(28,40,110,.28);
+  /* Restrained status treatment — soft tint bg + solid dot/rail (see job cards) */
+  --success-tint:#e7f7ee;--success-solid:#30a46c;
+  --warning-tint:#fdf3e3;--warning-solid:#f59e0b;
+  --danger-tint:#fdeceb;--danger-solid:#e5484d;
+  --info-tint:#eaf0fe;--info-solid:#2f6feb;
+  --orange-tint:#fff4ed;--purple-tint:#f5f3ff;
+  --idle-solid:#9aa1ac;
+
+  /* Shadows — de-tinted cool ink, two-layer soft (Untitled-UI style) */
+  --shadow-sm:0 1px 2px rgba(16,24,40,.06),0 1px 3px rgba(16,24,40,.08);
+  --shadow-md:0 4px 12px -2px rgba(16,24,40,.08),0 2px 6px -2px rgba(16,24,40,.05);
+  --shadow-lg:0 12px 24px -6px rgba(16,24,40,.12),0 4px 8px -4px rgba(16,24,40,.06);
   --shadow-glow:0 10px 30px -8px rgba(79,124,245,.40);
 
   --radius-sm:8px;
-  --radius:12px;
-  --radius-lg:16px;
-  --radius-xl:20px;
+  --radius:10px;
+  --radius-lg:14px;
+  --radius-xl:18px;
+  --radius-full:9999px;
 
   --font:'Inter',system-ui,-apple-system,sans-serif;
   --font-nav:'Plus Jakarta Sans','Inter',system-ui,sans-serif;
@@ -290,8 +301,8 @@ a.btn:hover{text-decoration:none}
 .btn-sm svg{width:13px;height:13px}
 .btn:disabled{opacity:.4;pointer-events:none}
 /* Colorful card actions (tinted fills so every button has its own colour, inline) */
-.btn-csv{background:var(--greenglow);color:#047857;border-color:rgba(4,120,87,.28)}
-.btn-csv:hover{background:#047857;color:#fff;border-color:#047857}
+.btn-csv{background:var(--greenglow);color:var(--green);border-color:rgba(4,120,87,.28)}
+.btn-csv:hover{background:#047857;color:#fff;border-color:var(--green)}
 .btn-xlsx{background:var(--blueglow);color:var(--blue);border-color:rgba(37,99,235,.28)}
 .btn-xlsx:hover{background:var(--blue);color:#fff;border-color:var(--blue)}
 .btn-logs{background:var(--purpleglow);color:#6d28d9;border-color:rgba(124,58,237,.26)}
@@ -360,7 +371,7 @@ a.btn:hover{text-decoration:none}
 }
 .st-ic svg{width:16px;height:16px;stroke-width:2.2}
 .st.b .st-ic{background:var(--blueglow);color:var(--blue)}
-.st.g .st-ic{background:var(--greenglow);color:#047857}
+.st.g .st-ic{background:var(--greenglow);color:var(--green)}
 .st.pr .st-ic{background:var(--purpleglow);color:#6d28d9}
 .st.or .st-ic{background:var(--orangeglow);color:var(--orange)}
 .st .v{
@@ -371,7 +382,7 @@ a.btn:hover{text-decoration:none}
   font-variant-numeric:tabular-nums;
 }
 .st.b .v{color:var(--blue)}
-.st.g .v{color:#047857}
+.st.g .v{color:var(--green)}
 .st.pr .v{color:#6d28d9}
 .st.or .v{color:var(--orange)}
 
@@ -390,12 +401,13 @@ a.btn:hover{text-decoration:none}
 @media (max-width:1000px){ .jg{grid-template-columns:repeat(2,minmax(0,1fr))} }
 @media (max-width:640px){ .jg{grid-template-columns:1fr} }
 .jc{
-  background:linear-gradient(160deg,var(--bg-elev-1) 0%,var(--bg-elev-2) 100%);
+  background:var(--bg-elev-1);
   border:1px solid var(--border);
   border-radius:var(--radius-lg);
-  padding:24px 24px;
+  box-shadow:var(--shadow-sm);
+  padding:20px 22px;
   min-height:230px;
-  transition:all .25s var(--ease);
+  transition:box-shadow .2s var(--ease),transform .2s var(--ease),border-color .2s var(--ease);
   position:relative;
   display:flex;
   flex-direction:column;
@@ -403,11 +415,12 @@ a.btn:hover{text-decoration:none}
   gap:14px;
 }
 .jc-new{animation:fadeUp .4s var(--ease-out)}
-/* Per-state card tint (mirrors the status line: ready / scraping / file-ready / failed) */
-.jc-idle{background:linear-gradient(160deg,rgba(79,124,245,.05) 0%,rgba(50,87,214,.10) 100%);border-color:rgba(79,124,245,.22)}
-.jc-run{background:linear-gradient(160deg,rgba(245,158,11,.06) 0%,rgba(217,119,6,.12) 100%);border-color:rgba(217,119,6,.28)}
-.jc-ok{background:linear-gradient(160deg,rgba(16,185,129,.06) 0%,rgba(5,150,105,.12) 100%);border-color:rgba(5,150,105,.26)}
-.jc-bad{background:linear-gradient(160deg,rgba(225,29,72,.05) 0%,rgba(225,29,72,.11) 100%);border-color:rgba(225,29,72,.3)}
+/* Per-state treatment — restrained: a 3px colored left rail (+ a soft tint only for the
+   actively-running card), never a heavy full-card fill. */
+.jc-idle{background:var(--bg-elev-1);border-color:var(--border)}
+.jc-run{background:var(--warning-tint);border-color:color-mix(in srgb,var(--warning-solid) 22%,var(--border));border-left:3px solid var(--warning-solid)}
+.jc-ok{border-left:3px solid var(--success-solid)}
+.jc-bad{border-left:3px solid var(--danger-solid)}
 .jc:hover{
   border-color:var(--border-strong);
   box-shadow:var(--shadow-md);
@@ -435,7 +448,7 @@ a.btn:hover{text-decoration:none}
 /* Status line (TotLeads-style "File available") */
 .jc-st{display:inline-flex;align-items:center;gap:7px;align-self:flex-start;font-size:13px;font-weight:600}
 .jc-st svg{width:15px;height:15px;stroke-width:2.2;flex-shrink:0}
-.jc-st.ok{color:#047857}
+.jc-st.ok{color:var(--green)}
 .jc-st.run{color:var(--amber)}
 .jc-st.bad{color:var(--red)}
 .jc-st.idle{color:var(--text-dim)}
@@ -448,9 +461,9 @@ a.btn:hover{text-decoration:none}
 .jc-url:hover span{text-decoration:underline}
 
 /* Leads — its OWN line, as a green badge with a bold, visible count */
-.jc-leads{display:inline-flex;align-items:center;gap:6px;align-self:flex-start;background:var(--greenglow);border:1px solid rgba(4,120,87,.30);border-radius:999px;padding:5px 13px;font-size:12.5px;font-weight:600;color:#047857}
+.jc-leads{display:inline-flex;align-items:center;gap:6px;align-self:flex-start;background:var(--success-tint);border:1px solid color-mix(in srgb,var(--success-solid) 30%,transparent);border-radius:var(--radius-full);padding:5px 13px;font-size:12.5px;font-weight:600;color:var(--green)}
 .jc-leads svg{width:14px;height:14px;stroke-width:2.4;opacity:1}
-.jc-leads .n{font-size:15px;font-weight:800;color:#047857;letter-spacing:-.01em}
+.jc-leads .n{font-size:15px;font-weight:800;color:var(--green);letter-spacing:-.01em}
 
 .jc-p{
   height:6px;
@@ -487,7 +500,7 @@ a.btn:hover{text-decoration:none}
 .jc-enrich-h svg{width:14px;height:14px;stroke-width:2.2;flex-shrink:0}
 .jc-enrich-h .n{font-size:14px;font-weight:800;color:#4f46e5;letter-spacing:-.01em}
 .jc-enrich-h .muted{color:var(--text-muted);font-weight:600}
-.jc-enrich.done .jc-enrich-h,.jc-enrich.done .jc-enrich-h .n{color:#047857}
+.jc-enrich.done .jc-enrich-h,.jc-enrich.done .jc-enrich-h .n{color:var(--green)}
 .jc-enrich.err .jc-enrich-h{color:var(--red)}
 .jc-enrich-dl{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
 
@@ -543,11 +556,11 @@ a.btn:hover{text-decoration:none}
 .wf-clear{margin-left:auto;background:none;border:none;color:var(--brand);font-weight:700;cursor:pointer;font-size:12px;padding:0}
 .wf-clear:hover{text-decoration:underline}
 .wf-jobs{display:flex;flex-direction:column;gap:10px}
-.wf-job{background:linear-gradient(160deg,var(--bg-elev-1) 0%,var(--bg-elev-2) 100%);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;display:flex;flex-direction:column;gap:11px;min-height:160px}
+.wf-job{background:var(--bg-elev-1);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);padding:18px 20px;display:flex;flex-direction:column;gap:11px;min-height:160px}
 .wf-job .wf-acts{margin-top:auto}
-.wf-job.running{border-color:rgba(99,102,241,.4);background:linear-gradient(160deg,rgba(99,102,241,.07) 0%,rgba(79,70,229,.14) 100%)}
-.wf-job.done{border-color:rgba(5,150,105,.34);background:linear-gradient(160deg,rgba(16,185,129,.08) 0%,rgba(5,150,105,.15) 100%)}
-.wf-job.err{border-color:rgba(225,29,72,.36);background:linear-gradient(160deg,rgba(225,29,72,.05) 0%,rgba(225,29,72,.11) 100%)}
+.wf-job.running{background:var(--info-tint);border-color:color-mix(in srgb,var(--info-solid) 22%,var(--border));border-left:3px solid var(--info-solid)}
+.wf-job.done{border-left:3px solid var(--success-solid)}
+.wf-job.err{border-left:3px solid var(--danger-solid)}
 .wf-job-h{display:flex;align-items:center;gap:10px}
 .wf-job-file{font-size:14.5px;font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:62%}
 .wf-job-d{font-size:11.5px;color:var(--text-muted)}
@@ -558,10 +571,10 @@ a.btn:hover{text-decoration:none}
 .wf-job-s svg{width:15px;height:15px}
 .wf-job-s b{font-size:15px;font-weight:800}
 .wf-job-s .muted{color:var(--text-muted);font-weight:600}
-.wf-job-s.sok{color:#047857}
+.wf-job-s.sok{color:var(--green)}
 .wf-job-s.serr{color:var(--red)}
 /* Done — hero verified count (icon matched to the number's height, all centred) */
-.wf-result{display:flex;align-items:center;gap:9px;color:#047857}
+.wf-result{display:flex;align-items:center;gap:9px;color:var(--green)}
 .wf-result svg{width:24px;height:24px;flex-shrink:0}
 .wf-result-n{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1}
 .wf-result-l{font-size:14.5px;font-weight:700}
@@ -569,7 +582,7 @@ a.btn:hover{text-decoration:none}
 /* Bottom action row — split download buttons (done) + the delete button (all states) */
 .wf-acts{display:flex;gap:8px;align-items:center}
 .wf-dlb{flex:1;justify-content:center;padding:8px 11px;font-size:12.5px;font-weight:700;border-radius:9px}
-.wf-acts .btn-csv{background:rgba(5,150,105,.13);color:#047857;border-color:rgba(5,150,105,.32)}
+.wf-acts .btn-csv{background:rgba(5,150,105,.13);color:var(--green);border-color:rgba(5,150,105,.32)}
 .wf-acts .btn-csv:hover{background:#059669;color:#fff;border-color:#059669}
 .wf-acts .btn-xlsx{background:rgba(37,99,235,.13);color:#2563eb;border-color:rgba(37,99,235,.32)}
 .wf-acts .btn-xlsx:hover{background:#2563eb;color:#fff;border-color:#2563eb}
@@ -601,7 +614,7 @@ a.btn:hover{text-decoration:none}
 .bd-idle{background:rgba(148,163,184,.1);color:var(--text-muted);border-color:rgba(148,163,184,.15)}
 .bd-running{background:var(--blueglow);color:#1e40af;border-color:rgba(96,165,250,.2)}
 .bd-running::before{animation:pulse 1.4s infinite;box-shadow:0 0 8px currentColor}
-.bd-done{background:var(--greenglow);color:#047857;border-color:rgba(52,211,153,.2)}
+.bd-done{background:var(--greenglow);color:var(--green);border-color:rgba(52,211,153,.2)}
 .bd-failed{background:var(--redglow);color:var(--red);border-color:rgba(225,29,72,.2)}
 .bd-stopped{background:var(--amberglow);color:var(--amber);border-color:rgba(180,83,9,.2)}
 .bd-stopping{background:var(--purpleglow);color:var(--purple);border-color:rgba(124,58,237,.2)}
@@ -744,7 +757,7 @@ textarea{resize:vertical;min-height:80px;font-family:var(--mono);font-size:12.5p
 .uz input{display:none}
 .uz svg{margin-bottom:10px;color:var(--text-faint)}
 .uz:hover svg,.uz.drag svg{color:var(--brand)}
-.uz-f{color:#047857;font-weight:600;margin-top:8px;font-size:12.5px}
+.uz-f{color:var(--green);font-weight:600;margin-top:8px;font-size:12.5px}
 
 /* ═══════════════════ LOG BOX ═══════════════════ */
 .log-box{
@@ -760,7 +773,7 @@ textarea{resize:vertical;min-height:80px;font-family:var(--mono);font-size:12.5p
   color:var(--text-muted);
 }
 .log-box .err{color:var(--red)}
-.log-box .ok{color:#047857}
+.log-box .ok{color:var(--green)}
 .log-box .info{color:#1e40af}
 .log-box .warn{color:var(--amber)}
 .log-box .enr{color:var(--orange)}
@@ -1135,7 +1148,7 @@ body{flex-direction:column}
 .topbar{
   display:flex;align-items:center;justify-content:space-between;gap:16px;
   padding:14px 28px;
-  background:linear-gradient(180deg,#ffffff 0%,#f4f7ff 100%);border-bottom:1px solid var(--border);
+  background:linear-gradient(180deg,#ffffff 0%,#f6f7f9 100%);border-bottom:1px solid var(--border);
   position:relative;z-index:5;flex-shrink:0;
 }
 .tb-right{display:flex;align-items:center;gap:10px;min-width:0}
