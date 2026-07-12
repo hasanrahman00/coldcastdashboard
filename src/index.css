@@ -402,7 +402,7 @@ a.btn:hover{text-decoration:none}
 @media (max-width:1000px){ .jg{grid-template-columns:repeat(2,minmax(0,1fr))} }
 @media (max-width:640px){ .jg{grid-template-columns:1fr} }
 .jc{
-  background:var(--bg-elev-1);
+  background:linear-gradient(160deg,var(--bg-elev-1) 0%,color-mix(in srgb,var(--pc,var(--brand)) 10%,var(--bg-elev-1)) 100%);
   border:1px solid var(--border);
   border-radius:var(--radius-lg);
   box-shadow:var(--shadow-sm);
@@ -418,8 +418,8 @@ a.btn:hover{text-decoration:none}
 .jc-new{animation:fadeUp .4s var(--ease-out)}
 /* Per-state treatment — restrained: a 3px colored left rail (+ a soft tint only for the
    actively-running card), never a heavy full-card fill. */
-.jc-idle{background:var(--bg-elev-1);border-color:var(--border)}
-.jc-run{background:var(--warning-tint);border-color:color-mix(in srgb,var(--warning-solid) 22%,var(--border));border-left:3px solid var(--warning-solid)}
+.jc-idle{border-color:var(--border)}
+.jc-run{background:linear-gradient(160deg,var(--bg-elev-1) 0%,var(--warning-tint) 100%);border-color:color-mix(in srgb,var(--warning-solid) 22%,var(--border));border-left:3px solid var(--warning-solid)}
 .jc-ok{border-left:3px solid var(--success-solid)}
 .jc-bad{border-left:3px solid var(--danger-solid)}
 .jc:hover{
@@ -557,9 +557,9 @@ a.btn:hover{text-decoration:none}
 .wf-clear{margin-left:auto;background:none;border:none;color:var(--brand);font-weight:700;cursor:pointer;font-size:12px;padding:0}
 .wf-clear:hover{text-decoration:underline}
 .wf-jobs{display:flex;flex-direction:column;gap:10px}
-.wf-job{background:var(--bg-elev-1);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);padding:18px 20px;display:flex;flex-direction:column;gap:11px;min-height:160px}
+.wf-job{background:linear-gradient(160deg,var(--bg-elev-1) 0%,color-mix(in srgb,var(--pc,var(--brand)) 10%,var(--bg-elev-1)) 100%);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);padding:18px 20px;display:flex;flex-direction:column;gap:11px;min-height:160px}
 .wf-job .wf-acts{margin-top:auto}
-.wf-job.running{background:var(--info-tint);border-color:color-mix(in srgb,var(--info-solid) 22%,var(--border));border-left:3px solid var(--info-solid)}
+.wf-job.running{background:linear-gradient(160deg,var(--bg-elev-1) 0%,var(--info-tint) 100%);border-color:color-mix(in srgb,var(--info-solid) 22%,var(--border));border-left:3px solid var(--info-solid)}
 .wf-job.done{border-left:3px solid var(--success-solid)}
 .wf-job.err{border-left:3px solid var(--danger-solid)}
 .wf-job-h{display:flex;align-items:center;gap:10px}

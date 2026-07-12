@@ -55,7 +55,8 @@ export default function Dashboard({ onLogout }) {
       <div className="shell-main">
         <Topbar route={route} nav={nav} onLogout={onLogout} />
         <main className="mn">
-          <div className="cnt">
+          {/* data-p sets --pc for the whole page so job cards can tint with the product accent */}
+          <div className="cnt" data-p={activeProduct && !activeProduct.soon ? route : undefined}>
             {activeProduct && !activeProduct.soon && <ProductHeader product={activeProduct} />}
             {page}
           </div>
