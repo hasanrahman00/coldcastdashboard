@@ -1,5 +1,5 @@
 import { PRODUCTS } from '../lib/products.js'
-import { IconLogo } from '../lib/icons.jsx'
+import { IconLogo, IconGrid } from '../lib/icons.jsx'
 
 // Left sidebar — the brand plus the FULL product list, always visible (no scrolling
 // row that hides tools). Dashboard first, then the live products, a divider, and the
@@ -12,6 +12,7 @@ export default function Sidebar({ route, nav }) {
   const item = (p) => {
     const on = route === p.id
     const label = p.navLabel || p.label
+    const Icon = p.icon
     return (
       <button
         key={p.id}
@@ -22,7 +23,7 @@ export default function Sidebar({ route, nav }) {
         title={label}
         onClick={() => nav(p.id)}
       >
-        <span className="snav-ic" aria-hidden="true">{p.emoji}</span>
+        <span className="snav-ic"><Icon /></span>
         <span className="snav-label">{label}</span>
         {p.soon && <span className="snav-soon">Soon</span>}
       </button>
@@ -45,7 +46,7 @@ export default function Sidebar({ route, nav }) {
           title="Dashboard"
           onClick={() => nav('home')}
         >
-          <span className="snav-ic" aria-hidden="true">🏠</span>
+          <span className="snav-ic"><IconGrid /></span>
           <span className="snav-label">Dashboard</span>
         </button>
 

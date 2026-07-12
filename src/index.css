@@ -1125,15 +1125,20 @@ body{flex-direction:column}
 .side-nav{display:flex;flex-direction:column;gap:2px}
 .side-cap{font-family:var(--font-nav);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:rgba(255,255,255,.45);padding:4px 11px 6px}
 .side-sep{height:1px;background:rgba(255,255,255,.14);margin:12px 6px 4px}
-.snav-item{position:relative;display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:10px 11px;border:none;background:transparent;border-radius:11px;cursor:pointer;font-family:var(--font-nav);font-size:12px;font-weight:600;letter-spacing:-.005em;color:rgba(255,255,255,.82);transition:background .15s,color .15s,box-shadow .15s}
+.snav-item{position:relative;display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:10px 11px;border:none;background:transparent;border-radius:11px;cursor:pointer;font-family:var(--font-nav);font-size:12px;font-weight:600;letter-spacing:-.005em;color:rgba(255,255,255,.9);transition:background .15s,color .15s,box-shadow .15s}
 .snav-item:hover{background:rgba(255,255,255,.10);color:#fff}
-.snav-ic{width:20px;height:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15.5px;line-height:1}
+.snav-ic{width:20px;height:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.snav-ic svg{width:18px;height:18px;stroke-width:2;color:rgba(255,255,255,.8);transition:color .15s}
+.snav-item:hover .snav-ic svg{color:#fff}
 .snav-label{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-transform:uppercase;letter-spacing:.015em}
 /* Active = a single ORANGE pill for EVERY item (consistent, à la the reference) —
    not the per-product accent. */
 .snav-item.on,.snav-item.on:hover{background:linear-gradient(135deg,#e8622a,#c9481c);color:#fff;font-weight:700;box-shadow:0 8px 18px -8px rgba(201,72,28,.7)}
-.snav-item.soon{color:rgba(255,255,255,.5)}
+.snav-item.on .snav-ic svg{color:#fff}
+.snav-item.soon{color:rgba(255,255,255,.62)}
+.snav-item.soon .snav-ic svg{color:rgba(255,255,255,.5)}
 .snav-item.soon:hover{color:#fff}
+.snav-item.soon:hover .snav-ic svg{color:#fff}
 .snav-soon{margin-left:auto;font-size:8.5px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:rgba(255,255,255,.62);background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.16);padding:2px 5px;border-radius:5px;line-height:1.3}
 
 /* Collapse the sidebar to an icon rail on narrow screens. */
