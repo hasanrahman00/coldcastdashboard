@@ -61,8 +61,8 @@
   --radius-xl:18px;
   --radius-full:9999px;
 
-  --font:'Inter',system-ui,-apple-system,sans-serif;
-  --font-nav:'Plus Jakarta Sans','Inter',system-ui,sans-serif;
+  --font:figmaSans,'figmaSans Fallback','SF Pro Display',system-ui,helvetica,sans-serif;
+  --font-nav:var(--font);
   --mono:'JetBrains Mono',ui-monospace,monospace;
 
   --ease:cubic-bezier(.4,0,.2,1);
@@ -1127,7 +1127,7 @@ body{flex-direction:column}
 .snav-item{position:relative;display:flex;align-items:center;gap:11px;width:100%;text-align:left;padding:10px 12px;border:none;background:transparent;border-radius:11px;cursor:pointer;font-family:var(--font-nav);font-size:13.5px;font-weight:600;letter-spacing:-.005em;color:rgba(255,255,255,.82);transition:background .15s,color .15s,box-shadow .15s}
 .snav-item:hover{background:rgba(255,255,255,.10);color:#fff}
 .snav-ic{width:20px;height:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15.5px;line-height:1}
-.snav-label{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.snav-label{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-transform:uppercase;letter-spacing:.03em}
 /* Active = a single ORANGE pill for EVERY item (consistent, à la the reference) —
    not the per-product accent. */
 .snav-item.on,.snav-item.on:hover{background:linear-gradient(135deg,#e8622a,#c9481c);color:#fff;font-weight:700;box-shadow:0 8px 18px -8px rgba(201,72,28,.7)}
