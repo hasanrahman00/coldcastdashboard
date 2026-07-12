@@ -29,7 +29,8 @@ const ENRICHER_BASE = (import.meta.env.VITE_LINKEDIN_ENRICHER_URL || '').replace
 export const enricherUrl = (path) => ENRICHER_BASE + path
 
 // The Company (Sales Nav account/company search) scraper — its OWN server too.
-const COMPANY_BASE = (import.meta.env.VITE_COMPANY_SCRAPER_URL || '').replace(/\/$/, '')
+// Defaults to the production host; override with VITE_COMPANY_SCRAPER_URL.
+const COMPANY_BASE = (import.meta.env.VITE_COMPANY_SCRAPER_URL || 'https://companyscraper.coldcast.io').replace(/\/$/, '')
 export const companyUrl = (path) => COMPANY_BASE + path
 
 // ── token + key storage (same localStorage keys the old dashboard used) ──────
