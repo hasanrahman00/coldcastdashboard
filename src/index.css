@@ -7,9 +7,10 @@
   --bg-elev-2:#f1f2f4;
   --bg-elev-3:#e8e9ec;
   --bg-hover:#e6e8ec;
-  /* Chip fills for the top-bar controls — neutral gradient depth (de-lavendered). */
-  --chip:linear-gradient(180deg,#ffffff 0%,#f0f1f4 100%);
-  --chip-hover:linear-gradient(180deg,#f7f8fa 0%,#e6e8ec 100%);
+  /* Top-bar controls — solid white "cards" (like the reference Upgrade button) that pop
+     against the warm peach bar. */
+  --chip:#ffffff;
+  --chip-hover:#f6f7f9;
 
   /* Borders — de-tinted near-neutral ink (was a blue ink that read faintly purple) */
   --border:rgba(16,20,32,.08);
@@ -1148,7 +1149,7 @@ body{flex-direction:column}
 .topbar{
   display:flex;align-items:center;justify-content:space-between;gap:16px;
   padding:14px 28px;
-  background:linear-gradient(180deg,#ffffff 0%,#f6f7f9 100%);border-bottom:1px solid var(--border);
+  background:linear-gradient(90deg,#fdf5ec 0%,#fae7d3 100%);border-bottom:1px solid var(--border);
   position:relative;z-index:5;flex-shrink:0;
 }
 .tb-right{display:flex;align-items:center;gap:10px;min-width:0}
