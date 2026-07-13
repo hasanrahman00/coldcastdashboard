@@ -4,6 +4,8 @@ import { useToast } from '../../store/ToastProvider.jsx'
 import Modal from '../../components/Modal.jsx'
 import EnricherJobCard from './EnricherJobCard.jsx'
 import EnricherNewJobModal from './EnricherNewJobModal.jsx'
+import ScraperConnection from '../../components/ScraperConnection.jsx'
+import { useApp } from '../../store/AppStore.jsx'
 import { IconPlus, IconChevronLeft, IconChevronRight } from '../../lib/icons.jsx'
 
 const JOBS_PER_PAGE = 9 // 3 × 3 — matches the Sales Nav / Apollo grid
@@ -14,6 +16,8 @@ const JOBS_PER_PAGE = 9 // 3 × 3 — matches the Sales Nav / Apollo grid
 export default function LinkedInEnricher() {
   const toast = useToast()
   const configured = api.enricherConfigured()
+  const { scraperConnected } = useApp()
+  const connected = scraperConnected('enricher')
 
   const [jobs, setJobs] = useState([])
   const [page, setPage] = useState(0)
@@ -97,9 +101,16 @@ export default function LinkedInEnricher() {
 
   return (
     <div>
+      <ScraperConnection scraper="enricher" name="LinkedIn enrichment" />
+
       {/* Centered New Job — same sticky bar as the other tabs */}
       <div className="newjob-bar">
-        <button className="btn btn-p" onClick={() => setShowNew(true)}>
+        <button
+          className="btn btn-p"
+          onClick={() => setShowNew(true)}
+          disabled={!connected}
+          title={connected ? '' : 'Connect the Coldcast extension in this browser to run a job here'}
+        >
           <IconPlus />
           New Job
         </button>
