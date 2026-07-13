@@ -20,7 +20,9 @@ export default function CompanyJobCard({ job, anotherRunning, onRun, onStop, onD
   const scrapeIdle = ['idle', 'stopped', 'done', 'failed'].includes(job.status)
   const scrapeRun = job.status === 'running'
   const scrapeBusy = scrapeRun || job.status === 'stopping'
-  const companies = job.totalScraped ?? job.total ?? job.count ?? 0
+  // The server sends the scraped count as `totalLeads` (shared job shape); keep the
+  // older aliases as fallbacks.
+  const companies = job.totalLeads ?? job.totalScraped ?? job.total ?? job.count ?? 0
   const hasData = job.hasData || companies > 0
   const url = job.url || ''
   const d = job.createdAt
