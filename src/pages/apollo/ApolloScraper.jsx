@@ -168,6 +168,14 @@ export default function ApolloScraper() {
 
 function ApolloLogsModal({ job, onClose }) {
   const [logs, setLogs] = useState([])
+  const [copied, setCopied] = useState(false)
+  const copy = () => {
+    const text = logs.join('\n')
+    if (!text) return
+    navigator.clipboard?.writeText(text)
+      .then(() => { setCopied(true); setTimeout(() => setCopied(false), 1500) })
+      .catch(() => {})
+  }
   useEffect(() => {
     if (!job) return
     let alive = true
@@ -187,6 +195,11 @@ function ApolloLogsModal({ job, onClose }) {
 
   return (
     <Modal open={!!job} onClose={onClose} title={`📜 Logs — ${job?.name || ''}`}>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
+        <button className="btn btn-s" style={{ padding: '6px 12px', fontSize: 12.5 }} onClick={copy} disabled={!logs.length}>
+          {copied ? '✓ Copied' : '📋 Copy logs'}
+        </button>
+      </div>
       <pre
         style={{
           maxHeight: '55vh',

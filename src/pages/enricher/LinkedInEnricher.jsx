@@ -215,6 +215,7 @@ export default function LinkedInEnricher() {
 
 function EnricherLogsModal({ job, onClose }) {
   const [logs, setLogs] = useState('')
+  const [copied, setCopied] = useState(false)
   useEffect(() => {
     if (!job) return
     let alive = true
@@ -232,8 +233,21 @@ function EnricherLogsModal({ job, onClose }) {
     }
   }, [job])
 
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(logs || '')
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1500)
+    } catch {}
+  }
+
   return (
     <Modal open={!!job} onClose={onClose} title={`📜 Logs — ${job?.filename || ''}`}>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
+        <button className="btn btn-s" style={{ padding: '6px 12px', fontSize: 12.5 }} onClick={copy} disabled={!logs}>
+          {copied ? '✓ Copied' : '📋 Copy logs'}
+        </button>
+      </div>
       <pre
         style={{
           maxHeight: '55vh',
