@@ -1,28 +1,33 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { api } from '../../lib/api.js'
 import { useToast } from '../../store/ToastProvider.jsx'
 import Modal from '../../components/Modal.jsx'
 import EnricherJobCard from './EnricherJobCard.jsx'
-import EnricherNewJobModal from './EnricherNewJobModal.jsx'
 import ScraperConnection from '../../components/ScraperConnection.jsx'
 import { useApp } from '../../store/AppStore.jsx'
-import { IconPlus, IconChevronLeft, IconChevronRight } from '../../lib/icons.jsx'
+import { IconUpload, IconChevronLeft, IconChevronRight } from '../../lib/icons.jsx'
 
 const JOBS_PER_PAGE = 9 // 3 × 3 — matches the Sales Nav / Apollo grid
 
 // LinkedIn URL Enricher tab. Runs on its OWN server (separate VPS), so this tab owns
 // its data: it lists jobs from the enricher backend (4s poll — the enricher's SSE is
 // per-job, so a poll drives the grid) and owns the upload + pause/resume/cancel flow.
+// The upload area is shown INLINE by default (like the Waterfall enricher) — no modal.
 export default function LinkedInEnricher() {
   const toast = useToast()
   const configured = api.enricherConfigured()
-  const { scraperConnected } = useApp()
+  const { scraperConnected, onlineProfileId, credits } = useApp()
   const connected = scraperConnected('enricher')
 
   const [jobs, setJobs] = useState([])
   const [page, setPage] = useState(0)
-  const [showNew, setShowNew] = useState(false)
   const [logsJob, setLogsJob] = useState(null)
+
+  // Upload state
+  const inputRef = useRef(null)
+  const [file, setFile] = useState(null)
+  const [drag, setDrag] = useState(false)
+  const [busy, setBusy] = useState(false)
 
   useEffect(() => {
     if (!configured) return
@@ -85,6 +90,29 @@ export default function LinkedInEnricher() {
   }
   const refresh = () => api.enricherJobs().then((l) => setJobs(Array.isArray(l) ? l : [])).catch(() => {})
 
+  // ── Upload flow (inline, no modal) ─────────────────────────────────────────
+  const pick = (f) => { if (f) setFile(f) }
+  const onDrop = (e) => { e.preventDefault(); setDrag(false); pick(e.dataTransfer.files?.[0]) }
+  const clear = () => { setFile(null); if (inputRef.current) inputRef.current.value = '' }
+  const run = async () => {
+    if (!file) return toast('Choose a CSV to upload', 'err')
+    setBusy(true)
+    try {
+      const fd = new FormData()
+      fd.append('file', file)
+      fd.append('provider', 'auto') // merge every logged-in source (best coverage)
+      if (onlineProfileId) fd.append('profileId', onlineProfileId)
+      const r = await api.enricherUpload(fd)
+      toast(`Job started — ${r.total || 0} URLs`, 'ok')
+      clear()
+      refresh()
+    } catch (e) {
+      toast(e.message || 'Upload failed', 'err')
+    } finally {
+      setBusy(false)
+    }
+  }
+
   if (!configured) {
     return (
       <div className="jg" style={{ marginTop: 20 }}>
@@ -100,38 +128,53 @@ export default function LinkedInEnricher() {
   }
 
   return (
-    <div>
+    <div className="wf">
       <ScraperConnection scraper="enricher" name="LinkedIn enrichment" />
 
-      {/* Centered New Job — same sticky bar as the other tabs */}
-      <div className="newjob-bar">
-        <button
-          className="btn btn-p"
-          onClick={() => setShowNew(true)}
-          disabled={!connected}
-          title={connected ? '' : 'Connect the Coldcast extension in this browser to run a job here'}
+      {/* Inline upload area — shown by default (same pattern as the Waterfall enricher) */}
+      <div className="wf-card">
+        <h3 className="wf-card-t">Upload LinkedIn URLs</h3>
+        <div className="wf-card-s">
+          <b>Required:</b> a LinkedIn profile URL column (any column with <code>linkedin.com/in/…</code>).{' '}
+          <b>Optional:</b> First Name, Last Name, Title, Company, Location — improve match accuracy. Each row is
+          enriched in your connected browser via your Lusha / ContactOut / SalesQL sessions — 5 credits per enriched row.
+        </div>
+
+        <div
+          className={'wf-drop' + (drag ? ' over' : '') + (file ? ' has' : '')}
+          onDragOver={(e) => { e.preventDefault(); setDrag(true) }}
+          onDragLeave={() => setDrag(false)}
+          onDrop={onDrop}
+          onClick={() => inputRef.current?.click()}
         >
-          <IconPlus />
-          New Job
+          <input ref={inputRef} type="file" accept=".csv,text/csv" hidden onChange={(e) => pick(e.target.files?.[0])} />
+          <IconUpload />
+          <span className="wf-drop-t">{file ? file.name : 'Choose a CSV file'}</span>
+        </div>
+
+        <button
+          className="btn btn-s wf-btn"
+          disabled={!file || busy || !connected}
+          title={connected ? '' : 'Connect the Coldcast extension in this browser to run a job'}
+          onClick={run}
+        >
+          {busy ? 'Starting…' : 'Upload and enrich'}
         </button>
+
+        <div className="wf-card-foot">
+          <span>{(credits ?? 0).toLocaleString()} credits left</span>
+          {file && !busy && <button className="wf-clear" onClick={clear}>Clear</button>}
+        </div>
       </div>
 
       <div className="jg-head">
-        <h3>Active Jobs</h3>
+        <h3>Enrichment Jobs</h3>
         <span className="count">{jobs.length ? `${jobs.length} ${jobs.length === 1 ? 'job' : 'jobs'}` : ''}</span>
       </div>
 
       <div className="jg">
         {sorted.length === 0 ? (
-          <div className="empty">
-            <div className="empty-ic">🔗</div>
-            <h3>No jobs yet</h3>
-            <p>Upload a list of LinkedIn URLs to enrich them into a clean CSV</p>
-            <button className="btn btn-p" onClick={() => setShowNew(true)}>
-              <IconPlus />
-              New Job
-            </button>
-          </div>
+          <div className="empty">No enrichment jobs yet — upload a file above to start.</div>
         ) : (
           slice.map((j) => (
             <EnricherJobCard
@@ -165,7 +208,6 @@ export default function LinkedInEnricher() {
         </div>
       )}
 
-      <EnricherNewJobModal open={showNew} onClose={() => setShowNew(false)} onCreated={refresh} />
       <EnricherLogsModal job={logsJob} onClose={() => setLogsJob(null)} />
     </div>
   )
