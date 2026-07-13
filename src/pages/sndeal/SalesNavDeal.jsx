@@ -30,7 +30,7 @@ export default function SalesNavDeal() {
       `Hi! I want the LinkedIn Sales Navigator 75% OFF deal.\n\n` +
       `Name: ${name.trim()}\n` +
       (linkedin.trim() ? `LinkedIn: ${linkedin.trim()}\n` : '') +
-      `Email: ${email.trim()}\n` +
+      `LinkedIn account email: ${email.trim()}\n` +
       `WhatsApp: +${waDigits}`
     window.open(`https://wa.me/${BUSINESS_WHATSAPP}?text=${encodeURIComponent(msg)}`, '_blank', 'noopener')
   }
@@ -60,8 +60,8 @@ export default function SalesNavDeal() {
           <input type="text" value={linkedin} onChange={(e) => setLinkedin(e.target.value)} placeholder="linkedin.com/in/janedoe" />
         </div>
         <div className="fg">
-          <label>Email</label>
-          <input type="text" inputMode="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="jane@company.com" />
+          <label>LinkedIn account email</label>
+          <input type="text" inputMode="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="the email you sign in to LinkedIn with" />
         </div>
         <div className="fg">
           <label>WhatsApp number</label>
