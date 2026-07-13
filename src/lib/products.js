@@ -7,6 +7,7 @@ import {
   IconAtSign,
   IconLink,
   IconUsers,
+  IconWhatsApp,
 } from './icons.jsx'
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -33,6 +34,19 @@ export const PRODUCTS = [
     title: 'Scrape LinkedIn Sales',
     short: 'Enriched lead lists from your LinkedIn Sales Navigator searches.',
     body: 'Export clean, enriched lead lists from your LinkedIn Sales Navigator searches — names, titles, verified emails, and company firmographics — in one click.',
+  },
+  {
+    id: 'sndeal',
+    label: 'Sales Nav 75% OFF',
+    navLabel: 'Sales Nav 75% OFF',
+    badge: '75% OFF',
+    deal: true,
+    soon: false,
+    icon: IconWhatsApp,
+    emoji: '💸',
+    title: 'LinkedIn Sales Navigator — 75% OFF',
+    short: 'A full Sales Navigator subscription on your own account — 75% off.',
+    body: 'Get a full LinkedIn Sales Navigator subscription activated on your own account at 75% off list price. Drop your details and connect with us on WhatsApp to claim the deal.',
   },
   {
     id: 'waterfall',

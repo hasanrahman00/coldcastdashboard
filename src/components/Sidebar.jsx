@@ -25,6 +25,7 @@ export default function Sidebar({ route, nav }) {
       >
         <span className="snav-ic"><Icon /></span>
         <span className="snav-label">{label}</span>
+        {p.badge && !p.soon && <span className="snav-deal">{p.badge}</span>}
         {p.soon && <span className="snav-soon">Soon</span>}
       </button>
     )

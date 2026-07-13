@@ -7,6 +7,7 @@ import { IconSearch } from '../lib/icons.jsx'
 // sections. Each card is a whole-card button (soft-tinted with the product accent + a
 // status badge); it opens that product's tab, or its teaser page if soon.
 const SECTIONS = [
+  { title: 'Deals & offers', ids: ['sndeal'] },
   { title: 'Lead & company scraping', ids: ['salesnav', 'apollo', 'company', 'zoominfo'] },
   { title: 'Enrichment & verification', ids: ['linkedin', 'waterfall', 'verify', 'domain'] },
 ]
@@ -28,7 +29,9 @@ function Card({ p, nav }) {
         <span className="pcard-ic">
           <Icon />
         </span>
-        <span className={'pcard-badge ' + (p.soon ? 'soon' : 'live')}>{p.soon ? 'Soon' : 'Active'}</span>
+        <span className={'pcard-badge ' + (p.soon ? 'soon' : p.deal ? 'deal' : 'live')}>
+          {p.soon ? 'Soon' : p.badge || 'Active'}
+        </span>
       </div>
       <h4 className="pcard-name">{p.label}</h4>
       <p className="pcard-desc">{p.short || p.body || ''}</p>
