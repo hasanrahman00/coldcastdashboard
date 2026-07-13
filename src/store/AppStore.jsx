@@ -6,7 +6,7 @@ import {
   useCallback,
   useRef,
 } from 'react'
-import { api, AuthError } from '../lib/api.js'
+import { api, AuthError, SCRAPER_HOSTS } from '../lib/api.js'
 import { subscribeLocalExtension } from '../lib/extBridge.js'
 import { useToast } from './ToastProvider.jsx'
 
@@ -79,6 +79,7 @@ export function AppProvider({ initialMe, onLogout, children }) {
   const [localExt, setLocalExt] = useState({
     installed: false, connected: false, hasKey: false,
     profileId: '', profileName: '', authError: '',
+    serverStatus: {}, // { '<scraper host>': bool } — per-hub connection for THIS browser
   })
   // Per-scrape-job enrich state, keyed by job id. Kept OUT of the `jobs` array
   // because SSE replaces job objects wholesale on every job:update (which would
@@ -508,17 +509,24 @@ export function AppProvider({ initialMe, onLogout, children }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // The profile a NEW job should auto-run on: prefer THIS browser if it's connected,
-  // else the active profile if connected, else the FIRST connected profile. Null if
-  // none are connected. Every scraper's create-job flow uses this so a job binds to a
-  // CONNECTED browser instead of a stale "active" profile that's offline.
-  const onlineProfileId = (() => {
-    const isOnline = (id) => id && profiles.some((p) => p.id === id && (p.online || p.bridge))
-    if (isOnline(localExt.profileId)) return localExt.profileId
-    if (isOnline(activeProfileId)) return activeProfileId
-    const first = profiles.find((p) => p && (p.online || p.bridge))
-    return first ? first.id : null
-  })()
+  // The profile a NEW job runs on: STRICTLY this browser's own profile, and only when
+  // the extension here is connected. NEVER fall back to another profile or the shared
+  // "active" profile — those belong to other machines and would route the scrape to the
+  // wrong browser (the multi-machine isolation bug). Null when this browser isn't
+  // connected → the create flow blocks Run and the server refuses to start.
+  const onlineProfileId = (localExt.connected && localExt.profileId) ? localExt.profileId : null
+
+  // Is THIS browser's extension connected to a specific scraper's hub? Uses the
+  // extension's per-hub report (serverStatus, keyed by host); falls back to the
+  // aggregate `connected` for older extensions that don't send per-hub status yet.
+  // Every scraper page uses this to show connected/not + gate Run before a job runs.
+  const scraperConnected = (key) => {
+    if (!localExt.installed || !localExt.profileId) return false
+    const host = SCRAPER_HOSTS[key]
+    const ss = localExt.serverStatus || {}
+    if (host && Object.keys(ss).length) return !!ss[host]
+    return !!localExt.connected
+  }
 
   const value = {
     me,
@@ -533,6 +541,8 @@ export function AppProvider({ initialMe, onLogout, children }) {
     profiles,
     activeProfileId,
     onlineProfileId,
+    scraperConnected,
+    localProfileName: localExt.profileName,
     connectorOnline,
     usage,
     credits,

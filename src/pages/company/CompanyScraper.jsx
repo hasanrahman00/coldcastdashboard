@@ -5,6 +5,7 @@ import { useToast } from '../../store/ToastProvider.jsx'
 import Modal from '../../components/Modal.jsx'
 import CompanyJobCard from './CompanyJobCard.jsx'
 import CompanyNewJobModal from './CompanyNewJobModal.jsx'
+import ScraperConnection from '../../components/ScraperConnection.jsx'
 import { IconPlus, IconChevronLeft, IconChevronRight } from '../../lib/icons.jsx'
 
 const JOBS_PER_PAGE = 9 // 3 cols × 3 rows — matches the Sales Nav grid
@@ -16,7 +17,8 @@ export default function CompanyScraper() {
   const toast = useToast()
   const configured = api.companyConfigured()
 
-  const { companyJobs, upsertCompanyJob, removeCompanyJob } = useApp()
+  const { companyJobs, upsertCompanyJob, removeCompanyJob, scraperConnected } = useApp()
+  const connected = scraperConnected('company')
   const jobs = companyJobs || []
   const [page, setPage] = useState(0)
   const [showNew, setShowNew] = useState(false)
@@ -83,9 +85,16 @@ export default function CompanyScraper() {
 
   return (
     <div>
+      <ScraperConnection scraper="company" name="Company scraping" />
+
       {/* Centered New Job — same sticky bar as the Sales Nav tab */}
       <div className="newjob-bar">
-        <button className="btn btn-p" onClick={() => setShowNew(true)}>
+        <button
+          className="btn btn-p"
+          onClick={() => setShowNew(true)}
+          disabled={!connected}
+          title={connected ? '' : 'Connect the Coldcast extension in this browser to run a job here'}
+        >
           <IconPlus />
           New Job
         </button>

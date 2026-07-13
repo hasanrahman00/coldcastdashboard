@@ -1340,6 +1340,15 @@ body{flex-direction:column}
 /* password inputs everywhere use the same field styling as text */
 input[type=password]{font-family:var(--font)}
 
+/* ── Per-scraper "this browser" connection status ─────────────────────────── */
+.conn-status{display:flex;align-items:center;gap:10px;margin:0 0 16px;padding:11px 15px;border-radius:12px;font-size:13px;font-weight:600;line-height:1.45;border:1px solid var(--border)}
+.conn-status .conn-dot{flex:none;width:9px;height:9px;border-radius:999px}
+.conn-status strong{font-weight:800}
+.conn-status.ok{background:color-mix(in srgb,#16a34a 9%,var(--bg-elev-1));border-color:color-mix(in srgb,#16a34a 30%,var(--border));color:color-mix(in srgb,#166534 80%,var(--text))}
+.conn-status.ok .conn-dot{background:#16a34a;box-shadow:0 0 0 3px color-mix(in srgb,#16a34a 22%,transparent)}
+.conn-status.bad{background:color-mix(in srgb,#f59e0b 11%,var(--bg-elev-1));border-color:color-mix(in srgb,#f59e0b 34%,var(--border));color:color-mix(in srgb,#92400e 82%,var(--text))}
+.conn-status.bad .conn-dot{background:#f59e0b;box-shadow:0 0 0 3px color-mix(in srgb,#f59e0b 22%,transparent)}
+
 /* ── Sales Nav 75% OFF deal page ─────────────────────────────────────────── */
 .deal-wrap{display:grid;grid-template-columns:1.05fr .95fr;gap:22px;align-items:stretch;align-content:center;max-width:1000px;min-height:calc(100vh - 230px)}
 @media(max-width:820px){.deal-wrap{grid-template-columns:1fr;min-height:0}}

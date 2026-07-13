@@ -5,6 +5,7 @@ import { useToast } from '../../store/ToastProvider.jsx'
 import Modal from '../../components/Modal.jsx'
 import ApolloJobCard from './ApolloJobCard.jsx'
 import ApolloNewJobModal from './ApolloNewJobModal.jsx'
+import ScraperConnection from '../../components/ScraperConnection.jsx'
 import { IconPlus, IconChevronLeft, IconChevronRight } from '../../lib/icons.jsx'
 
 const JOBS_PER_PAGE = 9 // 3 cols × 3 rows — matches the Sales Nav grid
@@ -16,7 +17,8 @@ export default function ApolloScraper() {
   const toast = useToast()
   const configured = api.apolloConfigured()
 
-  const { apolloJobs, upsertApolloJob, removeApolloJob } = useApp()
+  const { apolloJobs, upsertApolloJob, removeApolloJob, scraperConnected } = useApp()
+  const connected = scraperConnected('apollo')
   const jobs = apolloJobs || []
   const [page, setPage] = useState(0)
   const [showNew, setShowNew] = useState(false)
@@ -83,9 +85,16 @@ export default function ApolloScraper() {
 
   return (
     <div>
+      <ScraperConnection scraper="apollo" name="Apollo scraping" />
+
       {/* Centered New Job — same sticky bar as the Sales Nav tab */}
       <div className="newjob-bar">
-        <button className="btn btn-p" onClick={() => setShowNew(true)}>
+        <button
+          className="btn btn-p"
+          onClick={() => setShowNew(true)}
+          disabled={!connected}
+          title={connected ? '' : 'Connect the Coldcast extension in this browser to run a job here'}
+        >
           <IconPlus />
           New Job
         </button>

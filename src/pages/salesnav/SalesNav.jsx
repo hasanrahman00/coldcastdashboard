@@ -9,7 +9,8 @@ import { IconPlus, IconChevronLeft, IconChevronRight } from '../../lib/icons.jsx
 const JOBS_PER_PAGE = 9 // 3 cols × 3 rows
 
 export default function SalesNav() {
-  const { jobs } = useApp()
+  const { jobs, scraperConnected } = useApp()
+  const connected = scraperConnected('salesnav')
   const [page, setPage] = useState(0)
   const [showNew, setShowNew] = useState(false)
   const [logsJob, setLogsJob] = useState(null)
@@ -38,7 +39,12 @@ export default function SalesNav() {
 
       {/* Centered New Job — sticky so it stays visible on any job page */}
       <div className="newjob-bar">
-        <button className="btn btn-p" onClick={() => setShowNew(true)}>
+        <button
+          className="btn btn-p"
+          onClick={() => setShowNew(true)}
+          disabled={!connected}
+          title={connected ? '' : 'Connect the Coldcast extension in this browser to run a job here'}
+        >
           <IconPlus />
           New Job
         </button>

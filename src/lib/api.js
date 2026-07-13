@@ -33,6 +33,19 @@ export const enricherUrl = (path) => ENRICHER_BASE + path
 const COMPANY_BASE = (import.meta.env.VITE_COMPANY_SCRAPER_URL || 'https://companyscraper.coldcast.io').replace(/\/$/, '')
 export const companyUrl = (path) => COMPANY_BASE + path
 
+// Host (origin authority) of each scraper server — the extension reports per-hub
+// connection keyed by this same host, so the dashboard can show accurate
+// per-scraper "this browser connected / not connected" status. Empty for scrapers
+// that aren't configured. Add a new scraper's base above and here → it inherits the
+// same connection gating automatically (no per-scraper wiring).
+const hostOf = (u) => { try { return new URL(u).host } catch { return '' } }
+export const SCRAPER_HOSTS = {
+  salesnav: hostOf(BASE),
+  apollo: hostOf(APOLLO_BASE),
+  company: hostOf(COMPANY_BASE),
+  enricher: hostOf(ENRICHER_BASE),
+}
+
 // ── token + key storage (same localStorage keys the old dashboard used) ──────
 const TOKEN_KEY = 'vk_token'
 const KEY_KEY = 'vk_key'
