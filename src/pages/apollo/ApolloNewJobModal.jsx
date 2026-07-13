@@ -2,6 +2,7 @@ import { useState } from 'react'
 import Modal from '../../components/Modal.jsx'
 import { api } from '../../lib/api.js'
 import { useToast } from '../../store/ToastProvider.jsx'
+import { useApp } from '../../store/AppStore.jsx'
 
 const subLabel = { color: 'var(--text-faint)', fontWeight: 500, textTransform: 'none', letterSpacing: 0 }
 
@@ -9,6 +10,7 @@ const subLabel = { color: 'var(--text-faint)', fontWeight: 500, textTransform: '
 // the Apollo server; billing + the connected-browser run are handled server-side.
 export default function ApolloNewJobModal({ open, onClose, onCreated }) {
   const toast = useToast()
+  const { onlineProfileId } = useApp()
   const [name, setName] = useState('')
   const [url, setUrl] = useState('')
   const [maxPages, setMaxPages] = useState('')
@@ -24,6 +26,7 @@ export default function ApolloNewJobModal({ open, onClose, onCreated }) {
       const job = await api.apolloCreate({
         name: name.trim() || 'Apollo Scrape',
         url: u,
+        profileId: onlineProfileId,
         ...(maxPages ? { maxPages: parseInt(maxPages, 10) || undefined } : {}),
       })
       toast('Job created!', 'ok')

@@ -508,6 +508,18 @@ export function AppProvider({ initialMe, onLogout, children }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // The profile a NEW job should auto-run on: prefer THIS browser if it's connected,
+  // else the active profile if connected, else the FIRST connected profile. Null if
+  // none are connected. Every scraper's create-job flow uses this so a job binds to a
+  // CONNECTED browser instead of a stale "active" profile that's offline.
+  const onlineProfileId = (() => {
+    const isOnline = (id) => id && profiles.some((p) => p.id === id && (p.online || p.bridge))
+    if (isOnline(localExt.profileId)) return localExt.profileId
+    if (isOnline(activeProfileId)) return activeProfileId
+    const first = profiles.find((p) => p && (p.online || p.bridge))
+    return first ? first.id : null
+  })()
+
   const value = {
     me,
     jobs,
@@ -520,6 +532,7 @@ export function AppProvider({ initialMe, onLogout, children }) {
     removeCompanyJob,
     profiles,
     activeProfileId,
+    onlineProfileId,
     connectorOnline,
     usage,
     credits,

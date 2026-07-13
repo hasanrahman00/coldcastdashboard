@@ -2,6 +2,7 @@ import { useState } from 'react'
 import Modal from '../../components/Modal.jsx'
 import { api } from '../../lib/api.js'
 import { useToast } from '../../store/ToastProvider.jsx'
+import { useApp } from '../../store/AppStore.jsx'
 
 const subLabel = { color: 'var(--text-faint)', fontWeight: 500, textTransform: 'none', letterSpacing: 0 }
 
@@ -10,6 +11,7 @@ const subLabel = { color: 'var(--text-faint)', fontWeight: 500, textTransform: '
 // server-side.
 export default function CompanyNewJobModal({ open, onClose, onCreated }) {
   const toast = useToast()
+  const { onlineProfileId } = useApp()
   const [name, setName] = useState('')
   const [url, setUrl] = useState('')
   const [busy, setBusy] = useState(false)
@@ -21,7 +23,7 @@ export default function CompanyNewJobModal({ open, onClose, onCreated }) {
 
     setBusy(true)
     try {
-      const job = await api.companyCreate({ name: name.trim() || 'Company Scrape', url: u })
+      const job = await api.companyCreate({ name: name.trim() || 'Company Scrape', url: u, profileId: onlineProfileId })
       toast('Job created!', 'ok')
       onCreated?.(job)
       setUrl('')

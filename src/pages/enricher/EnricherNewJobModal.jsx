@@ -2,6 +2,7 @@ import { useState, useRef } from 'react'
 import Modal from '../../components/Modal.jsx'
 import { api } from '../../lib/api.js'
 import { useToast } from '../../store/ToastProvider.jsx'
+import { useApp } from '../../store/AppStore.jsx'
 
 const subLabel = { color: 'var(--text-faint)', fontWeight: 500, textTransform: 'none', letterSpacing: 0 }
 
@@ -17,6 +18,7 @@ const PROVIDERS = [
 // bills 5 scrape credits per enriched row.
 export default function EnricherNewJobModal({ open, onClose, onCreated }) {
   const toast = useToast()
+  const { onlineProfileId } = useApp()
   const fileRef = useRef(null)
   const [file, setFile] = useState(null)
   const [urls, setUrls] = useState('')
@@ -41,6 +43,7 @@ export default function EnricherNewJobModal({ open, onClose, onCreated }) {
       else fd.append('urls', urls.trim())
       fd.append('provider', provider)
       if (batchSize) fd.append('batchSize', String(parseInt(batchSize, 10) || 10))
+      if (onlineProfileId) fd.append('profileId', onlineProfileId)
       const r = await api.enricherUpload(fd)
       toast(`Job started — ${r.total || 0} URLs`, 'ok')
       onCreated?.(r)
