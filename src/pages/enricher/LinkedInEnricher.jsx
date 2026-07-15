@@ -16,8 +16,10 @@ const JOBS_PER_PAGE = 9 // 3 × 3 — matches the Sales Nav / Apollo grid
 export default function LinkedInEnricher() {
   const toast = useToast()
   const configured = api.enricherConfigured()
-  const { scraperConnected, onlineProfileId, credits } = useApp()
+  const { scraperConnected, onlineProfileId, usage } = useApp()
   const connected = scraperConnected('enricher')
+  // The enricher debits the shared SCRAPING limit (usage), not the credit wallet.
+  const scrapeLeft = Math.max(0, (usage?.limit ?? 0) - (usage?.used ?? 0))
 
   const [jobs, setJobs] = useState([])
   const [page, setPage] = useState(0)
@@ -137,7 +139,7 @@ export default function LinkedInEnricher() {
         <div className="wf-card-s">
           <b>Required:</b> a LinkedIn profile URL column (any column with <code>linkedin.com/in/…</code>).{' '}
           <b>Optional:</b> First Name, Last Name, Title, Company, Location — improve match accuracy. Each row is
-          enriched in your connected browser via your Lusha / ContactOut / SalesQL sessions — 5 credits per enriched row.
+          enriched in your connected browser via your Lusha / ContactOut / SalesQL sessions — each enriched row counts toward your scraping limit.
         </div>
 
         <div
@@ -162,7 +164,7 @@ export default function LinkedInEnricher() {
         </button>
 
         <div className="wf-card-foot">
-          <span>{(credits ?? 0).toLocaleString()} credits left</span>
+          <span>{scrapeLeft.toLocaleString()} rows left</span>
           {file && !busy && <button className="wf-clear" onClick={clear}>Clear</button>}
         </div>
       </div>
