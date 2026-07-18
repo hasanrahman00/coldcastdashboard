@@ -403,8 +403,9 @@ a.btn:hover{text-decoration:none}
 @media (max-width:1000px){ .jg{grid-template-columns:repeat(2,minmax(0,1fr))} }
 @media (max-width:640px){ .jg{grid-template-columns:1fr} }
 .jc{
-  background:linear-gradient(160deg,var(--bg-elev-1) 0%,color-mix(in srgb,var(--pc,var(--brand)) 10%,var(--bg-elev-1)) 100%);
-  border:1px solid var(--border);
+  background:#4d6a00;
+  color:#fff;
+  border:1px solid rgba(255,255,255,.16);
   border-radius:var(--radius-lg);
   box-shadow:var(--shadow-sm);
   padding:20px 22px;
@@ -419,13 +420,13 @@ a.btn:hover{text-decoration:none}
 .jc-new{animation:fadeUp .4s var(--ease-out)}
 /* Per-state treatment — restrained: a 3px colored left rail (+ a soft tint only for the
    actively-running card), never a heavy full-card fill. */
-.jc-idle{border-color:var(--border)}
-.jc-run{background:linear-gradient(160deg,var(--bg-elev-1) 0%,var(--warning-tint) 100%);border-color:color-mix(in srgb,var(--warning-solid) 22%,var(--border));border-left:3px solid var(--warning-solid)}
+.jc-idle{border-color:rgba(255,255,255,.16)}
+.jc-run{background:#556b0f;border-color:rgba(255,255,255,.18);border-left:3px solid var(--warning-solid)}
 .jc-ok{border-left:3px solid var(--success-solid)}
 .jc-bad{border-left:3px solid var(--danger-solid)}
 .jc:hover{
-  border-color:var(--brand);
-  box-shadow:0 16px 32px -16px rgba(204,255,0,.28),var(--shadow-md);
+  border-color:rgba(255,255,255,.4);
+  box-shadow:0 16px 34px -16px rgba(0,0,0,.5);
   transform:translateY(-2px);
 }
 .jc-h{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
@@ -440,7 +441,7 @@ a.btn:hover{text-decoration:none}
   display:flex;
   gap:14px 18px;
   font-size:12px;
-  color:var(--text-muted);
+  color:rgba(255,255,255,.82);
   font-weight:500;
   flex-wrap:wrap;
 }
@@ -450,22 +451,22 @@ a.btn:hover{text-decoration:none}
 /* Status line (TotLeads-style "File available") */
 .jc-st{display:inline-flex;align-items:center;gap:7px;align-self:flex-start;font-size:13px;font-weight:600}
 .jc-st svg{width:15px;height:15px;stroke-width:2.2;flex-shrink:0}
-.jc-st.ok{color:var(--green)}
-.jc-st.run{color:var(--amber)}
-.jc-st.bad{color:var(--red)}
-.jc-st.idle{color:var(--text-dim)}
+.jc-st.ok{color:#8dffc9}
+.jc-st.run{color:#ffd27a}
+.jc-st.bad{color:#ffb3a8}
+.jc-st.idle{color:rgba(255,255,255,.6)}
 
 /* Source URL — truncated, clickable */
-.jc-url{display:flex;align-items:center;gap:6px;align-self:flex-start;max-width:100%;min-width:0;font-size:12.5px;color:var(--text-muted);text-decoration:none}
+.jc-url{display:flex;align-items:center;gap:6px;align-self:flex-start;max-width:100%;min-width:0;font-size:12.5px;color:rgba(255,255,255,.8);text-decoration:none}
 .jc-url svg{width:13px;height:13px;stroke-width:2;opacity:.7;flex-shrink:0}
 .jc-url span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.jc-url:hover{color:var(--brand)}
+.jc-url:hover{color:#fff}
 .jc-url:hover span{text-decoration:underline}
 
 /* Leads — its OWN line, as a green badge with a bold, visible count */
-.jc-leads{display:inline-flex;align-items:center;gap:6px;align-self:flex-start;background:var(--success-tint);border:1px solid color-mix(in srgb,var(--success-solid) 30%,transparent);border-radius:var(--radius-full);padding:5px 13px;font-size:12.5px;font-weight:600;color:var(--green)}
+.jc-leads{display:inline-flex;align-items:center;gap:6px;align-self:flex-start;background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.2);border-radius:var(--radius-full);padding:5px 13px;font-size:12.5px;font-weight:600;color:#fff}
 .jc-leads svg{width:14px;height:14px;stroke-width:2.4;opacity:1}
-.jc-leads .n{font-size:15px;font-weight:800;color:var(--green);letter-spacing:-.01em}
+.jc-leads .n{font-size:15px;font-weight:800;color:#ccff00;letter-spacing:-.01em}
 
 .jc-p{
   height:6px;
@@ -498,17 +499,28 @@ a.btn:hover{text-decoration:none}
 
 /* Enrich control — its own line under the leads pill */
 .jc-enrich{display:flex;flex-direction:column;gap:7px;align-self:flex-start;max-width:100%}
-.jc-enrich-h{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:#35e0b8}
+.jc-enrich-h{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:#bff5e6}
 .jc-enrich-h svg{width:14px;height:14px;stroke-width:2.2;flex-shrink:0}
-.jc-enrich-h .n{font-size:14px;font-weight:800;color:#35e0b8;letter-spacing:-.01em}
-.jc-enrich-h .muted{color:var(--text-muted);font-weight:600}
-.jc-enrich.done .jc-enrich-h,.jc-enrich.done .jc-enrich-h .n{color:var(--green)}
-.jc-enrich.err .jc-enrich-h{color:var(--red)}
+.jc-enrich-h .n{font-size:14px;font-weight:800;color:#ccff00;letter-spacing:-.01em}
+.jc-enrich-h .muted{color:rgba(255,255,255,.7);font-weight:600}
+.jc-enrich.done .jc-enrich-h,.jc-enrich.done .jc-enrich-h .n{color:#8dffc9}
+.jc-enrich.err .jc-enrich-h{color:#ffb3a8}
 .jc-enrich-dl{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
 
 /* Enrich button (indigo / brand) */
-.btn-enr{background:rgba(53,224,184,.12);color:#35e0b8;border-color:rgba(53,224,184,.28)}
-.btn-enr:hover:not(:disabled){background:#35e0b8;color:#fff;border-color:#35e0b8}
+.btn-enr{background:rgba(255,255,255,.14);color:#fff;border-color:rgba(255,255,255,.28)}
+.btn-enr:hover:not(:disabled){background:#35e0b8;color:#08130f;border-color:#35e0b8}
+/* Job-card action buttons re-tinted for the deep-lime card (solid fills so nothing washes out green-on-green) */
+.jc .btn-g{background:rgba(255,255,255,.14);color:#fff;border-color:rgba(255,255,255,.26)}
+.jc .btn-g:hover{background:rgba(255,255,255,.22);color:#fff;border-color:rgba(255,255,255,.34)}
+.jc .btn-csv{background:#0f9d58;color:#fff;border-color:transparent}
+.jc .btn-csv:hover{background:#12b567;color:#fff;border-color:transparent}
+.jc .btn-xlsx{background:#2f6fed;color:#fff;border-color:transparent}
+.jc .btn-xlsx:hover{background:#4380ff;color:#fff;border-color:transparent}
+.jc .btn-logs{background:#7c4dff;color:#fff;border-color:transparent}
+.jc .btn-logs:hover{background:#8e63ff;color:#fff;border-color:transparent}
+.jc .btn-d{color:#ffb3a8;border-color:rgba(255,140,130,.4)}
+.jc .btn-d:hover{background:#f26d6d;color:#0a0a0a;border-color:#f26d6d}
 
 /* Enrich RUNNING — make it unmistakable the enricher is working in the background */
 .jc-enrich.running{
@@ -657,19 +669,16 @@ a.btn:hover{text-decoration:none}
 }
 .ov.on .md{transform:scale(1) translateY(0)}
 .md-h{
-  padding:18px 24px;
+  padding:24px 28px 0;
   display:flex;
   align-items:center;
   justify-content:space-between;
-  background:var(--brand);
-  border-radius:var(--radius-xl) var(--radius-xl) 0 0;
-  border-bottom:1px solid rgba(10,10,10,.18);
 }
-.md-h h3{font-size:18px;font-weight:700;letter-spacing:-.02em;color:#0a0a0a}
+.md-h h3{font-size:18px;font-weight:700;letter-spacing:-.02em}
 .md-x{
-  background:rgba(10,10,10,.12);
-  border:1px solid rgba(10,10,10,.2);
-  color:#0a0a0a;
+  background:var(--bg-elev-2);
+  border:1px solid var(--border);
+  color:var(--text-muted);
   cursor:pointer;
   font-size:16px;
   width:32px;height:32px;
@@ -677,7 +686,7 @@ a.btn:hover{text-decoration:none}
   display:flex;align-items:center;justify-content:center;
   transition:all .2s var(--ease);
 }
-.md-x:hover{background:#0a0a0a;color:#ccff00;border-color:transparent}
+.md-x:hover{background:var(--red);color:#fff;border-color:var(--red)}
 .md-b{padding:20px 28px 28px}
 
 /* Tabs */
@@ -788,8 +797,8 @@ textarea{resize:vertical;min-height:80px;font-family:var(--mono);font-size:12.5p
   grid-column:1/-1;
   text-align:center;
   padding:64px 28px;
-  color:rgba(10,10,10,.72);
-  background:var(--brand);
+  color:rgba(255,255,255,.8);
+  background:#4d6a00;
   border-radius:20px;
   box-shadow:0 8px 22px -12px rgba(0,0,0,.5);
   transition:transform .2s var(--ease),box-shadow .2s var(--ease);
@@ -800,16 +809,16 @@ textarea{resize:vertical;min-height:80px;font-family:var(--mono);font-size:12.5p
   width:72px;height:72px;
   margin:0 auto 18px;
   border-radius:18px;
-  background:rgba(10,10,10,.10);
-  border:1px solid rgba(10,10,10,.18);
+  background:rgba(255,255,255,.14);
+  border:1px solid rgba(255,255,255,.22);
   display:flex;align-items:center;justify-content:center;
   position:relative;
 }
-.empty-ic svg{width:32px;height:32px;color:#0a0a0a}
-.empty h3{font-size:18px;color:#0a0a0a;margin-bottom:6px;font-weight:700;letter-spacing:-.02em}
-.empty p{font-size:13.5px;margin-bottom:22px;color:rgba(10,10,10,.66)}
-.empty .btn-p{background:#0a0a0a;color:#ccff00;box-shadow:none}
-.empty .btn-p:hover{transform:scale(1.05);box-shadow:0 10px 24px -8px rgba(0,0,0,.55)}
+.empty-ic svg{width:32px;height:32px;color:#fff}
+.empty h3{font-size:18px;color:#fff;margin-bottom:6px;font-weight:700;letter-spacing:-.02em}
+.empty p{font-size:13.5px;margin-bottom:22px;color:rgba(255,255,255,.72)}
+.empty .btn-p{background:#ccff00;color:var(--lime-ink);box-shadow:none}
+.empty .btn-p:hover{transform:scale(1.05);box-shadow:0 10px 24px -8px rgba(0,0,0,.5)}
 
 /* ═══════════════════ SETTINGS ═══════════════════ */
 .sbox{
@@ -1156,7 +1165,7 @@ body{flex-direction:column}
 .topbar{
   display:flex;align-items:center;justify-content:space-between;gap:16px;
   padding:14px 28px;
-  background:var(--brand);border-bottom:1px solid rgba(10,10,10,.18);
+  background:#4d6a00;border-bottom:1px solid rgba(0,0,0,.22);
   position:relative;z-index:5;flex-shrink:0;
 }
 .tb-right{display:flex;align-items:center;gap:10px;min-width:0}
@@ -1182,35 +1191,35 @@ body{flex-direction:column}
 /* Usage group — one neutral, hairline-bordered container holding the scrape budget,
    credits, and reset countdown as matched segments. Replaces three loud colored pills;
    the only color is the tiny progress-track fill (+ an amber warn state). */
-.usage-group{display:inline-flex;align-items:stretch;height:42px;border:1px solid rgba(10,10,10,.20);border-radius:14px;background:rgba(10,10,10,.06);min-width:0;overflow:hidden}
+.usage-group{display:inline-flex;align-items:stretch;height:42px;border:1px solid rgba(255,255,255,.18);border-radius:14px;background:rgba(255,255,255,.10);min-width:0;overflow:hidden}
 .ug-chip{display:inline-flex;align-items:center;gap:9px;padding:0 14px;white-space:nowrap}
-.ug-chip svg{width:16px;height:16px;stroke-width:2;color:rgba(10,10,10,.55);flex-shrink:0}
+.ug-chip svg{width:16px;height:16px;stroke-width:2;color:rgba(255,255,255,.7);flex-shrink:0}
 .ug-col{display:flex;flex-direction:column;gap:5px;justify-content:center}
-.ug-val{font-size:13.5px;font-weight:700;color:#0a0a0a;line-height:1;text-transform:uppercase;letter-spacing:.01em}
-.ug-val em{font-style:normal;font-weight:500;color:rgba(10,10,10,.6)}
-.ug-val.muted{font-weight:600;color:rgba(10,10,10,.6)}
-.ug-val.warn{color:#8a4b00}
-.ug-track{width:66px;height:4px;border-radius:999px;background:rgba(10,10,10,.18);overflow:hidden}
-.ug-track i{display:block;height:100%;border-radius:999px;background:#0a0a0a;transition:width .4s ease}
-.ug-div{width:1px;background:rgba(10,10,10,.18);margin:9px 0}
+.ug-val{font-size:13.5px;font-weight:700;color:#fff;line-height:1;text-transform:uppercase;letter-spacing:.01em}
+.ug-val em{font-style:normal;font-weight:500;color:rgba(255,255,255,.68)}
+.ug-val.muted{font-weight:600;color:rgba(255,255,255,.68)}
+.ug-val.warn{color:#ffd27a}
+.ug-track{width:66px;height:4px;border-radius:999px;background:rgba(255,255,255,.22);overflow:hidden}
+.ug-track i{display:block;height:100%;border-radius:999px;background:#ccff00;transition:width .4s ease}
+.ug-div{width:1px;background:rgba(255,255,255,.2);margin:9px 0}
 /* The reset segment carries its own divider (a left border) so it can be hidden cleanly
    on narrow screens without leaving a dangling separator. */
-.ug-reset{border-left:1px solid rgba(10,10,10,.18)}
+.ug-reset{border-left:1px solid rgba(255,255,255,.2)}
 
-.conn-pill{display:flex;align-items:center;gap:8px;font-family:var(--font);font-size:12.5px;font-weight:600;color:rgba(10,10,10,.66);text-transform:uppercase;letter-spacing:.02em;padding:0 15px;height:42px;border:1px solid rgba(10,10,10,.20);border-radius:14px;background:rgba(10,10,10,.06);cursor:pointer;transition:background .15s,border-color .15s}
-.conn-pill:hover{background:rgba(10,10,10,.12)}
-.conn-pill .dot{width:8px;height:8px;border-radius:50%;background:#0b6b46;transition:background .3s,box-shadow .3s;flex-shrink:0}
-.conn-pill .dot.off{background:#a15c00;box-shadow:none}
-.conn-pill .dot.wait{background:rgba(10,10,10,.4);box-shadow:none}
-.tb-icon{width:42px;height:42px;border-radius:13px;border:1px solid rgba(10,10,10,.20);background:rgba(10,10,10,.06);color:#0a0a0a;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s}
-.tb-icon:hover{background:rgba(10,10,10,.12);color:#0a0a0a}
+.conn-pill{display:flex;align-items:center;gap:8px;font-family:var(--font);font-size:12.5px;font-weight:600;color:rgba(255,255,255,.82);text-transform:uppercase;letter-spacing:.02em;padding:0 15px;height:42px;border:1px solid rgba(255,255,255,.18);border-radius:14px;background:rgba(255,255,255,.10);cursor:pointer;transition:background .15s,border-color .15s}
+.conn-pill:hover{background:rgba(255,255,255,.16)}
+.conn-pill .dot{width:8px;height:8px;border-radius:50%;background:#7dffab;box-shadow:0 0 8px rgba(125,255,171,.7);transition:background .3s,box-shadow .3s;flex-shrink:0}
+.conn-pill .dot.off{background:#ffc24d;box-shadow:none}
+.conn-pill .dot.wait{background:rgba(255,255,255,.5);box-shadow:none}
+.tb-icon{width:42px;height:42px;border-radius:13px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.10);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s}
+.tb-icon:hover{background:rgba(255,255,255,.16);color:#fff}
 .tb-icon svg{width:19px;height:19px;stroke-width:2}
 .acct{position:relative;flex:0 0 auto}
-.acct-btn{display:flex;align-items:center;gap:10px;height:42px;padding:0 12px 0 5px;border:1px solid rgba(10,10,10,.20);border-radius:999px;background:rgba(10,10,10,.06);cursor:pointer;transition:all .15s}
-.acct-btn:hover{background:rgba(10,10,10,.12)}
-.acct-btn .avatar{width:31px;height:31px;border-radius:50%;background:#0a0a0a;color:#ccff00;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.acct-btn .uname{font-size:14px;font-weight:600;color:#0a0a0a;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.acct-btn .chev{width:16px;height:16px;color:rgba(10,10,10,.6);stroke-width:2.4}
+.acct-btn{display:flex;align-items:center;gap:10px;height:42px;padding:0 12px 0 5px;border:1px solid rgba(255,255,255,.18);border-radius:999px;background:rgba(255,255,255,.10);cursor:pointer;transition:all .15s}
+.acct-btn:hover{background:rgba(255,255,255,.16)}
+.acct-btn .avatar{width:31px;height:31px;border-radius:50%;background:var(--brand-grad);color:var(--lime-ink);font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.acct-btn .uname{font-size:14px;font-weight:600;color:#fff;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.acct-btn .chev{width:16px;height:16px;color:rgba(255,255,255,.65);stroke-width:2.4}
 .acct-menu{position:absolute;top:calc(100% + 8px);right:0;min-width:210px;background:var(--bg-elev-1);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-lg);padding:6px;opacity:0;visibility:hidden;transform:translateY(-6px);transition:all .16s var(--ease-out);z-index:20}
 .acct-menu.on{opacity:1;visibility:visible;transform:translateY(0)}
 .acct-menu .ttl{padding:8px 10px 6px;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-faint);font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -1224,14 +1233,14 @@ body{flex-direction:column}
 /* ═══════════════════ ACTIVITY METRICS (top-bar left) ═══════════════════ */
 /* Total jobs + Running as a rounded pill group on the left of the top bar (replaced the
    page title). Matches the height/radius of the right-side usage group. */
-.statsbar{display:inline-flex;align-items:center;height:42px;border:1px solid rgba(10,10,10,.20);border-radius:14px;background:rgba(10,10,10,.06);padding:0 5px;min-width:0}
-.sb-metric{display:inline-flex;align-items:center;gap:9px;padding:0 12px;font-size:12.5px;font-weight:600;color:rgba(10,10,10,.66);white-space:nowrap;text-transform:uppercase;letter-spacing:.02em}
-.sb-metric b{font-size:16px;font-weight:800;letter-spacing:-.01em;color:#0a0a0a;line-height:1}
+.statsbar{display:inline-flex;align-items:center;height:42px;border:1px solid rgba(255,255,255,.18);border-radius:14px;background:rgba(255,255,255,.10);padding:0 5px;min-width:0}
+.sb-metric{display:inline-flex;align-items:center;gap:9px;padding:0 12px;font-size:12.5px;font-weight:600;color:rgba(255,255,255,.82);white-space:nowrap;text-transform:uppercase;letter-spacing:.02em}
+.sb-metric b{font-size:16px;font-weight:800;letter-spacing:-.01em;color:#ccff00;line-height:1}
 .sb-ic{width:28px;height:28px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
 .sb-ic svg{width:15px;height:15px;stroke-width:2.2}
-.sb-ic.b{background:rgba(10,10,10,.12);color:#0a0a0a}
-.sb-ic.pr{background:rgba(10,10,10,.12);color:#0a0a0a}
-.sb-sep{width:1px;height:20px;background:rgba(10,10,10,.18)}
+.sb-ic.b{background:rgba(255,255,255,.16);color:#fff}
+.sb-ic.pr{background:rgba(255,255,255,.16);color:#fff}
+.sb-sep{width:1px;height:20px;background:rgba(255,255,255,.2)}
 @media (max-width:820px){ .sb-lbl{display:none} }
 @media (max-width:600px){ .statsbar{display:none} }
 
@@ -1300,12 +1309,11 @@ body{flex-direction:column}
 [data-p="home"]{--pc:#3257d6}
 
 /* ═══════════ PRODUCT PAGE HEADER — "which dashboard am I in" ═══════════ */
-.phead{display:flex;align-items:center;justify-content:center;gap:12px;width:fit-content;max-width:100%;margin:0 auto 14px;border:1px solid rgba(10,10,10,.20);background:var(--brand);border-radius:14px;padding:12px 26px;text-align:center;box-shadow:0 6px 18px -10px rgba(0,0,0,.5);transition:transform .2s var(--ease),box-shadow .2s var(--ease)}
-.phead:hover{transform:scale(1.03);box-shadow:0 16px 32px -14px rgba(0,0,0,.55)}
+.phead{display:flex;align-items:center;justify-content:center;gap:12px;width:fit-content;max-width:100%;margin:0 auto 14px;border:1px solid var(--border-strong);background:var(--bg-elev-1);border-radius:14px;padding:12px 26px;text-align:center}
 .phead-emoji{font-size:28px;line-height:1}
-.phead-ic{width:40px;height:40px;flex:none;border-radius:11px;display:flex;align-items:center;justify-content:center;background:#0a0a0a;color:#ccff00}
+.phead-ic{width:40px;height:40px;flex:none;border-radius:11px;display:flex;align-items:center;justify-content:center;background:rgba(53,224,184,.14);color:var(--brand-3)}
 .phead-ic svg{width:22px;height:22px;stroke-width:2}
-.phead-name{font-size:23px;font-weight:800;letter-spacing:-.02em;line-height:1.1;color:#0a0a0a}
+.phead-name{font-size:23px;font-weight:800;letter-spacing:-.02em;line-height:1.1;color:var(--text)}
 
 /* ═══════════════════ COMING SOON module ═══════════════════ */
 .coming{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:64px 24px;max-width:540px;margin:24px auto}
