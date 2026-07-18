@@ -22,16 +22,15 @@ function make(children, viewBox = '0 0 24 24') {
   }
 }
 
-// Brand mark — the 6-spoke radial used in the topbar + login.
+// Brand mark — the Coldcast spiral (7 curved blades). Renders in currentColor,
+// so on the lime logo tile the CSS sets it dark (#0a0a0a). Kept identical to
+// public/favicon.svg so the tab icon and the in-app logo are the same mark.
 export function IconLogo({ className, style }) {
   return (
-    <svg viewBox="20 20 88 88" fill="none" className={className} style={style} aria-hidden="true">
-      <g strokeWidth="11" strokeLinecap="round" stroke="currentColor">
-        {[0, 60, 120, 180, 240, 300].map((deg) => (
-          <g key={deg} transform={`rotate(${deg} 64 64)`}>
-            <path d="M64 56 C 71 46 86 48 92 60" />
-            <circle cx="92" cy="60" r="5" fill="currentColor" stroke="none" />
-          </g>
+    <svg viewBox="0 0 128 128" fill="none" className={className} style={style} aria-hidden="true">
+      <g stroke="currentColor" strokeWidth="13" strokeLinecap="round" fill="none">
+        {[0, 51.4, 102.9, 154.3, 205.7, 257.1, 308.6].map((deg) => (
+          <path key={deg} d="M64 64 C 61 46 73 34 92 39" transform={`rotate(${deg} 64 64)`} />
         ))}
       </g>
     </svg>
