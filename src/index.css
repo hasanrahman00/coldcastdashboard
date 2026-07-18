@@ -815,8 +815,8 @@ textarea{resize:vertical;min-height:80px;font-family:var(--mono);font-size:12.5p
 .empty-ic svg{width:32px;height:32px;color:#35e0b8}
 .empty h3{font-size:18px;color:var(--text);margin-bottom:6px;font-weight:700;letter-spacing:-.02em}
 .empty p{font-size:13.5px;margin-bottom:22px;color:var(--text-muted)}
-.empty .btn-p{background:#4d6a00;color:#fff;box-shadow:none;border:1px solid rgba(255,255,255,.22)}
-.empty .btn-p:hover{transform:scale(1.05);background:#587a0a;box-shadow:0 10px 24px -8px rgba(0,0,0,.5)}
+.empty .btn-p{background:#D3FF27;color:#0a0a0a;box-shadow:none;border:1px solid rgba(0,0,0,.18)}
+.empty .btn-p:hover{transform:scale(1.05);background:#c7f01f;box-shadow:0 10px 24px -8px rgba(0,0,0,.4)}
 
 /* ═══════════════════ SETTINGS ═══════════════════ */
 .sbox{
@@ -1247,8 +1247,8 @@ body{flex-direction:column}
    visible on every job page (it sits above the jobs in the Sales Nav module). */
 .newjob-bar{display:flex;justify-content:center;position:sticky;top:0;z-index:5;background:var(--bg);padding:6px 0 16px;box-shadow:0 9px 12px -11px rgba(20,30,80,.12)}
 .newjob-bar .btn{min-width:200px;justify-content:center}
-.newjob-bar .btn-p{background:#4d6a00;color:#fff;box-shadow:none;border:1px solid rgba(255,255,255,.22)}
-.newjob-bar .btn-p:hover{background:#587a0a;box-shadow:0 8px 20px -8px rgba(0,0,0,.5)}
+.newjob-bar .btn-p{background:#D3FF27;color:#0a0a0a;box-shadow:none;border:1px solid rgba(0,0,0,.18)}
+.newjob-bar .btn-p:hover{background:#c7f01f;box-shadow:0 8px 20px -8px rgba(0,0,0,.4)}
 .newjob-bar .btn:hover{transform:scale(1.045)}
 
 /* ═══════════════════ PRODUCTS HOME (Tools grid) ═══════════════════ */
@@ -1309,11 +1309,11 @@ body{flex-direction:column}
 [data-p="home"]{--pc:#3257d6}
 
 /* ═══════════ PRODUCT PAGE HEADER — "which dashboard am I in" ═══════════ */
-.phead{display:flex;align-items:center;justify-content:center;gap:12px;width:fit-content;max-width:100%;margin:0 auto 14px;border:1px solid rgba(0,0,0,.22);background:#4d6a00;border-radius:14px;padding:12px 26px;text-align:center}
+.phead{display:flex;align-items:center;justify-content:center;gap:12px;width:fit-content;max-width:100%;margin:0 auto 14px;border:1px solid rgba(0,0,0,.2);background:#D3FF27;border-radius:14px;padding:12px 26px;text-align:center}
 .phead-emoji{font-size:28px;line-height:1}
 .phead-ic{width:40px;height:40px;flex:none;border-radius:11px;display:flex;align-items:center;justify-content:center;background:#0a0a0a;color:#35e0b8}
 .phead-ic svg{width:22px;height:22px;stroke-width:2}
-.phead-name{font-size:23px;font-weight:800;letter-spacing:-.02em;line-height:1.1;color:#fff}
+.phead-name{font-size:23px;font-weight:800;letter-spacing:-.02em;line-height:1.1;color:#0a0a0a}
 
 /* ═══════════════════ COMING SOON module ═══════════════════ */
 .coming{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:64px 24px;max-width:540px;margin:24px auto}
