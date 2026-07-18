@@ -7,9 +7,9 @@ import { IconSearch } from '../lib/icons.jsx'
 // sections. Each card is a whole-card button (soft-tinted with the product accent + a
 // status badge); it opens that product's tab, or its teaser page if soon.
 const SECTIONS = [
-  { title: 'Deals & offers', ids: ['sndeal'] },
   { title: 'Lead & company scraping', ids: ['salesnav', 'apollo', 'company', 'zoominfo'] },
   { title: 'Enrichment & verification', ids: ['linkedin', 'waterfall', 'verify', 'domain'] },
+  { title: 'Deals & offers', ids: ['sndeal'] },
 ]
 
 // The flagship product shown as the big hero banner (and excluded from its section grid
