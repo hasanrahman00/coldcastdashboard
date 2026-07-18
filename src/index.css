@@ -1124,15 +1124,14 @@ body{flex-direction:column}
 .side-logo svg{width:24px;height:24px;color:#0a0a0a;position:relative;z-index:1;filter:drop-shadow(0 1px 2px rgba(0,0,0,.25))}
 .side-brand h1{font-family:var(--font-nav);font-size:18px;font-weight:800;color:#fff;letter-spacing:-.02em;white-space:nowrap}
 .side-nav{display:flex;flex-direction:column;gap:2px}
-.side-cap{font-family:var(--font-nav);font-size:11px;font-weight:700;text-transform:none;letter-spacing:.01em;color:rgba(255,255,255,.45);padding:4px 11px 6px}
+.side-cap{font-family:var(--font-nav);font-size:11px;font-weight:700;text-transform:capitalize;letter-spacing:.01em;color:rgba(255,255,255,.45);padding:4px 11px 6px}
 .side-sep{height:1px;background:rgba(255,255,255,.14);margin:12px 6px 4px}
 .snav-item{position:relative;display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:10px 11px;border:none;background:transparent;border-radius:11px;cursor:pointer;font-family:var(--font-nav);font-size:12px;font-weight:600;letter-spacing:-.005em;color:rgba(255,255,255,.9);transition:background .15s,color .15s,box-shadow .15s}
 .snav-item:hover{background:rgba(255,255,255,.10);color:#fff}
 .snav-ic{width:20px;height:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .snav-ic svg{width:18px;height:18px;stroke-width:2;color:var(--accent);transition:color .15s}
 .snav-item:hover .snav-ic svg{color:#7defd9}
-.snav-label{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-transform:lowercase;letter-spacing:.01em}
-.snav-label::first-letter{text-transform:uppercase}
+.snav-label{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-transform:capitalize;letter-spacing:.01em}
 /* Active = a single ORANGE pill for EVERY item (consistent, à la the reference) —
    not the per-product accent. */
 .snav-item.on,.snav-item.on:hover{background:linear-gradient(135deg,rgba(204,255,0,.22),rgba(163,204,0,.12));color:#ccff00;font-weight:700;box-shadow:0 8px 18px -8px rgba(204,255,0,.30)}
@@ -1263,37 +1262,29 @@ body{flex-direction:column}
 .phome-empty{font-size:13.5px;color:var(--text-muted);padding:8px 2px 40px}
 
 /* Featured hero — flagship product as a wide banner card */
-.pcard-feat{display:flex;align-items:center;gap:22px;width:100%;text-align:left;font-family:var(--font);cursor:pointer;margin-bottom:30px;border:1px solid color-mix(in srgb,var(--pc,#4f7cf5) 24%,var(--border));border-radius:18px;padding:24px 26px;background:linear-gradient(120deg,color-mix(in srgb,var(--pc,#4f7cf5) 13%,var(--bg-elev-1)),color-mix(in srgb,var(--pc,#4f7cf5) 4%,var(--bg-elev-1)));transition:transform .15s var(--ease),box-shadow .15s var(--ease),border-color .15s,background .15s var(--ease)}
-.pcard-feat:hover{transform:translateY(-3px);background:var(--brand);border-color:var(--brand);box-shadow:0 22px 46px -18px rgba(0,0,0,.6)}
-.pcard-feat:hover .pcard-feat-name{color:#0a0a0a}
-.pcard-feat:hover .pcard-feat-desc{color:rgba(10,10,10,.72)}
-.pcard-feat:hover .pcard-feat-cta{color:#0a0a0a}
-.pcard-feat:hover .pcard-feat-ic{background:rgba(10,10,10,.12);color:#0a0a0a;box-shadow:none}
-.pcard-feat:focus-visible{outline:2px solid var(--pc,var(--brand));outline-offset:2px}
-.pcard-feat-ic{width:64px;height:64px;flex:none;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:30px;background:color-mix(in srgb,var(--pc,#4f7cf5) 18%,var(--bg-elev-1));color:var(--pc,var(--brand));box-shadow:0 6px 18px -8px color-mix(in srgb,var(--pc,#4f7cf5) 70%,transparent);transition:background .15s var(--ease),color .15s var(--ease),box-shadow .15s var(--ease)}
+.pcard-feat{display:flex;align-items:center;gap:22px;width:100%;text-align:left;font-family:var(--font);cursor:pointer;margin-bottom:30px;border:1px solid var(--brand);border-radius:18px;padding:24px 26px;background:var(--brand);box-shadow:0 6px 18px -8px rgba(0,0,0,.5);transition:transform .2s var(--ease),box-shadow .2s var(--ease)}
+.pcard-feat:hover{transform:scale(1.012);box-shadow:0 26px 50px -18px rgba(0,0,0,.62)}
+.pcard-feat:focus-visible{outline:2px solid #0a0a0a;outline-offset:3px}
+.pcard-feat-ic{width:64px;height:64px;flex:none;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:30px;background:rgba(10,10,10,.10);color:#0a0a0a}
 .pcard-feat-ic svg{width:30px;height:30px;stroke-width:2}
 .pcard-feat-body{min-width:0}
-.pcard-feat-name{font-size:20px;font-weight:800;letter-spacing:-.02em;color:var(--text);line-height:1.2;margin:9px 0 7px;transition:color .15s var(--ease)}
-.pcard-feat-desc{font-size:13px;color:var(--text-muted);line-height:1.55;margin:0;max-width:64ch;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;transition:color .15s var(--ease)}
-.pcard-feat-cta{display:inline-block;margin-top:12px;font-size:13px;font-weight:700;color:var(--pc,var(--brand));transition:color .15s var(--ease)}
+.pcard-feat-name{font-size:20px;font-weight:800;letter-spacing:-.02em;color:#0a0a0a;line-height:1.2;margin:9px 0 7px}
+.pcard-feat-desc{font-size:13px;color:rgba(10,10,10,.72);line-height:1.55;margin:0;max-width:64ch;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.pcard-feat-cta{display:inline-block;margin-top:12px;font-size:13px;font-weight:700;color:#0a0a0a}
 /* Snov.io-style product card — the WHOLE card is a button, softly tinted with its own
    accent (--pc), with a status badge. */
-.pcard{display:flex;flex-direction:column;align-items:stretch;width:100%;text-align:left;font-family:var(--font);cursor:pointer;border:1px solid color-mix(in srgb,var(--pc,#4f7cf5) 16%,var(--border));border-radius:16px;padding:16px 18px 18px;background:color-mix(in srgb,var(--pc,#4f7cf5) 6%,var(--bg-elev-1));transition:transform .15s var(--ease),box-shadow .15s var(--ease),border-color .15s,background .15s var(--ease)}
-.pcard:hover{transform:translateY(-3px);background:var(--brand);border-color:var(--brand);box-shadow:0 16px 34px -14px rgba(0,0,0,.55)}
-.pcard:hover .pcard-name{color:#0a0a0a}
-.pcard:hover .pcard-desc{color:rgba(10,10,10,.72)}
-.pcard:hover .pcard-ic{background:rgba(10,10,10,.12);color:#0a0a0a}
-.pcard:hover .pcard-badge{background:#0a0a0a;border-color:transparent;color:#d9ff4d;box-shadow:none}
-.pcard:focus-visible{outline:2px solid var(--pc,var(--brand));outline-offset:2px}
+.pcard{display:flex;flex-direction:column;align-items:stretch;width:100%;text-align:left;font-family:var(--font);cursor:pointer;position:relative;border:1px solid var(--brand);border-radius:16px;padding:16px 18px 18px;background:var(--brand);box-shadow:0 4px 14px -6px rgba(0,0,0,.45);transition:transform .2s var(--ease),box-shadow .2s var(--ease)}
+.pcard:hover{transform:scale(1.045);z-index:2;box-shadow:0 22px 44px -16px rgba(0,0,0,.58)}
+.pcard:focus-visible{outline:2px solid #0a0a0a;outline-offset:2px}
 .pcard-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:13px}
-.pcard-ic{width:40px;height:40px;flex:none;border-radius:11px;display:flex;align-items:center;justify-content:center;background:color-mix(in srgb,var(--pc,#4f7cf5) 16%,var(--bg-elev-1));color:var(--pc,var(--brand));transition:background .15s var(--ease),color .15s var(--ease)}
+.pcard-ic{width:40px;height:40px;flex:none;border-radius:11px;display:flex;align-items:center;justify-content:center;background:rgba(10,10,10,.10);color:#0a0a0a}
 .pcard-ic svg{width:21px;height:21px;stroke-width:2}
-.pcard-badge{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;padding:3px 8px;border-radius:999px;line-height:1.4;white-space:nowrap;transition:background .15s,color .15s,border-color .15s}
-.pcard-badge.live{color:#35e0b8;background:rgba(53,224,184,.12);border:1px solid rgba(53,224,184,.28)}
-.pcard-badge.soon{color:#e8c258;background:rgba(232,194,88,.12);border:1px solid rgba(232,194,88,.28)}
-.pcard-badge.deal{color:#fff;background:linear-gradient(135deg,#16a34a,#0f9d58);border:1px solid transparent;box-shadow:0 2px 8px -2px rgba(22,163,74,.6)}
-.pcard-name{font-size:15px;font-weight:700;letter-spacing:-.01em;color:var(--text);line-height:1.3;margin-bottom:6px;transition:color .15s var(--ease)}
-.pcard-desc{font-size:12.5px;color:var(--text-muted);line-height:1.5;margin:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;transition:color .15s var(--ease)}
+.pcard-badge{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;padding:3px 8px;border-radius:999px;line-height:1.4;white-space:nowrap;background:#0a0a0a;border:1px solid transparent}
+.pcard-badge.live{color:#35e0b8}
+.pcard-badge.soon{color:#e8c258}
+.pcard-badge.deal{color:#d9ff4d}
+.pcard-name{font-size:15px;font-weight:700;letter-spacing:-.01em;color:#0a0a0a;line-height:1.3;margin-bottom:6px}
+.pcard-desc{font-size:12.5px;color:rgba(10,10,10,.72);line-height:1.5;margin:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 /* Per-product accent (--pc), shared by the card, the page header, and anything with a
    data-p attribute. */
 [data-p="salesnav"]{--pc:#4f7cf5}
