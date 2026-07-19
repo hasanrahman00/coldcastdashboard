@@ -6,10 +6,11 @@ import { IconCopy } from '../../lib/icons.jsx'
 
 // matches renderLines() in the original
 function lineClass(l) {
-  if (l.includes('[ERR]') || l.includes('ERROR')) return 'err'
-  if (l.includes('✅') || l.includes('Generated')) return 'ok'
-  if (l.includes('📄') || l.includes('🔥') || l.includes('═══')) return 'info'
-  if (l.includes('⚠️')) return 'warn'
+  if (l.includes('[ERR]') || /ERROR|FAILED|🛑/.test(l)) return 'err'
+  if (l.includes('📄')) return 'pg'                                   // page header → gap + separator
+  if (/✅|🎉|🏁|🟢|Generated/.test(l)) return 'ok'
+  if (/⚠️|🟡|⏸/.test(l)) return 'warn'
+  if (/📥|ℹ️|🧭/.test(l)) return 'info'
   return ''
 }
 
