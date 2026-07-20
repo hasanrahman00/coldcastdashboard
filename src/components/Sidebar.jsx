@@ -1,5 +1,5 @@
 import { PRODUCTS } from '../lib/products.js'
-import { IconLogo, IconGrid, IconUsers, IconAtSign, IconZap, IconWhatsApp } from '../lib/icons.jsx'
+import { IconLogo, IconGrid, IconUsers, IconAtSign, IconZap, IconWhatsApp, IconFileLines } from '../lib/icons.jsx'
 
 // A separate nav area, below the products: the Sales Nav deal + done-for-you services +
 // feedback. Rendered with a mint accent so it reads as distinct from the (lime) product
@@ -9,6 +9,7 @@ const SERVICES = [
   { id: 'prospectteam', label: 'Hire Prospect Team', icon: IconUsers },
   { id: 'coldinfra', label: 'Cold Infrastructure', icon: IconAtSign },
   { id: 'requestfeature', label: 'Request Feature', icon: IconZap },
+  { id: 'playbook', label: 'Free Playbook', icon: IconFileLines },
 ]
 
 // Left sidebar — the brand plus the FULL product list, always visible (no scrolling

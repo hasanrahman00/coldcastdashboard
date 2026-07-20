@@ -19,13 +19,14 @@ import Extension from '../pages/Extension.jsx'
 import HireProspectTeam from '../pages/services/HireProspectTeam.jsx'
 import ColdInfraSetup from '../pages/services/ColdInfraSetup.jsx'
 import RequestFeature from '../pages/services/RequestFeature.jsx'
+import FreePlaybook from '../pages/services/FreePlaybook.jsx'
 
 // Every route the logged-in app recognizes: the product tabs + the config pages +
 // the Services area. Anything else (typo, stale #/login, #/dash, bare hash) → home.
 const VALID_ROUTES = new Set([
   ...PRODUCTS.map((p) => p.id),
   'home', 'set', 'setup', 'api', 'ext',
-  'prospectteam', 'coldinfra', 'requestfeature',
+  'prospectteam', 'coldinfra', 'requestfeature', 'playbook',
 ])
 
 export default function Dashboard({ onLogout }) {
@@ -45,6 +46,7 @@ export default function Dashboard({ onLogout }) {
   else if (route === 'prospectteam') page = <HireProspectTeam />
   else if (route === 'coldinfra') page = <ColdInfraSetup />
   else if (route === 'requestfeature') page = <RequestFeature />
+  else if (route === 'playbook') page = <FreePlaybook />
   else {
     const product = getProduct(route)
     if (route === 'waterfall') page = <WaterfallEnricher />
