@@ -4,6 +4,15 @@ import { IconFileLines, IconDownload } from '../../lib/icons.jsx'
 // Free Playbook — a grid of downloadable playbooks (under the Services nav area).
 // Entries come from src/lib/playbooks.js; each with a `url` gets a live download button,
 // the rest show "Coming soon".
+const fmtDate = (d) => {
+  if (!d) return ''
+  try {
+    return new Date(d + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+  } catch {
+    return d
+  }
+}
+
 function PlaybookCard({ pb }) {
   const ready = !!(pb.url && pb.url.trim())
   return (
@@ -11,8 +20,10 @@ function PlaybookCard({ pb }) {
       <div className="pb-cover"><IconFileLines /></div>
       <div className="pb-body">
         {pb.tag && <span className="pb-tag">{pb.tag}</span>}
+        {pb.emoji && <div className="pb-emoji">{pb.emoji}</div>}
         <h4 className="pb-title">{pb.title}</h4>
         <p className="pb-desc">{pb.desc}</p>
+        {pb.updated && <span className="pb-date">Updated {fmtDate(pb.updated)}</span>}
         <div className="pb-foot">
           <span className="pb-fmt">{pb.format || 'PDF'}{pb.size ? ` · ${pb.size}` : ''}</span>
           {ready ? (

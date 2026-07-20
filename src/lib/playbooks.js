@@ -8,11 +8,13 @@
 export const PLAYBOOKS = [
   {
     id: 'cold-email-outbound-setup',
+    emoji: '📧',
     title: 'Cold Email Outbound Setup',
     desc: 'Our end-to-end cold email + outbound setup — domains, mailboxes, warmup, sequences, and deliverability, the way we run it at Coldcast.',
     tag: 'Outbound',
     format: 'PDF',
     size: '',
+    updated: '2026-07-19',
     url: 'https://drive.google.com/uc?export=download&id=1Gv-5c6HT_0kAmcOkb-ZULj4sUObLFmYW',
   },
 ]
