@@ -10,8 +10,10 @@ import {
   IconZap,
   IconClock,
   IconDownload,
+  IconWhatsApp,
 } from '../lib/icons.jsx'
 import StatsBox from './StatsBox.jsx'
+import { waLink } from '../lib/whatsapp.js'
 
 function fmtTtl(secs) {
   if (secs <= 0) return 'Expired'
@@ -127,6 +129,16 @@ export default function Topbar({ route, nav, onLogout }) {
           <span className={'dot' + (connectorOnline ? '' : ' off')} />
           <span>{connText}</span>
         </button>
+
+        <a
+          className="tb-demo"
+          href={waLink('Hi! I’d like to book a demo of Coldcast.')}
+          target="_blank"
+          rel="noopener noreferrer"
+          title="Book a demo on WhatsApp"
+        >
+          <IconWhatsApp /> <span className="tb-demo-t">Demo</span>
+        </a>
 
         <button className="tb-icon" onClick={() => nav('set')} title="Settings">
           <IconGear />

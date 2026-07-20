@@ -1,12 +1,12 @@
 import { IconWhatsApp } from '../../lib/icons.jsx'
 import { useToast } from '../../store/ToastProvider.jsx'
+import { BUSINESS_WHATSAPP } from '../../lib/whatsapp.js'
 
 // Shared shell for the "Services" nav area (Hire Prospect Team, Cold Infrastructure,
 // Request Feature). Each is a lead-capture form — a lime→mint hero on the left, a dark
 // form card on the right. On submit we open WhatsApp to our business number with the
 // request pre-filled (same delivery as the Sales Nav deal page), so it works with no
-// extra backend. Set VITE_DEAL_WHATSAPP to the destination number.
-const BUSINESS_WHATSAPP = String(import.meta.env.VITE_DEAL_WHATSAPP || '').replace(/\D/g, '')
+// extra backend.
 
 export const isEmail = (s) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(s || '').trim())
 

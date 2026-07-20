@@ -1,14 +1,11 @@
 import { useState } from 'react'
 import { IconWhatsApp } from '../../lib/icons.jsx'
 import { useToast } from '../../store/ToastProvider.jsx'
+import { BUSINESS_WHATSAPP } from '../../lib/whatsapp.js'
 
 // LinkedIn Sales Navigator "75% OFF" offer — a lead-capture page (not a scraper).
 // The user drops their details and the button opens WhatsApp to our business number
 // with everything pre-filled, so they can claim the deal in one tap.
-//
-// Destination number comes from VITE_DEAL_WHATSAPP (full international number, any
-// format — non-digits are stripped). Until it's set, the button is disabled.
-const BUSINESS_WHATSAPP = String(import.meta.env.VITE_DEAL_WHATSAPP || '').replace(/\D/g, '')
 
 const isEmail = (s) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s)
 
