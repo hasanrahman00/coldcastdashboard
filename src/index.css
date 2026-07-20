@@ -25,14 +25,14 @@
   /* Brand & accents — BLUE, used tastefully as an accent (buttons, active nav,
      links, focus, highlights). Single-accent; the rest is semantic (green/amber/red).
      Ink that sits ON a blue fill is --lime-ink (now white). */
-  --brand:#3b82f6;
-  --brand-2:#2563eb;
-  --brand-3:#60a5fa;
-  --accent:#3b82f6;
+  --brand:#6366f1;
+  --brand-2:#4f46e5;
+  --brand-3:#818cf8;
+  --accent:#6366f1;
   --surface:#16191c;
   --surface-2:#1b1f23;
-  --brand-grad:linear-gradient(135deg,#3b82f6 0%,#2563eb 100%);
-  --brand-grad-soft:linear-gradient(135deg,rgba(59,130,246,.16),rgba(37,99,235,.10));
+  --brand-grad:linear-gradient(135deg,#6366f1 0%,#4f46e5 100%);
+  --brand-grad-soft:linear-gradient(135deg,rgba(99,102,241,.16),rgba(79,70,229,.10));
   --lime-ink:#ffffff;
 
   /* Status TEXT colors — brightened for dark (were deep for light tints) */
@@ -56,7 +56,7 @@
   --shadow-sm:0 1px 2px rgba(0,0,0,.4),0 1px 3px rgba(0,0,0,.5);
   --shadow-md:0 6px 16px -4px rgba(0,0,0,.5),0 2px 6px -2px rgba(0,0,0,.45);
   --shadow-lg:0 20px 40px -12px rgba(0,0,0,.6),0 6px 12px -6px rgba(0,0,0,.5);
-  --shadow-glow:0 10px 30px -8px rgba(59,130,246,.35);
+  --shadow-glow:0 10px 30px -8px rgba(99,102,241,.35);
 
   --radius-sm:8px;
   --radius:10px;
@@ -131,9 +131,9 @@ input,button,textarea,select{font-family:var(--font)}
 .sb-logo{
   width:44px;height:44px;
   border-radius:13px;
-  background:var(--brand-grad);
+  background:#D3FF27;
   display:flex;align-items:center;justify-content:center;
-  box-shadow:0 6px 18px rgba(53,224,184,.5);
+  box-shadow:0 6px 18px rgba(211,255,39,.4);
   position:relative;
   flex-shrink:0;
 }
@@ -143,11 +143,11 @@ input,button,textarea,select{font-family:var(--font)}
   border-radius:13px;
   background:linear-gradient(135deg,rgba(255,255,255,.28),transparent 55%);
 }
-.sb-logo svg{width:30px;height:30px;color:#fff;position:relative;z-index:1;filter:drop-shadow(0 1px 2px rgba(0,0,0,.25))}
+.sb-logo svg{width:30px;height:30px;color:#0a0a0a;position:relative;z-index:1;filter:drop-shadow(0 1px 2px rgba(0,0,0,.25))}
 .sb-brand h1{
   font-size:20px;
   font-weight:800;
-  background:linear-gradient(135deg,#60a5fa,#3b82f6);
+  background:linear-gradient(135deg,#818cf8,#6366f1);
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
   background-clip:text;
@@ -258,7 +258,7 @@ a.btn:hover{text-decoration:none}
 .btn-p{
   background:var(--brand-grad);
   color:var(--lime-ink);
-  box-shadow:0 4px 16px rgba(59,130,246,.30),inset 0 1px 0 rgba(255,255,255,.35);
+  box-shadow:0 4px 16px rgba(99,102,241,.30),inset 0 1px 0 rgba(255,255,255,.35);
 }
 .btn-p:hover{
   box-shadow:0 6px 24px rgba(53,224,184,.5),inset 0 1px 0 rgba(255,255,255,.2);
@@ -306,7 +306,7 @@ a.btn:hover{text-decoration:none}
 /* Colorful card actions (tinted fills so every button has its own colour, inline) */
 .btn-csv{background:var(--greenglow);color:var(--green);border-color:rgba(4,120,87,.28)}
 .btn-csv:hover{background:#047857;color:#fff;border-color:var(--green)}
-.btn-xlsx{background:var(--blueglow);color:var(--blue);border-color:rgba(37,99,235,.28)}
+.btn-xlsx{background:var(--blueglow);color:var(--blue);border-color:rgba(79,70,229,.28)}
 .btn-xlsx:hover{background:var(--blue);color:#fff;border-color:var(--blue)}
 .btn-logs{background:var(--purpleglow);color:#6d28d9;border-color:rgba(124,58,237,.26)}
 .btn-logs:hover{background:#6d28d9;color:#fff;border-color:#6d28d9}
@@ -353,7 +353,7 @@ a.btn:hover{text-decoration:none}
   filter:blur(40px);
   opacity:.25;
 }
-.st.b::before{background:linear-gradient(90deg,#60a5fa,#3b82f6)}.st.b::after{background:#3b82f6}
+.st.b::before{background:linear-gradient(90deg,#818cf8,#6366f1)}.st.b::after{background:#6366f1}
 .st.g::before{background:linear-gradient(90deg,#34d399,#10b981)}.st.g::after{background:#10b981}
 .st.pr::before{background:linear-gradient(90deg,#a78bfa,#8b5cf6)}.st.pr::after{background:#8b5cf6}
 .st.or::before{background:linear-gradient(90deg,#fb923c,#f97316)}.st.or::after{background:#f97316}
@@ -482,7 +482,7 @@ a.btn:hover{text-decoration:none}
   transition:width .6s var(--ease-out);
   background:var(--brand-grad);
   position:relative;
-  box-shadow:0 0 12px rgba(59,130,246,.4);
+  box-shadow:0 0 12px rgba(99,102,241,.4);
 }
 .jc-pb::after{
   content:'';
@@ -588,8 +588,8 @@ a.btn:hover{text-decoration:none}
 .wf-dlb{flex:1;justify-content:center;padding:8px 11px;font-size:12.5px;font-weight:700;border-radius:9px}
 .wf-acts .btn-csv{background:rgba(5,150,105,.13);color:var(--green);border-color:rgba(5,150,105,.32)}
 .wf-acts .btn-csv:hover{background:#059669;color:#fff;border-color:#059669}
-.wf-acts .btn-xlsx{background:rgba(37,99,235,.13);color:#2563eb;border-color:rgba(37,99,235,.32)}
-.wf-acts .btn-xlsx:hover{background:#2563eb;color:#fff;border-color:#2563eb}
+.wf-acts .btn-xlsx{background:rgba(79,70,229,.13);color:#4f46e5;border-color:rgba(79,70,229,.32)}
+.wf-acts .btn-xlsx:hover{background:#4f46e5;color:#fff;border-color:#4f46e5}
 /* Indeterminate bar — the catch-all / waterfall cleaning phase (no scanned counter) */
 .jc-p.indet{position:relative;overflow:hidden}
 .jc-p.indet .jc-pb{position:absolute;top:0;bottom:0;left:0;width:36%;box-shadow:none;transition:none;animation:wfIndet 1.15s ease-in-out infinite}
@@ -706,7 +706,7 @@ a.btn:hover{text-decoration:none}
 .tab.on{
   background:var(--brand-grad);
   color:var(--lime-ink);
-  box-shadow:0 2px 8px rgba(59,130,246,.28);
+  box-shadow:0 2px 8px rgba(99,102,241,.28);
 }
 .tab:not(.on):hover{background:var(--bg-elev-3);color:var(--text)}
 
@@ -802,8 +802,8 @@ textarea{resize:vertical;min-height:80px;font-family:var(--mono);font-size:12.5p
   width:72px;height:72px;
   margin:0 auto 18px;
   border-radius:18px;
-  background:rgba(59,130,246,.12);
-  border:1px solid rgba(59,130,246,.26);
+  background:rgba(99,102,241,.12);
+  border:1px solid rgba(99,102,241,.26);
   display:flex;align-items:center;justify-content:center;
   position:relative;
 }
@@ -1120,9 +1120,9 @@ body{flex-direction:column}
 .side::-webkit-scrollbar{width:6px}
 .side::-webkit-scrollbar-thumb{background:rgba(255,255,255,.18);border-radius:999px}
 .side-brand{display:flex;align-items:center;gap:11px;cursor:pointer;padding:16px 8px 14px;position:sticky;top:0;background:#16191c;z-index:1}
-.side-logo{width:36px;height:36px;border-radius:11px;background:var(--brand-grad);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(53,224,184,.45);flex-shrink:0;position:relative}
+.side-logo{width:36px;height:36px;border-radius:11px;background:#D3FF27;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(211,255,39,.4);flex-shrink:0;position:relative}
 .side-logo::after{content:'';position:absolute;inset:0;border-radius:11px;background:linear-gradient(135deg,rgba(255,255,255,.28),transparent 55%)}
-.side-logo svg{width:24px;height:24px;color:#fff;position:relative;z-index:1;filter:drop-shadow(0 1px 2px rgba(0,0,0,.25))}
+.side-logo svg{width:24px;height:24px;color:#0a0a0a;position:relative;z-index:1;filter:drop-shadow(0 1px 2px rgba(0,0,0,.25))}
 .side-brand h1{font-family:var(--font-nav);font-size:18px;font-weight:800;color:#fff;letter-spacing:-.02em;white-space:nowrap}
 .side-nav{display:flex;flex-direction:column;gap:2px}
 .side-cap{font-family:var(--font-nav);font-size:11px;font-weight:700;text-transform:capitalize;letter-spacing:.01em;color:rgba(255,255,255,.45);padding:4px 11px 6px}
@@ -1131,15 +1131,15 @@ body{flex-direction:column}
 .snav-item:hover{background:rgba(255,255,255,.10);color:#fff}
 .snav-ic{width:20px;height:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .snav-ic svg{width:18px;height:18px;stroke-width:2;color:var(--accent);transition:color .15s}
-.snav-item:hover .snav-ic svg{color:#93c5fd}
+.snav-item:hover .snav-ic svg{color:#a5b4fc}
 .snav-label{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-transform:capitalize;letter-spacing:.01em}
 /* Active = a soft blue pill for every item. */
-.snav-item.on,.snav-item.on:hover{background:linear-gradient(135deg,rgba(59,130,246,.22),rgba(37,99,235,.12));color:#60a5fa;font-weight:700;box-shadow:0 8px 18px -8px rgba(59,130,246,.30)}
-.snav-item.on .snav-ic svg{color:#60a5fa}
+.snav-item.on,.snav-item.on:hover{background:linear-gradient(135deg,rgba(99,102,241,.22),rgba(79,70,229,.12));color:#818cf8;font-weight:700;box-shadow:0 8px 18px -8px rgba(99,102,241,.30)}
+.snav-item.on .snav-ic svg{color:#818cf8}
 .snav-item.soon{color:rgba(255,255,255,.62)}
 .snav-item.soon .snav-ic svg{color:rgba(255,255,255,.4)}
 .snav-item.soon:hover{color:#fff}
-.snav-item.soon:hover .snav-ic svg{color:#93c5fd}
+.snav-item.soon:hover .snav-ic svg{color:#a5b4fc}
 .snav-soon{margin-left:auto;font-size:8.5px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:rgba(255,255,255,.62);background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.16);padding:2px 5px;border-radius:5px;line-height:1.3}
 .snav-deal{margin-left:auto;font-size:8.5px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:#fff;background:linear-gradient(135deg,#22c55e,#16a34a);border:1px solid transparent;padding:2px 6px;border-radius:5px;line-height:1.3;box-shadow:0 2px 8px -2px rgba(22,163,74,.7)}
 
@@ -1162,10 +1162,10 @@ body{flex-direction:column}
 .tb-right{display:flex;align-items:center;gap:10px;min-width:0}
 /* Brand lockup — still used by the standalone Admin header. */
 .tb-brand{display:flex;align-items:center;gap:11px;cursor:pointer}
-.tb-logo{width:38px;height:38px;border-radius:11px;background:var(--brand-grad);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(59,130,246,.45);position:relative;flex-shrink:0}
+.tb-logo{width:38px;height:38px;border-radius:11px;background:#D3FF27;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(211,255,39,.4);position:relative;flex-shrink:0}
 .tb-logo::after{content:'';position:absolute;inset:0;border-radius:11px;background:linear-gradient(135deg,rgba(255,255,255,.28),transparent 55%)}
-.tb-logo svg{width:26px;height:26px;color:#fff;position:relative;z-index:1;filter:drop-shadow(0 1px 2px rgba(0,0,0,.25))}
-.tb-brand h1{font-size:19px;font-weight:800;background:linear-gradient(135deg,#60a5fa,#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-.02em}
+.tb-logo svg{width:26px;height:26px;color:#0a0a0a;position:relative;z-index:1;filter:drop-shadow(0 1px 2px rgba(0,0,0,.25))}
+.tb-brand h1{font-size:19px;font-weight:800;background:linear-gradient(135deg,#818cf8,#6366f1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-.02em}
 /* Trim the top-bar resource cluster progressively so the account button is never pushed
    off-screen (the shell has no horizontal scroll). The usage-group can also shrink/clip as
    a last-resort safety net (min-width:0 + overflow:hidden above). */
@@ -1234,8 +1234,8 @@ body{flex-direction:column}
 .sb-metric b{font-size:16px;font-weight:800;letter-spacing:-.01em;color:var(--brand);line-height:1}
 .sb-ic{width:28px;height:28px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
 .sb-ic svg{width:15px;height:15px;stroke-width:2.2}
-.sb-ic.b{background:rgba(59,130,246,.15);color:var(--brand)}
-.sb-ic.pr{background:rgba(59,130,246,.15);color:var(--brand)}
+.sb-ic.b{background:rgba(99,102,241,.15);color:var(--brand)}
+.sb-ic.pr{background:rgba(99,102,241,.15);color:var(--brand)}
 .sb-sep{width:1px;height:20px;background:var(--border-strong)}
 @media (max-width:820px){ .sb-lbl{display:none} }
 @media (max-width:600px){ .statsbar{display:none} }
@@ -1271,7 +1271,7 @@ body{flex-direction:column}
 .pcard-feat{display:flex;align-items:center;gap:22px;width:100%;text-align:left;font-family:var(--font);cursor:pointer;margin-bottom:30px;border:1px solid var(--border-strong);border-radius:18px;padding:24px 26px;background:linear-gradient(120deg,color-mix(in srgb,var(--brand) 9%,var(--bg-elev-1)),var(--bg-elev-1));box-shadow:0 6px 18px -10px rgba(0,0,0,.5);transition:transform .2s var(--ease),box-shadow .2s var(--ease),border-color .2s}
 .pcard-feat:hover{transform:scale(1.012);box-shadow:0 22px 46px -18px rgba(0,0,0,.6);border-color:color-mix(in srgb,var(--brand) 40%,var(--border))}
 .pcard-feat:focus-visible{outline:2px solid var(--brand);outline-offset:3px}
-.pcard-feat-ic{width:64px;height:64px;flex:none;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:30px;background:rgba(59,130,246,.14);color:var(--brand)}
+.pcard-feat-ic{width:64px;height:64px;flex:none;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:30px;background:rgba(99,102,241,.14);color:var(--brand)}
 .pcard-feat-ic svg{width:30px;height:30px;stroke-width:2}
 .pcard-feat-body{min-width:0}
 .pcard-feat-name{font-size:20px;font-weight:800;letter-spacing:-.02em;color:var(--text);line-height:1.2;margin:9px 0 7px}
@@ -1283,7 +1283,7 @@ body{flex-direction:column}
 .pcard:hover{transform:scale(1.03);z-index:2;box-shadow:0 20px 40px -16px rgba(0,0,0,.6);border-color:var(--border-strong)}
 .pcard:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
 .pcard-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:13px}
-.pcard-ic{width:40px;height:40px;flex:none;border-radius:11px;display:flex;align-items:center;justify-content:center;background:rgba(59,130,246,.14);color:var(--brand)}
+.pcard-ic{width:40px;height:40px;flex:none;border-radius:11px;display:flex;align-items:center;justify-content:center;background:rgba(99,102,241,.14);color:var(--brand)}
 .pcard-ic svg{width:21px;height:21px;stroke-width:2}
 .pcard-badge{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;padding:3px 8px;border-radius:999px;line-height:1.4;white-space:nowrap;border:1px solid transparent}
 .pcard-badge.live{color:#35e0b8;background:rgba(53,224,184,.12);border-color:rgba(53,224,184,.28)}
@@ -1307,7 +1307,7 @@ body{flex-direction:column}
 /* ═══════════ PRODUCT PAGE HEADER — "which dashboard am I in" ═══════════ */
 .phead{display:flex;align-items:center;justify-content:center;gap:12px;width:fit-content;max-width:100%;margin:0 auto 14px;border:1px solid var(--border-strong);background:var(--bg-elev-1);border-radius:14px;padding:12px 26px;text-align:center}
 .phead-emoji{font-size:28px;line-height:1}
-.phead-ic{width:40px;height:40px;flex:none;border-radius:11px;display:flex;align-items:center;justify-content:center;background:rgba(59,130,246,.14);color:var(--brand)}
+.phead-ic{width:40px;height:40px;flex:none;border-radius:11px;display:flex;align-items:center;justify-content:center;background:rgba(99,102,241,.14);color:var(--brand)}
 .phead-ic svg{width:22px;height:22px;stroke-width:2}
 .phead-name{font-size:23px;font-weight:800;letter-spacing:-.02em;line-height:1.1;color:var(--text)}
 
@@ -1330,10 +1330,10 @@ body{flex-direction:column}
 .login-wrap{flex:1;display:grid;place-items:center;padding:24px;position:relative;z-index:1}
 .login-card{width:100%;max-width:384px;background:linear-gradient(160deg,var(--bg-elev-1) 0%,var(--bg-elev-2) 100%);border:1px solid var(--border);border-radius:var(--radius-xl);box-shadow:var(--shadow-lg);padding:32px 28px}
 .login-brand{display:flex;flex-direction:column;align-items:center;text-align:center;margin-bottom:24px}
-.login-logo{width:54px;height:54px;border-radius:16px;background:var(--brand-grad);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 22px rgba(53,224,184,.5);margin-bottom:14px;position:relative}
+.login-logo{width:54px;height:54px;border-radius:16px;background:#D3FF27;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 22px rgba(211,255,39,.4);margin-bottom:14px;position:relative}
 .login-logo::after{content:'';position:absolute;inset:0;border-radius:16px;background:linear-gradient(135deg,rgba(255,255,255,.28),transparent 55%)}
-.login-logo svg{width:34px;height:34px;color:#fff;position:relative;z-index:1}
-.login-brand h1{font-size:27px;font-weight:800;letter-spacing:-.02em;background:linear-gradient(135deg,#60a5fa,#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.login-logo svg{width:34px;height:34px;color:#0a0a0a;position:relative;z-index:1}
+.login-brand h1{font-size:27px;font-weight:800;letter-spacing:-.02em;background:linear-gradient(135deg,#818cf8,#6366f1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .login-brand p{font-size:13.5px;color:var(--text-muted);margin-top:5px}
 .login-card label{display:block;font-size:11.5px;font-weight:600;color:var(--text-muted);margin-bottom:7px;text-transform:uppercase;letter-spacing:.8px}
 .login-field{position:relative}
@@ -1380,7 +1380,7 @@ input[type=password]{font-family:var(--font)}
 .svc-page{min-height:100%;display:flex;flex-direction:column}
 .svc{flex:1;display:grid;grid-template-columns:1.05fr .95fr;gap:22px;align-items:stretch;align-content:center;max-width:1000px;width:100%;margin:0 auto;padding-bottom:24px}
 @media (max-width:900px){ .svc{grid-template-columns:1fr;align-content:start} }
-.svc-hero{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;text-align:left;background:linear-gradient(150deg,#3b82f6 0%,#4f46e5 100%);border:1px solid rgba(255,255,255,.14);border-radius:20px;padding:34px 30px;color:#fff}
+.svc-hero{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;text-align:left;background:linear-gradient(150deg,#6366f1 0%,#4f46e5 100%);border:1px solid rgba(255,255,255,.14);border-radius:20px;padding:34px 30px;color:#fff}
 .svc-ic{width:52px;height:52px;flex:none;border-radius:15px;background:rgba(255,255,255,.16);color:#fff;display:flex;align-items:center;justify-content:center;margin-bottom:16px;box-shadow:0 6px 16px -6px rgba(0,0,0,.4)}
 .svc-ic svg{width:26px;height:26px;stroke-width:2}
 .svc-badge{display:inline-block;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:#fff;background:rgba(255,255,255,.18);padding:4px 11px;border-radius:999px;margin-bottom:14px}
@@ -1388,18 +1388,18 @@ input[type=password]{font-family:var(--font)}
 .svc-hero p{font-size:14px;color:rgba(255,255,255,.82);line-height:1.55;margin:0 0 20px;max-width:42ch}
 .svc-points{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:11px}
 .svc-points li{display:flex;align-items:flex-start;gap:10px;font-size:13.5px;font-weight:600;color:#fff;line-height:1.4}
-.svc-points li::before{content:"✓";flex:none;width:19px;height:19px;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#2563eb;background:#fff;border-radius:999px}
+.svc-points li::before{content:"✓";flex:none;width:19px;height:19px;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#4f46e5;background:#fff;border-radius:999px}
 .svc-card{background:var(--bg-elev-1);border:1px solid var(--border);border-radius:20px;padding:26px;box-shadow:0 22px 46px -28px rgba(0,0,0,.6)}
 .svc-card h4{font-size:16px;font-weight:800;letter-spacing:-.01em;color:var(--text);margin:0 0 18px}
-.svc-card input:focus,.svc-card textarea:focus,.svc-card select:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(59,130,246,.18);background:var(--bg-elev-1)}
+.svc-card input:focus,.svc-card textarea:focus,.svc-card select:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(99,102,241,.18);background:var(--bg-elev-1)}
 .svc-row{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
 @media (max-width:520px){ .svc-row{grid-template-columns:1fr} }
 .svc-check{display:flex;align-items:center;gap:9px;font-size:13px;font-weight:500;color:var(--text);cursor:pointer;user-select:none;text-transform:none;letter-spacing:0}
 .svc-check input{width:16px;height:16px;accent-color:var(--brand);cursor:pointer}
 .svc-submit{width:100%;justify-content:center;gap:9px;padding:12px;font-size:14.5px;font-weight:800;color:#fff;background:var(--brand-2);border:none;margin-top:4px}
-.svc-submit:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 12px 24px -8px rgba(37,99,235,.5)}
+.svc-submit:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 12px 24px -8px rgba(79,70,229,.5)}
 .svc-submit:disabled{opacity:.5;cursor:not-allowed}
 .svc-submit svg{width:18px;height:18px;fill:#fff}
 .svc-fine{font-size:11.5px;color:var(--text-faint);text-align:center;margin:12px 0 0;line-height:1.5}
 /* Services nav area — subtle blue caption; active pills inherit .snav-item.on (blue) */
-.side-cap-svc{color:#60a5fa}
+.side-cap-svc{color:#818cf8}
