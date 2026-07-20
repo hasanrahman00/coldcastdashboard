@@ -16,10 +16,17 @@ import Settings from '../pages/Settings.jsx'
 import Setup from '../pages/Setup.jsx'
 import ApiKey from '../pages/ApiKey.jsx'
 import Extension from '../pages/Extension.jsx'
+import HireProspectTeam from '../pages/services/HireProspectTeam.jsx'
+import ColdInfraSetup from '../pages/services/ColdInfraSetup.jsx'
+import RequestFeature from '../pages/services/RequestFeature.jsx'
 
-// Every route the logged-in app recognizes: the product tabs + the config pages.
-// Anything else (typo, stale #/login, #/dash, bare hash) → bounce to salesnav.
-const VALID_ROUTES = new Set([...PRODUCTS.map((p) => p.id), 'home', 'set', 'setup', 'api', 'ext'])
+// Every route the logged-in app recognizes: the product tabs + the config pages +
+// the Services area. Anything else (typo, stale #/login, #/dash, bare hash) → home.
+const VALID_ROUTES = new Set([
+  ...PRODUCTS.map((p) => p.id),
+  'home', 'set', 'setup', 'api', 'ext',
+  'prospectteam', 'coldinfra', 'requestfeature',
+])
 
 export default function Dashboard({ onLogout }) {
   const [route, nav] = useHashRoute('home')
@@ -35,6 +42,9 @@ export default function Dashboard({ onLogout }) {
   else if (route === 'setup') page = <Setup />
   else if (route === 'api') page = <ApiKey />
   else if (route === 'ext') page = <Extension />
+  else if (route === 'prospectteam') page = <HireProspectTeam />
+  else if (route === 'coldinfra') page = <ColdInfraSetup />
+  else if (route === 'requestfeature') page = <RequestFeature />
   else {
     const product = getProduct(route)
     if (route === 'waterfall') page = <WaterfallEnricher />

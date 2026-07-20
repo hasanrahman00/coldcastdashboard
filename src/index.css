@@ -1383,3 +1383,34 @@ input[type=password]{font-family:var(--font)}
 .btn-wa:hover:not(:disabled){filter:brightness(1.05);transform:translateY(-1px)}
 .btn-wa:disabled{opacity:.5;cursor:not-allowed;box-shadow:none}
 .btn-wa svg{width:19px;height:19px;fill:#fff}
+
+/* ═══════════════════ SERVICES (Hire team · Cold infra · Request feature) ═══════════════════ */
+/* Done-for-you + feedback forms: a lime→mint hero beside a dark form card. */
+.svc{display:grid;grid-template-columns:1.05fr .95fr;gap:22px;align-items:start;max-width:1000px;margin:0 auto;padding-bottom:24px}
+@media (max-width:900px){ .svc{grid-template-columns:1fr} }
+.svc-hero{position:sticky;top:0;display:flex;flex-direction:column;align-items:flex-start;text-align:left;background:linear-gradient(150deg,#D3FF27 0%,#7ef0c6 60%,#35e0b8 100%);border:1px solid rgba(0,0,0,.16);border-radius:20px;padding:30px 30px 34px;color:#0a0a0a}
+@media (max-width:900px){ .svc-hero{position:static} }
+.svc-ic{width:52px;height:52px;flex:none;border-radius:15px;background:#0a0a0a;color:#35e0b8;display:flex;align-items:center;justify-content:center;margin-bottom:16px;box-shadow:0 6px 16px -6px rgba(0,0,0,.5)}
+.svc-ic svg{width:26px;height:26px;stroke-width:2}
+.svc-badge{display:inline-block;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:#D3FF27;background:#0a0a0a;padding:4px 11px;border-radius:999px;margin-bottom:14px}
+.svc-hero h3{font-size:24px;font-weight:800;letter-spacing:-.02em;line-height:1.2;color:#0a0a0a;margin:0 0 9px}
+.svc-hero p{font-size:14px;color:rgba(10,10,10,.72);line-height:1.55;margin:0 0 20px;max-width:42ch}
+.svc-points{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:11px}
+.svc-points li{display:flex;align-items:flex-start;gap:10px;font-size:13.5px;font-weight:600;color:#0a0a0a;line-height:1.4}
+.svc-points li::before{content:"✓";flex:none;width:19px;height:19px;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#D3FF27;background:#0a0a0a;border-radius:999px}
+.svc-card{background:var(--bg-elev-1);border:1px solid var(--border);border-radius:20px;padding:26px;box-shadow:0 22px 46px -28px rgba(0,0,0,.6)}
+.svc-card h4{font-size:16px;font-weight:800;letter-spacing:-.01em;color:var(--text);margin:0 0 18px}
+.svc-card input:focus,.svc-card textarea:focus,.svc-card select:focus{outline:none;border-color:#35e0b8;box-shadow:0 0 0 3px rgba(53,224,184,.18);background:var(--bg-elev-1)}
+.svc-row{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+@media (max-width:520px){ .svc-row{grid-template-columns:1fr} }
+.svc-check{display:flex;align-items:center;gap:9px;font-size:13px;font-weight:500;color:var(--text);cursor:pointer;user-select:none;text-transform:none;letter-spacing:0}
+.svc-check input{width:16px;height:16px;accent-color:#35e0b8;cursor:pointer}
+.svc-submit{width:100%;justify-content:center;gap:9px;padding:12px;font-size:14.5px;font-weight:800;color:#0a0a0a;background:#D3FF27;border:1px solid rgba(0,0,0,.16);margin-top:4px}
+.svc-submit:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 12px 24px -8px rgba(0,0,0,.45)}
+.svc-submit:disabled{opacity:.5;cursor:not-allowed}
+.svc-submit svg{width:18px;height:18px;fill:#0a0a0a}
+.svc-fine{font-size:11.5px;color:var(--text-faint);text-align:center;margin:12px 0 0;line-height:1.5}
+/* Services nav area — mint accent so it reads distinct from the lime product tabs */
+.side-cap-svc{color:#35e0b8}
+.snav-svc.on,.snav-svc.on:hover{background:linear-gradient(135deg,rgba(53,224,184,.22),rgba(53,224,184,.10));color:#35e0b8;font-weight:700;box-shadow:0 8px 18px -8px rgba(53,224,184,.30)}
+.snav-svc.on .snav-ic svg{color:#35e0b8}

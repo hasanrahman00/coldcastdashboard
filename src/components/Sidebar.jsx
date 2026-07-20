@@ -1,5 +1,13 @@
 import { PRODUCTS } from '../lib/products.js'
-import { IconLogo, IconGrid } from '../lib/icons.jsx'
+import { IconLogo, IconGrid, IconUsers, IconAtSign, IconZap } from '../lib/icons.jsx'
+
+// A separate nav area, below the products: done-for-you services + feedback. Rendered
+// with a mint accent so it reads as distinct from the (lime) product tabs.
+const SERVICES = [
+  { id: 'prospectteam', label: 'Hire Prospect Team', icon: IconUsers },
+  { id: 'coldinfra', label: 'Cold Infrastructure', icon: IconAtSign },
+  { id: 'requestfeature', label: 'Request Feature', icon: IconZap },
+]
 
 // Left sidebar — the brand plus the FULL product list, always visible (no scrolling
 // row that hides tools). Dashboard first, then the live products, a divider, and the
@@ -60,6 +68,27 @@ export default function Sidebar({ route, nav }) {
             {soon.map(item)}
           </>
         )}
+
+        {/* Separate nav area — done-for-you services + feature requests */}
+        <div className="side-sep" />
+        <div className="side-cap side-cap-svc">Services</div>
+        {SERVICES.map((s) => {
+          const on = route === s.id
+          const Icon = s.icon
+          return (
+            <button
+              key={s.id}
+              className={'snav-item snav-svc' + (on ? ' on' : '')}
+              aria-current={on ? 'page' : undefined}
+              aria-label={s.label}
+              title={s.label}
+              onClick={() => nav(s.id)}
+            >
+              <span className="snav-ic"><Icon /></span>
+              <span className="snav-label">{s.label}</span>
+            </button>
+          )
+        })}
       </nav>
     </aside>
   )
