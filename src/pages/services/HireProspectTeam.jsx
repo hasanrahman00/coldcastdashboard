@@ -32,6 +32,7 @@ export default function HireProspectTeam() {
 
   return (
     <ServicePage
+      title="Hire Prospect Team"
       hero={{
         icon: IconUsers,
         badge: 'Done for you',

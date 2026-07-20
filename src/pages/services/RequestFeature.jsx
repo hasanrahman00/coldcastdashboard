@@ -36,6 +36,7 @@ export default function RequestFeature() {
 
   return (
     <ServicePage
+      title="Request Feature"
       hero={{
         icon: IconZap,
         badge: 'We listen',

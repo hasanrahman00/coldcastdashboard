@@ -42,6 +42,7 @@ export default function ColdInfraSetup() {
 
   return (
     <ServicePage
+      title="Cold Infrastructure"
       hero={{
         icon: IconAtSign,
         badge: 'Done for you',

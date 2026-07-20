@@ -10,7 +10,7 @@ const BUSINESS_WHATSAPP = String(import.meta.env.VITE_DEAL_WHATSAPP || '').repla
 
 export const isEmail = (s) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(s || '').trim())
 
-export default function ServicePage({ hero, children, valid, buildMessage, submitLabel = 'Send on WhatsApp', fine }) {
+export default function ServicePage({ title, hero, children, valid, buildMessage, submitLabel = 'Send on WhatsApp', fine }) {
   const toast = useToast()
   const configured = BUSINESS_WHATSAPP.length >= 7
   const Icon = hero.icon
@@ -23,7 +23,14 @@ export default function ServicePage({ hero, children, valid, buildMessage, submi
   }
 
   return (
-    <div className="svc">
+    <div className="svc-page">
+      {/* Title banner named after the nav item (matches the product-page header) */}
+      <div className="phead">
+        <span className="phead-ic"><Icon /></span>
+        <h2 className="phead-name">{title}</h2>
+      </div>
+
+      <div className="svc">
       <div className="svc-hero">
         <span className="svc-ic"><Icon /></span>
         {hero.badge && <span className="svc-badge">{hero.badge}</span>}
@@ -48,6 +55,7 @@ export default function ServicePage({ hero, children, valid, buildMessage, submi
           <IconWhatsApp /> {submitLabel}
         </button>
         <p className="svc-fine">{fine || 'Opens WhatsApp with your details pre-filled — nothing is sent until you hit send.'}</p>
+      </div>
       </div>
     </div>
   )
