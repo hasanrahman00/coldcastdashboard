@@ -16,7 +16,9 @@ const SERVICES = [
 // coming-soon products grouped under a caption (dimmed but still navigable). Active row
 // picks up the product accent (--pc) as a soft tint + a left accent bar.
 export default function Sidebar({ route, nav }) {
-  const live = PRODUCTS.filter((p) => !p.soon)
+  // sndeal (Sales Nav 75% OFF) is shown under Services below, so keep it out of the
+  // product tabs to avoid a duplicate nav entry.
+  const live = PRODUCTS.filter((p) => !p.soon && p.id !== 'sndeal')
   const soon = PRODUCTS.filter((p) => p.soon)
 
   const item = (p) => {
