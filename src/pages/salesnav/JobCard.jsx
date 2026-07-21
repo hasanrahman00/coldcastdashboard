@@ -75,7 +75,18 @@ export default function JobCard({ job, onOpenLogs }) {
       toast(e.message || 'Action failed', 'err')
     }
   }
-  const run = wrap(() => startJob(job.id))
+  const run = async () => {
+    try {
+      await startJob(job.id)
+    } catch (e) {
+      const m = e.message || 'Action failed'
+      // The connect / API-key reasons (🔑 / 🧩) are written into the job log by the
+      // scraper — open the Logs so the user sees the reason there (persistent), instead
+      // of only a fleeting toast. Everything else still toasts.
+      if (/🔑|🧩/.test(m)) onOpenLogs(job)
+      else toast(m, 'err')
+    }
+  }
   const stop = wrap(() => stopJob(job.id))
   const remove = async () => {
     const running = job.status === 'running' || job.status === 'stopping'
