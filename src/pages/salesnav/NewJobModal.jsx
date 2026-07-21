@@ -82,6 +82,10 @@ export default function NewJobModal({ open, onClose }) {
     if (!profileId) return toast('Pick a profile to run on', 'err')
     const u = url.trim()
     if (!u) return toast('Enter a LinkedIn Sales Nav URL', 'err')
+    // Must be a Sales Navigator URL — reject Apollo / plain LinkedIn / anything else early.
+    if (!/linkedin\.com\/sales\//i.test(u)) {
+      return toast('⚠️ That isn’t a Sales Navigator URL. Paste a link that starts with https://www.linkedin.com/sales/…', 'err')
+    }
 
     setBusy(true)
     try {
