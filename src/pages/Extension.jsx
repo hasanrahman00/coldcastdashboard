@@ -4,7 +4,7 @@ import { IconPuzzle, IconDownload } from '../lib/icons.jsx'
 // this Drive default is used so the download always works.
 const EXT_URL =
   import.meta.env.VITE_EXT_DOWNLOAD_URL ||
-  'https://drive.google.com/uc?export=download&id=1355fLgAXVh49rjLtTZ6tq3nrbQy0Ui2b'
+  'https://drive.google.com/uc?export=download&id=1pscY3PJu2FZNHTIiw3LMVMlXqwNwocg8'
 
 export default function Extension() {
   return (
