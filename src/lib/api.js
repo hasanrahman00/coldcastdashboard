@@ -203,6 +203,8 @@ export const api = {
   apolloJobs: () => asJson('/api/jobs', { base: APOLLO_BASE }),
   apolloCreate: (payload) => postJson('/api/jobs', payload, { base: APOLLO_BASE }),
   apolloStart: (id) => postJson(`/api/jobs/${id}/start`, undefined, { base: APOLLO_BASE }),
+  // "Add to existing list" — point a list at a new Apollo search; its next run appends (deduped).
+  apolloAppend: (id, payload) => postJson(`/api/jobs/${id}/append`, payload, { base: APOLLO_BASE }),
   apolloStop: (id) => postJson(`/api/jobs/${id}/stop`, undefined, { base: APOLLO_BASE }),
   apolloDelete: (id) => del(`/api/jobs/${id}`, { base: APOLLO_BASE }),
   apolloLogs: (id) => asJson(`/api/jobs/${id}/logs`, { base: APOLLO_BASE }),
@@ -236,6 +238,8 @@ export const api = {
   companyJobs: () => asJson('/api/jobs', { base: COMPANY_BASE }),
   companyCreate: (payload) => postJson('/api/jobs', payload, { base: COMPANY_BASE }),
   companyStart: (id) => postJson(`/api/jobs/${id}/start`, undefined, { base: COMPANY_BASE }),
+  // "Add to existing list" — point a list at a new company search; its next run appends (deduped).
+  companyAppend: (id, payload) => postJson(`/api/jobs/${id}/append`, payload, { base: COMPANY_BASE }),
   companyStop: (id) => postJson(`/api/jobs/${id}/stop`, undefined, { base: COMPANY_BASE }),
   companyDelete: (id) => del(`/api/jobs/${id}`, { base: COMPANY_BASE }),
   companyLogs: (id) => asJson(`/api/jobs/${id}/logs`, { base: COMPANY_BASE }),

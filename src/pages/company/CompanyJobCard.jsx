@@ -58,6 +58,14 @@ export default function CompanyJobCard({ job, anotherRunning, onRun, onStop, onD
     <div className={'jc jc-' + stCls}>
       <div className="jc-h">
         <div className="jc-t">{job.name || 'Untitled'}</div>
+        {job.appendNext && (
+          <span
+            title="The next Run will append a new search into this list (existing companies kept, deduped)"
+            style={{ fontSize: 10, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '.5px', color: '#0e7490', background: 'rgba(8,145,178,.12)', padding: '2px 8px', borderRadius: 999 }}
+          >
+            Append pending
+          </span>
+        )}
       </div>
 
       <div className={'jc-st ' + stCls}>
