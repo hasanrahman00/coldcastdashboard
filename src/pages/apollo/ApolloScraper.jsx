@@ -200,23 +200,27 @@ function ApolloLogsModal({ job, onClose }) {
           {copied ? '✓ Copied' : '📋 Copy logs'}
         </button>
       </div>
-      <pre
+      <div
         style={{
           maxHeight: '55vh',
           overflow: 'auto',
           background: 'var(--bg-elev-2)',
           border: '1px solid var(--border)',
-          borderRadius: 10,
-          padding: 12,
-          fontSize: 12,
+          borderRadius: 12,
+          padding: '14px 16px',
+          fontFamily: "ui-monospace, 'SF Mono', 'JetBrains Mono', 'Cascadia Code', Menlo, Consolas, 'Liberation Mono', monospace",
+          fontSize: 12.5,
           lineHeight: 1.5,
-          whiteSpace: 'pre-wrap',
+          letterSpacing: 0.1,
           color: 'var(--text)',
-          margin: 0,
         }}
       >
-        {logs.length ? logs.join('\n') : 'No logs yet.'}
-      </pre>
+        {logs.length
+          ? logs.flatMap((l) => String(l).split('\n')).filter((l) => l.trim()).map((line, i) => (
+              <div key={i} style={{ marginBottom: 9, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{line}</div>
+            ))
+          : <div style={{ color: 'var(--text-faint)' }}>No logs yet.</div>}
+      </div>
     </Modal>
   )
 }
