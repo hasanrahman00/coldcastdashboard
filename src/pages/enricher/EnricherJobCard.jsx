@@ -13,8 +13,9 @@ import {
 
 // LinkedIn URL Enricher job card — same visual language as the Apollo / Sales Nav
 // cards (reuses the .jc* CSS), fully props-driven (its own server owns the data).
-// The enricher creates jobs by CSV upload, streams done/total, and supports
-// pause / resume / cancel; "enriched" = rows with a resolved contact.
+// The enricher creates jobs by CSV upload, streams done/total, and supports a
+// graceful Stop (+ Resume for a crash-interrupted job); "enriched" = rows with a
+// resolved contact.
 export default function EnricherJobCard({ job, anotherRunning, onPause, onResume, onStop, onDelete, onOpenLogs, downloadUrl }) {
   const st = job.status
   const running = st === 'running' || st === 'queued'
@@ -91,14 +92,11 @@ export default function EnricherJobCard({ job, anotherRunning, onPause, onResume
 
       <div className="jc-a">
         {running && (
-          <>
-            <button className="btn btn-w btn-sm" onClick={onPause}>
-              Pause
-            </button>
-            <button className="btn btn-w btn-sm" onClick={onStop}>
-              <IconStop /> Stop
-            </button>
-          </>
+          // Single graceful Stop — the worker finishes the in-flight batch, then stops
+          // (Pause did the same thing, so it was redundant).
+          <button className="btn btn-w btn-sm" onClick={onStop}>
+            <IconStop /> Stop
+          </button>
         )}
         {paused && (
           <button className="btn btn-s btn-sm" disabled={anotherRunning} title={resumeTitle} onClick={onResume}>
