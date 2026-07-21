@@ -13,7 +13,6 @@ export default function ApolloNewJobModal({ open, onClose, onCreated }) {
   const { onlineProfileId } = useApp()
   const [name, setName] = useState('')
   const [url, setUrl] = useState('')
-  const [maxPages, setMaxPages] = useState('')
   const [busy, setBusy] = useState(false)
 
   const submit = async () => {
@@ -27,13 +26,11 @@ export default function ApolloNewJobModal({ open, onClose, onCreated }) {
         name: name.trim() || 'Apollo Scrape',
         url: u,
         profileId: onlineProfileId,
-        ...(maxPages ? { maxPages: parseInt(maxPages, 10) || undefined } : {}),
       })
       toast('Job created!', 'ok')
       onCreated?.(job)
       setUrl('')
       setName('')
-      setMaxPages('')
       onClose()
     } catch (e) {
       toast(e.message || 'Something went wrong', 'err')
@@ -66,13 +63,6 @@ export default function ApolloNewJobModal({ open, onClose, onCreated }) {
           onChange={(e) => setUrl(e.target.value)}
           placeholder="https://app.apollo.io/#/people?personTitles[]=..."
         />
-      </div>
-
-      <div className="fg">
-        <label>
-          📄 Max pages <span style={subLabel}>— optional; blank = all (25 leads per page)</span>
-        </label>
-        <input type="number" min="1" value={maxPages} onChange={(e) => setMaxPages(e.target.value)} placeholder="100" />
       </div>
 
       <button
