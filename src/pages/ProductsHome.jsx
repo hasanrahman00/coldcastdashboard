@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { PRODUCTS, getProduct } from '../lib/products.js'
+import { SERVICES } from '../lib/services.js'
 import { IconSearch } from '../lib/icons.jsx'
 
 // Products home ("Tools") — the dashboard's landing view. Enterprise console layout:
@@ -9,7 +10,6 @@ import { IconSearch } from '../lib/icons.jsx'
 const SECTIONS = [
   { title: 'Lead & company scraping', ids: ['salesnav', 'apollo', 'company', 'zoominfo'] },
   { title: 'Enrichment & verification', ids: ['linkedin', 'waterfall', 'verify', 'domain'] },
-  { title: 'Deals & offers', ids: ['sndeal'] },
 ]
 
 // The flagship product shown as the big hero banner (and excluded from its section grid
@@ -44,7 +44,9 @@ export default function ProductsHome({ nav }) {
   const query = q.trim().toLowerCase()
   const searching = query.length > 0
   const match = (p) => (p.label + ' ' + (p.short || '') + ' ' + (p.body || '')).toLowerCase().includes(query)
-  const results = searching ? PRODUCTS.filter(match) : []
+  // Search products + services (sndeal lives in SERVICES now, so drop the PRODUCTS copy)
+  const searchable = [...PRODUCTS.filter((p) => p.id !== 'sndeal'), ...SERVICES]
+  const results = searching ? searchable.filter(match) : []
 
   const featured = getProduct(FEATURED)
   const FeatIcon = featured?.icon
@@ -120,6 +122,18 @@ export default function ProductsHome({ nav }) {
               </section>
             )
           })}
+
+          <section className="phome-sec">
+            <h3 className="phome-sec-title">
+              Services
+              <span className="phome-sec-count">{SERVICES.length}</span>
+            </h3>
+            <div className="phome-grid">
+              {SERVICES.map((s) => (
+                <Card key={s.id} p={s} nav={nav} />
+              ))}
+            </div>
+          </section>
         </>
       )}
     </div>

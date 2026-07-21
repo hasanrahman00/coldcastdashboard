@@ -1,16 +1,6 @@
 import { PRODUCTS } from '../lib/products.js'
-import { IconLogo, IconGrid, IconUsers, IconAtSign, IconZap, IconWhatsApp, IconFileLines } from '../lib/icons.jsx'
-
-// A separate nav area, below the products: the Sales Nav deal + done-for-you services +
-// feedback. Rendered with a mint accent so it reads as distinct from the (lime) product
-// tabs. `sndeal` also appears in the product tabs — it just routes to the same page.
-const SERVICES = [
-  { id: 'sndeal', label: 'Sales Nav 75% OFF', icon: IconWhatsApp, badge: '75% OFF' },
-  { id: 'prospectteam', label: 'Hire Prospect Team', icon: IconUsers },
-  { id: 'coldinfra', label: 'Cold Infrastructure', icon: IconAtSign },
-  { id: 'requestfeature', label: 'Request Feature', icon: IconZap },
-  { id: 'playbook', label: 'Free Playbook', icon: IconFileLines },
-]
+import { SERVICES } from '../lib/services.js'
+import { IconLogo, IconGrid } from '../lib/icons.jsx'
 
 // Left sidebar — the brand plus the FULL product list, always visible (no scrolling
 // row that hides tools). Dashboard first, then the live products, a divider, and the
@@ -91,7 +81,7 @@ export default function Sidebar({ route, nav }) {
             >
               <span className="snav-ic"><Icon /></span>
               <span className="snav-label">{s.label}</span>
-              {s.badge && <span className="snav-deal">{s.badge}</span>}
+              {s.deal && s.badge && <span className="snav-deal">{s.badge}</span>}
             </button>
           )
         })}
