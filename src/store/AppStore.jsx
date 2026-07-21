@@ -58,15 +58,46 @@ function persistEnrichState(uid, map) {
   } catch { /* quota */ }
 }
 
+// ── Per-user job-list cache (instant first-frame render on reload) ──────────────
+// The dashboard talks to up to 5 separate backends, each a cold cross-region TLS
+// handshake on reload — so every job grid sat EMPTY until its own SSE/poll arrived
+// over that slow path. Cache each scraper's last-known list under a PER-USER key
+// (localStorage is browser-global) and hydrate it in the useState initializer: the
+// grid paints from the FIRST frame, then the live SSE/poll REPLACES it with the
+// authoritative data. Same per-user isolation as the enrich uploads above — a
+// different account signing in on this browser never sees the previous user's jobs.
+// Slimmed (no logs/results) + capped so the snapshot can't approach the storage quota.
+const JOBS_CACHE_MAX = 60
+const jobsKey = (uid, scraper) => `vk_jobs:${scraper}:${uid || 'anon'}`
+const slimJob = (j) => {
+  if (!j || typeof j !== 'object') return j
+  const { logs, results, ...rest } = j // drop the heavy arrays — cards don't read them
+  return rest
+}
+function readJobsCache(uid, scraper) {
+  try {
+    const a = JSON.parse(localStorage.getItem(jobsKey(uid, scraper)) || '[]')
+    return Array.isArray(a) ? a : []
+  } catch { return [] }
+}
+function writeJobsCache(uid, scraper, list) {
+  try {
+    const slim = (Array.isArray(list) ? list : []).slice(0, JOBS_CACHE_MAX).map(slimJob)
+    localStorage.setItem(jobsKey(uid, scraper), JSON.stringify(slim))
+  } catch { /* quota — skip; the live stream still populates the grid */ }
+}
+
 export function AppProvider({ initialMe, onLogout, children }) {
   const toast = useToast()
   const [me, setMe] = useState(initialMe)
   // Stable per-user id used to namespace this account's enrich jobs in localStorage.
   const uid = me?.user?.id || initialMe?.user?.id || ''
-  const [jobs, setJobs] = useState([])
-  const [apolloJobs, setApolloJobs] = useState([]) // Apollo scraper jobs (separate server) — see the SSE slice below
-  const [enricherJobs, setEnricherJobs] = useState([]) // LinkedIn URL Enricher jobs (separate server) — polled below
-  const [companyJobs, setCompanyJobs] = useState([]) // Company scraper jobs (separate server) — SSE below
+  // Hydrate each grid from THIS user's cached snapshot so a reload renders instantly;
+  // the live SSE/poll below replaces it with authoritative data the moment it arrives.
+  const [jobs, setJobs] = useState(() => readJobsCache(uid, 'salesnav'))
+  const [apolloJobs, setApolloJobs] = useState(() => readJobsCache(uid, 'apollo')) // Apollo scraper jobs (separate server) — see the SSE slice below
+  const [enricherJobs, setEnricherJobs] = useState(() => readJobsCache(uid, 'enricher')) // LinkedIn URL Enricher jobs (separate server) — polled below
+  const [companyJobs, setCompanyJobs] = useState(() => readJobsCache(uid, 'company')) // Company scraper jobs (separate server) — SSE below
   const [profiles, setProfiles] = useState([])
   const [activeProfileId, setActiveProfileId] = useState(null)
   const [connectorOnline, setConnectorOnline] = useState(false)
@@ -486,6 +517,14 @@ export function AppProvider({ initialMe, onLogout, children }) {
 
   // Persist the upload snapshot on every change so a reload restores it verbatim.
   useEffect(() => { persistEnrichState(uid, enrichUploads) }, [uid, enrichUploads])
+
+  // Persist each scraper's live job list to THIS user's cache so the next reload paints
+  // the grids instantly (see readJobsCache). Each effect rewrites only when its own list
+  // changes; the live SSE/poll stays the source of truth — this is just the warm snapshot.
+  useEffect(() => { writeJobsCache(uid, 'salesnav', jobs) }, [uid, jobs])
+  useEffect(() => { writeJobsCache(uid, 'apollo', apolloJobs) }, [uid, apolloJobs])
+  useEffect(() => { writeJobsCache(uid, 'enricher', enricherJobs) }, [uid, enricherJobs])
+  useEffect(() => { writeJobsCache(uid, 'company', companyJobs) }, [uid, companyJobs])
 
   // On mount: load THIS user's jobs from the server (authoritative + cross-device), replace
   // the localStorage cache, and re-attach a live poll to any still-running one. The
