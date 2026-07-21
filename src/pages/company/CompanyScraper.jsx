@@ -45,7 +45,16 @@ export default function CompanyScraper() {
     try {
       await api.companyStart(id)
     } catch (e) {
-      toast(e.message || 'Could not start', 'err')
+      const m = e.message || 'Could not start'
+      // Connect / API-key reasons (🔑 / 🧩) are written into the job log by the scraper —
+      // open the Logs so the user sees the reason there, instead of only a fleeting toast.
+      if (/🔑|🧩/.test(m)) {
+        const job = sorted.find((j) => j.id === id)
+        if (job) setLogsJob(job)
+        else toast(m, 'err')
+      } else {
+        toast(m, 'err')
+      }
     }
   }
   const stop = async (id) => {
