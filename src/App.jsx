@@ -6,6 +6,11 @@ import Login from './pages/Login.jsx'
 import Dashboard from './components/Dashboard.jsx'
 import Admin from './pages/Admin.jsx'
 import Trial from './pages/Trial.jsx'
+import { Crisp } from 'crisp-sdk-web'
+
+// Crisp live chat — same website ID (shared inbox) as the marketing site. This is a
+// PUBLIC client key (it ships in every Crisp embed), so it's safe in the bundle.
+const CRISP_WEBSITE_ID = '71962233-1845-425d-b872-a0d6ec4c4658'
 
 // Boot splash while we validate a stored token.
 function BootSplash() {
@@ -32,6 +37,21 @@ export default function App() {
   }, [])
   const isAdmin = hashRoute === 'admin'
   const isTrial = hashRoute === 'trial' // public self-serve trial (#trial or #/trial)
+
+  // Live chat (Crisp) — load the chatbox once, colored to the dashboard's indigo accent.
+  useEffect(() => {
+    Crisp.configure(CRISP_WEBSITE_ID)
+    Crisp.setColorTheme('indigo')
+  }, [])
+
+  // Identify the signed-in user to Crisp so support knows who's chatting.
+  useEffect(() => {
+    if (!me?.user) return
+    try {
+      if (me.user.username) Crisp.user.setNickname(me.user.username)
+      if (me.user.email) Crisp.user.setEmail(me.user.email)
+    } catch {}
+  }, [me])
 
   // On load: if a token exists, restore the cached session immediately (so a
   // refresh doesn't flash login), then validate via /api/auth/me in the
