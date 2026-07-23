@@ -1171,7 +1171,7 @@ body{flex-direction:column}
    a last-resort safety net (min-width:0 + overflow:hidden above). */
 @media (max-width:880px){
   .ug-val em{display:none}
-  .ug-reset{display:none}
+  .ug-reset,.ug-div-reset{display:none}
   .conn-pill span:last-child{display:none}
   .conn-pill{padding:0 11px}
 }
@@ -1193,9 +1193,8 @@ body{flex-direction:column}
 .ug-track{width:66px;height:4px;border-radius:999px;background:var(--border-strong);overflow:hidden}
 .ug-track i{display:block;height:100%;border-radius:999px;background:var(--brand);transition:width .4s ease}
 .ug-div{width:1px;background:var(--border-strong);margin:9px 0}
-/* The reset segment carries its own divider (a left border) so it can be hidden cleanly
-   on narrow screens without leaving a dangling separator. */
-.ug-reset{border-left:1px solid var(--border-strong)}
+/* The reset segment now leads the usage group with a ug-div-reset divider after it; both
+   are hidden together on narrow screens so no dangling separator is left. */
 
 .conn-pill{display:flex;align-items:center;gap:8px;font-family:var(--font);font-size:12.5px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.02em;padding:0 15px;height:42px;border:1px solid var(--border-strong);border-radius:14px;background:var(--bg-elev-2);cursor:pointer;transition:background .15s,border-color .15s}
 .conn-pill:hover{background:var(--bg-elev-3)}

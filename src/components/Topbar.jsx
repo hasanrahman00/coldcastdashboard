@@ -86,12 +86,22 @@ export default function Topbar({ route, nav, onLogout }) {
             credits, and (when applicable) the reset countdown — instead of three
             competing colored pills. Accent shows only in the tiny progress track. */}
         <div className="usage-group">
+          {resetsDaily && (
+            <>
+              <span className="ug-chip ug-reset" title={`Scraping limit resets in ${resetTxt} — daily at 00:00 UTC`}>
+                <IconClock />
+                <span className="ug-val muted">{resetTxt}<em> daily reset</em></span>
+              </span>
+              <span className="ug-div ug-div-reset" />
+            </>
+          )}
+
           <span className="ug-chip" title={scrapeTitle}>
             <IconChartBar />
             <span className="ug-col">
               <span className="ug-val">
                 {scrapeLeft.toLocaleString()}
-                <em>{scrapeLimit > 0 ? ` left of ${scrapeLimit.toLocaleString()}` : ' left'}</em>
+                <em>{scrapeLimit > 0 ? ` left of ${scrapeLimit.toLocaleString()} scraping limit` : ' scraping limit left'}</em>
               </span>
               <span className="ug-track">
                 <i style={{ width: scrapePct.toFixed(1) + '%', background: scrapeBar }} />
@@ -103,20 +113,13 @@ export default function Topbar({ route, nav, onLogout }) {
 
           <span
             className="ug-chip"
-            title="Credits for email enrichment & verification — 1 credit = 1 valid email · 2 verifications · ⅓ of a domain/LinkedIn enrichment (3 credits each)"
+            title="Email credits — for enrichment & verification. 1 credit = 1 valid email · 2 verifications · ⅓ of a domain/LinkedIn enrichment (3 credits each)"
           >
             <IconZap />
             <span className={'ug-val' + (lowCredits ? ' warn' : '')}>
-              {creditBal.toLocaleString()}<em> credits</em>
+              {creditBal.toLocaleString()}<em> email credits</em>
             </span>
           </span>
-
-          {resetsDaily && (
-            <span className="ug-chip ug-reset" title={`Scrape budget resets in ${resetTxt} — daily at 00:00 UTC`}>
-              <IconClock />
-              <span className="ug-val muted">{resetTxt}</span>
-            </span>
-          )}
         </div>
 
         {/* Connection status lives here and ONLY here now. */}

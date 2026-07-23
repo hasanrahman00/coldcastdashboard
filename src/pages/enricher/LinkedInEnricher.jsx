@@ -137,9 +137,7 @@ export default function LinkedInEnricher() {
       <div className="wf-card">
         <h3 className="wf-card-t">Upload LinkedIn URLs</h3>
         <div className="wf-card-s">
-          <b>Required:</b> a LinkedIn profile URL column (any column with <code>linkedin.com/in/…</code>).{' '}
-          <b>Optional:</b> First Name, Last Name, Title, Company, Location — improve match accuracy. Each row is
-          enriched in your connected browser via your Lusha / ContactOut / SalesQL sessions — each enriched row counts toward your scraping limit.
+          <b>Required:</b> a LinkedIn profile URL column.
         </div>
 
         <div
