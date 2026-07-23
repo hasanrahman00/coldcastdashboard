@@ -189,6 +189,8 @@ export const api = {
     return asJson('/api/enrich/start', { base: CORE_BASE, method: 'POST', body: fd })
   },
   enrichStatus: (id) => asJson(`/api/enrich/jobs/${encodeURIComponent(id)}`, { base: CORE_BASE }),
+  // Cleaned, user-facing job log ("why did it stop / fail") — { logs: [...] }.
+  enrichLogs: (id) => asJson(`/api/enrich/jobs/${encodeURIComponent(id)}/logs`, { base: CORE_BASE }),
   // Server-side, per-user enrich job history (cross-device — Core filters by the token's user).
   enrichList: () => asJson('/api/enrich/jobs', { base: CORE_BASE }),
   enrichDelete: (id) => del(`/api/enrich/jobs/${encodeURIComponent(id)}`, { base: CORE_BASE }),

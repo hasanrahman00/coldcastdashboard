@@ -7,7 +7,9 @@
 import { useRef, useState, useMemo, useEffect } from 'react'
 import { useApp, ENRICH_ACTIVE } from '../../store/AppStore.jsx'
 import { useToast } from '../../store/ToastProvider.jsx'
-import { IconUpload, IconMailCheck, IconDownload, IconTrash, IconWarn, IconChevronLeft, IconChevronRight } from '../../lib/icons.jsx'
+import { api } from '../../lib/api.js'
+import Modal from '../../components/Modal.jsx'
+import { IconUpload, IconMailCheck, IconDownload, IconTrash, IconWarn, IconLogsLines, IconChevronLeft, IconChevronRight } from '../../lib/icons.jsx'
 
 const MAX_BYTES = 25 * 1024 * 1024 // 25 MB — comfortably fits ~10k rows
 const JOBS_PER_PAGE = 9 // 3 cols × 3 rows — same grid as the Sales Nav dashboard
@@ -16,7 +18,7 @@ const fmtDate = (ts) =>
   ts ? new Date(ts).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : ''
 
 // One row in the jobs list — mirrors the lifecycle: running → done (download) → error.
-function UploadJob({ job, enrichDownloadUrl, onRemove }) {
+function UploadJob({ job, enrichDownloadUrl, onRemove, onOpenLogs }) {
   const status = (job.status || 'queued').toLowerCase()
   const active = ENRICH_ACTIVE.includes(status)
   const preparing = status === 'queued' || status === 'queueing' || status === 'uploading'
@@ -100,6 +102,11 @@ function UploadJob({ job, enrichDownloadUrl, onRemove }) {
             <button className="btn btn-xlsx wf-dlb" onClick={() => dl('xlsx')}><IconDownload /> XLSX</button>
           </>
         )}
+        {/* Logs — always available so a FAILED job (no CSV/XLSX) can still show the user
+            exactly why it stopped. Sits next to XLSX for finished jobs. */}
+        {job.enrichJobId && (
+          <button className="btn btn-logs wf-dlb" onClick={() => onOpenLogs(job)}><IconLogsLines /> Logs</button>
+        )}
         <button
           className="wf-x"
           title="Delete enrichment"
@@ -123,6 +130,7 @@ export default function WaterfallEnricher() {
   const [busy, setBusy] = useState(false)
   const [drag, setDrag] = useState(false)
   const [page, setPage] = useState(0)
+  const [logsJob, setLogsJob] = useState(null)
   const inputRef = useRef(null)
 
   const pick = (f) => {
@@ -198,10 +206,12 @@ export default function WaterfallEnricher() {
           <div className="empty">No enrichment jobs yet — upload a file above to start.</div>
         ) : (
           slice.map((j) => (
-            <UploadJob key={j.enrichJobId} job={j} enrichDownloadUrl={enrichDownloadUrl} onRemove={removeEnrichUpload} />
+            <UploadJob key={j.enrichJobId} job={j} enrichDownloadUrl={enrichDownloadUrl} onRemove={removeEnrichUpload} onOpenLogs={setLogsJob} />
           ))
         )}
       </div>
+
+      <EnricherLogsModal job={logsJob} onClose={() => setLogsJob(null)} />
 
       {pages > 1 && (
         <div className="jpag">
@@ -215,5 +225,62 @@ export default function WaterfallEnricher() {
         </div>
       )}
     </div>
+  )
+}
+
+// Cleaned, user-facing job log — opened from a job's "Logs" button. Shows exactly why
+// a job stopped or failed (credits, halts, errors) without exposing provider internals
+// (Core sanitizes the lines). Polls while the job is still active, static once it's done.
+function EnricherLogsModal({ job, onClose }) {
+  const [logs, setLogs] = useState([])
+  const [copied, setCopied] = useState(false)
+  const copy = () => {
+    const text = logs.join('\n')
+    if (!text) return
+    navigator.clipboard?.writeText(text)
+      .then(() => { setCopied(true); setTimeout(() => setCopied(false), 1500) })
+      .catch(() => {})
+  }
+  useEffect(() => {
+    if (!job || !job.enrichJobId) return
+    let alive = true
+    const load = async () => {
+      try {
+        const r = await api.enrichLogs(job.enrichJobId)
+        if (alive) setLogs((r && r.logs) || [])
+      } catch { /* keep last-known */ }
+    }
+    load()
+    const active = ENRICH_ACTIVE.includes(String(job.status || '').toLowerCase())
+    const t = active ? setInterval(load, 2500) : null
+    return () => { alive = false; if (t) clearInterval(t) }
+  }, [job])
+
+  return (
+    <Modal open={!!job} onClose={onClose} title={`📜 Logs — ${job?.fileName || ''}`}>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
+        <button className="btn btn-s" style={{ padding: '6px 12px', fontSize: 12.5 }} onClick={copy} disabled={!logs.length}>
+          {copied ? '✓ Copied' : '📋 Copy logs'}
+        </button>
+      </div>
+      <pre
+        style={{
+          maxHeight: '55vh',
+          overflow: 'auto',
+          background: 'var(--bg-elev-2)',
+          border: '1px solid var(--border)',
+          borderRadius: 10,
+          padding: 14,
+          fontFamily: "ui-monospace, 'SF Mono', 'JetBrains Mono', 'Cascadia Code', Menlo, Consolas, 'Liberation Mono', monospace",
+          fontSize: 12.5,
+          lineHeight: 1.65,
+          whiteSpace: 'pre-wrap',
+          color: 'var(--text)',
+          margin: 0,
+        }}
+      >
+        {logs.length ? logs.join('\n') : 'No logs yet.'}
+      </pre>
+    </Modal>
   )
 }
