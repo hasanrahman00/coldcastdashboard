@@ -137,7 +137,8 @@ export default function LinkedInEnricher() {
       <div className="wf-card">
         <h3 className="wf-card-t">Upload LinkedIn URLs</h3>
         <div className="wf-card-s">
-          <b>Required:</b> a LinkedIn profile URL column.
+          <b>Required:</b> a column of LinkedIn <b>profile</b> URLs (<span style={{ fontFamily: 'var(--mono)' }}>linkedin.com/in/…</span>) — best named{' '}
+          <b>Person Linkedin Url</b>. Any header containing “linkedin”, or a column that just holds the URLs, is auto-detected.
         </div>
 
         <div
