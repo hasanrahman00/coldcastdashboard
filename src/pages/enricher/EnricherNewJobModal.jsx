@@ -60,7 +60,7 @@ export default function EnricherNewJobModal({ open, onClose, onCreated }) {
 
         <div style={{ marginTop: 10, fontSize: 12, color: 'var(--text-faint)', lineHeight: 1.6, textAlign: 'left', display: 'inline-block' }}>
           <div>
-            <strong style={{ color: 'var(--text-muted)' }}>Required:</strong> a LinkedIn <strong>profile</strong> URL column — best named <strong>Person Linkedin Url</strong>
+            <strong style={{ color: 'var(--text-muted)' }}>Required column:</strong> <strong style={{ fontFamily: 'var(--mono)' }}>Person Linkedin Url</strong> — LinkedIn profile URLs
             {' '}(any column with <span style={{ fontFamily: 'var(--mono)' }}>linkedin.com/in/…</span> is auto-detected).
           </div>
           <div style={{ marginTop: 3 }}>
