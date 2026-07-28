@@ -54,8 +54,9 @@ export default function Extension() {
         <li>
           <h4>Download &amp; unzip</h4>
           <p>
-            Download the .zip above and extract it. You'll get a folder named <code>Coldcast</code> —
-            keep it somewhere permanent.
+            Download the .zip above, right-click it and choose <b>Extract All</b>. You'll get a single
+            folder with <code>manifest.json</code> directly inside — keep it somewhere permanent
+            (deleting the folder removes the extension from Chrome).
           </p>
         </li>
         <li>
@@ -67,7 +68,8 @@ export default function Extension() {
         <li>
           <h4>Load it</h4>
           <p>
-            Click <b>Load unpacked</b> and select the <code>Coldcast</code> folder you extracted.
+            Click <b>Load unpacked</b> and select the folder you just extracted — the one with{' '}
+            <code>manifest.json</code> directly inside it.
           </p>
         </li>
         <li>
