@@ -12,6 +12,7 @@ import {
   IconCalendar,
   IconDownload,
   IconWhatsApp,
+  IconPuzzle,
 } from '../lib/icons.jsx'
 import StatsBox from './StatsBox.jsx'
 import { waLink } from '../lib/whatsapp.js'
@@ -28,7 +29,7 @@ function fmtTtl(secs) {
   return `${s}s left`
 }
 
-export default function Topbar({ route, nav, onLogout }) {
+export default function Topbar({ route, nav, onLogout, onGuide }) {
   const { me, uiConfig, connectorOnline, profiles, credits, usage } = useApp()
   const [open, setOpen] = useState(false)
   const ref = useRef(null)
@@ -186,6 +187,11 @@ export default function Topbar({ route, nav, onLogout }) {
 
           <div className={'acct-menu' + (open ? ' on' : '')}>
             <div className="ttl">{fmtTtl(secondsLeft)}</div>
+            {onGuide && (
+              <button className="acct-item" onClick={() => { setOpen(false); onGuide() }}>
+                <IconPuzzle /> Setup guide
+              </button>
+            )}
             {!uiConfig.hideSettings && (
               <button className="acct-item" onClick={() => { setOpen(false); nav('set') }}>
                 <IconGear /> Settings

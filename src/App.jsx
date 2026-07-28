@@ -99,6 +99,9 @@ export default function App() {
     }
     setCachedMe(meObj) // so a later refresh restores instantly without a server round-trip
     setMe(meObj)
+    // Fresh login → clear any prior "I'll finish later" so the setup guide greets
+    // new (not-yet-connected) users again. Already-connected browsers self-suppress.
+    sessionStorage.removeItem('cc_guide_dismissed')
     window.location.hash = '#/salesnav'
   }, [])
 

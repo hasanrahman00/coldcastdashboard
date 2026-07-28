@@ -1,6 +1,8 @@
-import { useEffect } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useHashRoute } from '../lib/useHashRoute.js'
+import { useApp } from '../store/AppStore.jsx'
 import { PRODUCTS, getProduct } from '../lib/products.js'
+import Onboarding from './Onboarding.jsx'
 import Topbar from './Topbar.jsx'
 import Sidebar from './Sidebar.jsx'
 import SalesNav from '../pages/salesnav/SalesNav.jsx'
@@ -31,6 +33,42 @@ const VALID_ROUTES = new Set([
 
 export default function Dashboard({ onLogout }) {
   const [route, nav] = useHashRoute('home')
+  const { localExt, me } = useApp()
+
+  // First-run onboarding guide. It pops up for NEW users whose browser hasn't
+  // connected the extension yet — the people who actually need it — and greets
+  // them again on each fresh login (App clears the per-session dismissal on login).
+  // A browser that has connected before is left alone (the ScraperConnection banner
+  // handles a temporary reconnect). Always re-openable from the account menu.
+  const uid = me?.user?.id || me?.user?.username || 'anon'
+  const SETUP_KEY = `cc_setup_done_${uid}`
+
+  // Once this browser connects the extension for this user, remember it so we stop
+  // auto-popping the guide on future logins/refreshes.
+  useEffect(() => {
+    if (localExt.connected) { try { localStorage.setItem(SETUP_KEY, '1') } catch {} }
+  }, [localExt.connected, SETUP_KEY])
+
+  const [guideOpen, setGuideOpen] = useState(false)
+  const autoTried = useRef(false)
+  useEffect(() => {
+    if (autoTried.current) return
+    // Wait ~2.5s so the extension bridge can report before we decide — installed/
+    // connected start "unknown", so this avoids a flash for already-connected users.
+    const t = setTimeout(() => {
+      autoTried.current = true
+      if (localExt.connected) return                           // set up right now → never
+      if (localStorage.getItem(SETUP_KEY)) return              // returning browser → don't nag
+      if (sessionStorage.getItem('cc_guide_dismissed')) return // closed it this session
+      setGuideOpen(true)                                       // new user, extension not connected here
+    }, 2500)
+    return () => clearTimeout(t)
+  }, [localExt.connected, SETUP_KEY])
+
+  const closeGuide = () => {
+    sessionStorage.setItem('cc_guide_dismissed', '1')
+    setGuideOpen(false)
+  }
 
   // Logged in + unknown/wrong path → bounce to the products home.
   useEffect(() => {
@@ -67,7 +105,8 @@ export default function Dashboard({ onLogout }) {
     <div className="shell">
       <Sidebar route={route} nav={nav} />
       <div className="shell-main">
-        <Topbar route={route} nav={nav} onLogout={onLogout} />
+        <Topbar route={route} nav={nav} onLogout={onLogout} onGuide={() => setGuideOpen(true)} />
+        <Onboarding open={guideOpen} onClose={closeGuide} nav={nav} />
         <main className="mn">
           {/* data-p sets --pc for the whole page so job cards can tint with the product accent */}
           <div className="cnt" data-p={activeProduct && !activeProduct.soon ? route : undefined}>
