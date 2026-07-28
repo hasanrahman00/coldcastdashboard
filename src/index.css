@@ -1429,29 +1429,33 @@ input[type=password]{font-family:var(--font)}
 @media (max-width:560px){ .pb-grid{grid-template-columns:1fr} }
 
 /* ── Onboarding / setup guide (Onboarding.jsx) ───────────────────────────── */
-.onb{display:flex;flex-direction:column;gap:4px}
-.onb-sub{font-size:13px;line-height:1.55;color:var(--text-muted);margin:0 0 6px}
+.onb{display:flex;flex-direction:column;gap:4px;font-family:var(--font);-webkit-font-smoothing:antialiased}
+.onb-sub{font-size:13.5px;line-height:1.6;letter-spacing:-.005em;color:var(--text-muted);margin:2px 0 18px}
 .onb-pill{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:600;padding:5px 11px;border-radius:var(--radius-full);white-space:nowrap}
 .onb-pill.ok{color:var(--green);background:color-mix(in srgb,var(--success-solid) 14%,transparent);border:1px solid color-mix(in srgb,var(--success-solid) 30%,transparent)}
 .onb-pill.bad{color:var(--text-muted);background:var(--bg-elev-2);border:1px solid var(--border)}
 .onb-dot{width:7px;height:7px;border-radius:50%;background:currentColor}
 .onb-pill.ok .onb-dot{box-shadow:0 0 0 3px color-mix(in srgb,var(--success-solid) 22%,transparent)}
 
-.onb-steps{list-style:none;margin:6px 0 0;padding:0}
-.onb-step{display:grid;grid-template-columns:32px 1fr;gap:14px}
+.onb-steps{list-style:none;margin:14px 0 0;padding:0}
+.onb-step{display:grid;grid-template-columns:34px 1fr;gap:16px}
 .onb-rail{display:flex;flex-direction:column;align-items:center}
 .onb-num{width:30px;height:30px;flex:0 0 auto;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:700;background:var(--bg-elev-2);border:1px solid var(--border-strong);color:var(--text-muted);transition:all .18s var(--ease-out)}
-.onb-line{flex:1;width:2px;min-height:14px;background:var(--border);margin:5px 0}
+.onb-line{flex:1;width:2px;min-height:22px;background:var(--border);margin:7px 0;border-radius:2px}
 .onb-step.is-active .onb-num{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 22%,transparent)}
 .onb-step.is-done .onb-num{background:color-mix(in srgb,var(--success-solid) 16%,transparent);border-color:color-mix(in srgb,var(--success-solid) 45%,transparent);color:var(--green)}
 .onb-step.is-done .onb-line{background:color-mix(in srgb,var(--success-solid) 40%,transparent)}
-.onb-body{padding-bottom:20px;min-width:0}
-.onb-body h4{margin:4px 0 6px;font-size:14.5px;font-weight:650;color:var(--text)}
-.onb-body p{margin:0 0 8px;font-size:13px;line-height:1.55;color:var(--text-muted)}
+.onb-body{padding-bottom:32px;min-width:0}
+.onb-step:last-child .onb-body{padding-bottom:8px}
+.onb-body h4{display:flex;align-items:center;gap:9px;margin:5px 0 10px;font-size:15.5px;font-weight:650;letter-spacing:-.017em;color:var(--text)}
+.onb-emoji{font-size:17px;line-height:1;flex:0 0 auto}
+.onb-body p{margin:0 0 10px;font-size:13px;line-height:1.6;color:var(--text-muted)}
 .onb-body svg{width:14px;height:14px;vertical-align:-2px;opacity:.85}
 .onb-step.is-todo .onb-body{opacity:.72}
 
-.onb-key{display:flex;align-items:stretch;gap:8px;margin:8px 0 10px}
+.onb .btn{letter-spacing:-.01em}
+.onb .btn:disabled{opacity:.55}
+.onb-key{display:flex;align-items:stretch;gap:8px;margin:10px 0 12px}
 .onb-key-val{flex:1;min-width:0;overflow:auto;white-space:nowrap;padding:11px 13px;background:var(--bg);border:1px solid var(--border-strong);border-radius:var(--radius);font-family:var(--mono);font-size:12.5px;color:var(--text);display:flex;align-items:center}
 .onb-key .btn{width:auto;padding:0 20px;white-space:nowrap}
 
@@ -1460,12 +1464,12 @@ input[type=password]{font-family:var(--font)}
 .onb-mini li{font-size:12.5px;line-height:1.5;color:var(--text-muted);margin-bottom:6px}
 .onb-mini code,.onb-body code{font-family:var(--mono);font-size:11.5px;background:var(--bg-elev-2);border:1px solid var(--border);border-radius:6px;padding:1px 6px;color:var(--text)}
 
-.onb-actions{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 4px}
+.onb-actions{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 6px}
 .onb-actions .btn{width:auto}
 .onb-ok{font-size:12.5px;font-weight:600;color:var(--green)!important}
 .onb-muted{font-size:12px;color:var(--text-faint)!important}
-.onb-body a{color:var(--accent);text-decoration:none;font-weight:600}
-.onb-body a:hover{text-decoration:underline}
+.onb-body a:not(.btn){color:var(--accent);text-decoration:none;font-weight:600}
+.onb-body a:not(.btn):hover{text-decoration:underline}
 
 .onb-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:6px;padding-top:16px;border-top:1px solid var(--border)}
 .onb-help{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;color:var(--green);text-decoration:none}

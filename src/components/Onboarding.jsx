@@ -24,7 +24,7 @@ function Check() {
 }
 
 // One row of the vertical stepper. `state` = 'done' | 'active' | 'todo'.
-function Step({ n, state, title, last, children }) {
+function Step({ n, state, emoji, title, last, children }) {
   return (
     <li className={`onb-step is-${state}`}>
       <div className="onb-rail">
@@ -32,7 +32,7 @@ function Step({ n, state, title, last, children }) {
         {!last && <span className="onb-line" />}
       </div>
       <div className="onb-body">
-        <h4>{title}</h4>
+        <h4><span className="onb-emoji">{emoji}</span>{title}</h4>
         {children}
       </div>
     </li>
@@ -88,7 +88,7 @@ export default function Onboarding({ open, onClose, nav }) {
 
         <ol className="onb-steps">
           {/* 1 — Account & API key */}
-          <Step n={1} state={st('account', !!key)} title="Your account & API key">
+          <Step n={1} state={st('account', !!key)} emoji="🔑" title="Your account & API key">
             <p>
               You’re signed in, so your key is ready. This one key is your login <em>and</em> your
               extension connector — keep it private.
@@ -106,7 +106,7 @@ export default function Onboarding({ open, onClose, nav }) {
           </Step>
 
           {/* 2 — Download & install the extension */}
-          <Step n={2} state={st('install', installed)} title="Download & install the extension">
+          <Step n={2} state={st('install', installed)} emoji="🧩" title="Download & install the extension">
             <p>Download the extension, unzip it, and load it into Chrome.</p>
             <a
               className="btn btn-p onb-dl"
@@ -129,7 +129,7 @@ export default function Onboarding({ open, onClose, nav }) {
           </Step>
 
           {/* 3 — Log into the platform */}
-          <Step n={3} state={st('login', connected)} title="Log in to the platform you’ll scrape">
+          <Step n={3} state={st('login', connected)} emoji="🌐" title="Log in to the platform you’ll scrape">
             <p>
               In <b>this same browser</b>, open and sign in to whatever you’ll scrape —{' '}
               <IconGlobe /> Sales Navigator, Apollo, or ZoomInfo. The extension scrapes through your own
@@ -138,7 +138,7 @@ export default function Onboarding({ open, onClose, nav }) {
           </Step>
 
           {/* 4 — Connect the extension */}
-          <Step n={4} state={st('connect', connected)} title="Connect the extension">
+          <Step n={4} state={st('connect', connected)} emoji="🔌" title="Connect the extension">
             <p>
               Click the Coldcast icon, paste your API key (from step 1) into the box, and hit{' '}
               <b>Connect</b>. Your profile is auto-detected once it’s linked.
@@ -155,7 +155,7 @@ export default function Onboarding({ open, onClose, nav }) {
           </Step>
 
           {/* 5 — Enrichment providers */}
-          <Step n={5} state={st('enrich', connected)} title="Turn on free contact data (Lusha · SalesQL · ContactOut)">
+          <Step n={5} state={st('enrich', connected)} emoji="📇" title="Turn on free contact data (Lusha · SalesQL · ContactOut)">
             <p>
               Coldcast pulls emails and phones for free through three providers. Log in to all three in{' '}
               <b>this browser</b> — Lusha (grab a free account on the Setup page), plus SalesQL and
@@ -169,7 +169,7 @@ export default function Onboarding({ open, onClose, nav }) {
           </Step>
 
           {/* 6 — First job */}
-          <Step n={6} state={st('launch', false)} title="Launch your first job" last>
+          <Step n={6} state={st('launch', false)} emoji="🚀" title="Launch your first job" last>
             <p>
               Pick a scraper, click <b>New Job</b>, name your list, and paste a search URL. Choose{' '}
               <b>Fast</b> mode for speed (up to ~10k rows/hr) or <b>Normal</b> for deep buying-signal data.
