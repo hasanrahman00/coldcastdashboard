@@ -67,16 +67,20 @@ export default function LinkedInEnricher() {
   // The enricher worker runs one job at a time — disable Resume on other jobs while one runs.
   const anyRunning = jobs.some((j) => j.status === 'running' || j.status === 'queued')
 
-  const act = async (fn, id) => {
+  const act = async (fn, id, optimistic) => {
+    // Show the new state instantly, then pull the authoritative status right away —
+    // don't wait for the 4s poll (or a manual refresh) to reflect a Stop/Pause/Resume.
+    if (optimistic) setJobs((p) => p.map((j) => (j.id === id ? { ...j, status: optimistic } : j)))
     try {
       await fn(id)
     } catch (e) {
       toast(e.message || 'Action failed', 'err')
     }
+    refresh()
   }
-  const pause = (id) => act(api.enricherPause, id)
-  const resume = (id) => act(api.enricherResume, id)
-  const stop = (id) => act(api.enricherCancel, id)
+  const pause = (id) => act(api.enricherPause, id, 'pausing')
+  const resume = (id) => act(api.enricherResume, id, 'queued')
+  const stop = (id) => act(api.enricherCancel, id, 'stopping')
   const remove = async (job) => {
     const running = job.status === 'running' || job.status === 'queued'
     const msg = running

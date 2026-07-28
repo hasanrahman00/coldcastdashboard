@@ -38,7 +38,13 @@ export default function EnricherJobCard({ job, anotherRunning, onPause, onResume
   let stCls = 'idle'
   let stTxt = 'Ready'
   let StIcon = IconRetry
-  if (running) {
+  if (st === 'stopping') {
+    stCls = 'run'
+    stTxt = 'Stopping…'
+  } else if (st === 'pausing') {
+    stCls = 'run'
+    stTxt = 'Pausing…'
+  } else if (running) {
     stCls = 'run'
     stTxt = st === 'queued' ? 'Queued…' : 'Enriching…'
   } else if (paused) {
