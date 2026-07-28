@@ -1,10 +1,12 @@
 import { IconPuzzle, IconDownload } from '../lib/icons.jsx'
 
-// Hosted .zip link for the Chrome extension. VITE_EXT_DOWNLOAD_URL overrides; otherwise
-// this Drive default is used so the download always works.
+// Hosted .zip for the Chrome extension. Served straight from this app's own
+// /public folder (Vercel), so there's no Google Drive wrapper-folder nesting and
+// no cache/version dance — to ship an update, drop a new public/coldcast-extension.zip
+// and push. VITE_EXT_DOWNLOAD_URL still overrides if you ever want to host elsewhere.
 const EXT_URL =
   import.meta.env.VITE_EXT_DOWNLOAD_URL ||
-  'https://drive.google.com/uc?export=download&id=1pscY3PJu2FZNHTIiw3LMVMlXqwNwocg8'
+  '/coldcast-extension.zip'
 
 export default function Extension() {
   return (
@@ -24,6 +26,7 @@ export default function Extension() {
         <a
           className="btn btn-p"
           href={EXT_URL}
+          download="coldcast-extension.zip"
           target="_blank"
           rel="noopener noreferrer"
           style={{ width: 'auto', display: 'inline-flex', alignItems: 'center', textDecoration: 'none', gap: 8 }}
