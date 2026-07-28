@@ -9,6 +9,7 @@ import {
   IconChartBar,
   IconZap,
   IconClock,
+  IconCalendar,
   IconDownload,
   IconWhatsApp,
 } from '../lib/icons.jsx'
@@ -70,6 +71,12 @@ export default function Topbar({ route, nav, onLogout }) {
   const creditBal = credits ?? 0
   const lowCredits = creditBal > 0 && creditBal < 50
 
+  // Account validity — days until this account/plan expires. `secondsLeft` (declared above)
+  // is recomputed from expiresAt and ticks down live (AppStore). Ceil so the final partial
+  // day still reads "1 day left" instead of 0.
+  const daysLeft = secondsLeft > 0 ? Math.ceil(secondsLeft / 86400) : 0
+  const lowDays = daysLeft > 0 && daysLeft <= 3
+
   // Connection status — shown ONCE here (the middle strip no longer duplicates it).
   const onlineCount = profiles.filter((p) => p.online).length
   const connText = profiles.length > 1
@@ -120,6 +127,23 @@ export default function Topbar({ route, nav, onLogout }) {
               {creditBal.toLocaleString()}<em> email credits</em>
             </span>
           </span>
+
+          {daysLeft > 0 && (
+            <>
+              <span className="ug-div" />
+              <span
+                className="ug-chip"
+                title={me?.expiresAt
+                  ? `Account expires ${new Date(me.expiresAt).toLocaleDateString()} · ${fmtTtl(secondsLeft)}`
+                  : 'Days left on your account'}
+              >
+                <IconCalendar />
+                <span className={'ug-val' + (lowDays ? ' warn' : '')}>
+                  {daysLeft.toLocaleString()}<em> day{daysLeft === 1 ? '' : 's'} left</em>
+                </span>
+              </span>
+            </>
+          )}
         </div>
 
         {/* Connection status lives here and ONLY here now. */}
