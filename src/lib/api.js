@@ -180,6 +180,9 @@ export const api = {
   // ── live updates (Server-Sent Events) ──────────────────────────────────
   // EventSource can't set headers, so the token rides in the query string.
   events: () => new EventSource(apiUrl(`/api/events?token=${encodeURIComponent(getToken())}`)),
+  // REST jobs list (yours only) — poll fallback for when the SSE silently stalls
+  // (sleep / backgrounded tab / proxy idle-timeout), so the grid never freezes.
+  jobs: () => asJson('/api/jobs'),
 
   // ── email enricher (Core proxies the job to the enricher engine) ─────────
   // Core checks/reserves credits, forwards the file, and bills as valids resolve.

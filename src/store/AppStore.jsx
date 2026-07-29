@@ -140,20 +140,28 @@ export function AppProvider({ initialMe, onLogout, children }) {
     [onLogout],
   )
 
-  // ── SSE: live jobs ─────────────────────────────────────────────────────
+  // ── SSE: live Sales Nav jobs (+ poll fallback + revive-on-wake) ──────────
+  // SSE gives instant updates, but an EventSource can silently die on laptop sleep,
+  // a backgrounded tab, or a proxy idle-timeout WITHOUT a clean CLOSED event — which
+  // used to freeze this grid until the user hard-refreshed. So we ALSO poll (gated on
+  // visibility) and, on focus/visible, force a fresh fetch + revive the stream if it
+  // isn't OPEN. Mirrors the Apollo/Company slices, which already poll.
   useEffect(() => {
     let es
     let closed = false
     let retry
 
+    const load = async () => {
+      try {
+        const list = await api.jobs()
+        if (!closed && Array.isArray(list)) setJobs(list)
+      } catch { /* keep last-known; the SSE + next poll reconcile */ }
+    }
+
     const connect = () => {
-      es = api.events()
+      try { es = api.events() } catch { return }
       es.addEventListener('init', (ev) => {
-        try {
-          setJobs(JSON.parse(ev.data) || [])
-        } catch {
-          /* ignore */
-        }
+        try { setJobs(JSON.parse(ev.data) || []) } catch { /* ignore */ }
       })
       es.addEventListener('job:update', (ev) => {
         try {
@@ -167,31 +175,49 @@ export function AppProvider({ initialMe, onLogout, children }) {
             }
             return [d, ...prev]
           })
-        } catch {
-          /* ignore */
-        }
+        } catch { /* ignore */ }
       })
       es.addEventListener('job:delete', (ev) => {
         try {
           const { id } = JSON.parse(ev.data)
           setJobs((prev) => prev.filter((j) => j.id !== id))
-        } catch {
-          /* ignore */
-        }
+        } catch { /* ignore */ }
       })
-      // Only reconnect once fully CLOSED (token rejected / server closed it).
-      // On a transient drop EventSource auto-reconnects itself.
+      // Reconnect once fully CLOSED (token rejected / server closed it). Transient
+      // drops auto-reconnect; a silent stall is covered by the poll + visibility revive.
       es.onerror = () => {
         if (es.readyState === EventSource.CLOSED && !closed) {
+          clearTimeout(retry)
           retry = setTimeout(connect, 3000)
         }
       }
     }
 
+    load()      // instant fresh list on mount, even before the SSE `init` lands
     connect()
+
+    // Poll fallback — keeps the grid live even if the SSE silently stalls.
+    const poll = setInterval(() => { if (!document.hidden) load() }, 8000)
+
+    // Tab became visible/focused → refresh now AND revive the stream if it died while
+    // hidden (the #1 "had to hard-refresh" cause: a slept/backgrounded tab's dead SSE).
+    const onVisible = () => {
+      if (document.hidden) return
+      load()
+      if (!es || es.readyState !== EventSource.OPEN) {
+        try { if (es) es.close() } catch { /* ignore */ }
+        connect()
+      }
+    }
+    window.addEventListener('focus', onVisible)
+    document.addEventListener('visibilitychange', onVisible)
+
     return () => {
       closed = true
       clearTimeout(retry)
+      clearInterval(poll)
+      window.removeEventListener('focus', onVisible)
+      document.removeEventListener('visibilitychange', onVisible)
       if (es) es.close()
     }
   }, [])
