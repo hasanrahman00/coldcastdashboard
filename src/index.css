@@ -1201,6 +1201,8 @@ body{flex-direction:column}
 .conn-pill .dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);transition:background .3s,box-shadow .3s;flex-shrink:0}
 .conn-pill .dot.off{background:var(--amber);box-shadow:none}
 .conn-pill .dot.wait{background:var(--text-faint);box-shadow:none}
+.conn-pill.mismatch{border-color:color-mix(in srgb,#dc2626 45%,var(--border-strong));color:#ef4444}
+.conn-pill.mismatch .dot,.conn-pill.mismatch .dot.off{background:#dc2626;box-shadow:0 0 8px #dc2626}
 .tb-icon{width:42px;height:42px;border-radius:13px;border:1px solid var(--border-strong);background:var(--bg-elev-2);color:var(--text-muted);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s}
 .tb-icon:hover{background:var(--bg-elev-3);color:var(--text)}
 .tb-icon svg{width:19px;height:19px;stroke-width:2}

@@ -30,7 +30,7 @@ function fmtTtl(secs) {
 }
 
 export default function Topbar({ route, nav, onLogout, onGuide }) {
-  const { me, uiConfig, connectorOnline, profiles, credits, usage } = useApp()
+  const { me, uiConfig, connectorOnline, profiles, credits, usage, localAccountMismatch } = useApp()
   const [open, setOpen] = useState(false)
   const ref = useRef(null)
 
@@ -79,10 +79,14 @@ export default function Topbar({ route, nav, onLogout, onGuide }) {
   const lowDays = daysLeft > 0 && daysLeft <= 3
 
   // Connection status — shown ONCE here (the middle strip no longer duplicates it).
+  // A "different account" (extension connected under another Coldcast login in this
+  // browser) wins over the plain connected/not text — it's the global, every-page signal.
   const onlineCount = profiles.filter((p) => p.online).length
-  const connText = profiles.length > 1
-    ? `${onlineCount}/${profiles.length} connected`
-    : connectorOnline ? 'Connected' : 'Not connected'
+  const connText = localAccountMismatch
+    ? 'Different account'
+    : profiles.length > 1
+      ? `${onlineCount}/${profiles.length} connected`
+      : connectorOnline ? 'Connected' : 'Not connected'
 
 
   return (
@@ -149,12 +153,14 @@ export default function Topbar({ route, nav, onLogout, onGuide }) {
 
         {/* Connection status lives here and ONLY here now. */}
         <button
-          className="conn-pill"
+          className={'conn-pill' + (localAccountMismatch ? ' mismatch' : '')}
           onClick={() => nav('set')}
-          title={`${connText} · manage extensions`}
+          title={localAccountMismatch
+            ? 'This browser’s extension is signed in with a different Coldcast account — open the extension and paste THIS account’s API key'
+            : `${connText} · manage extensions`}
           aria-label={`Extensions: ${connText}`}
         >
-          <span className={'dot' + (connectorOnline ? '' : ' off')} />
+          <span className={'dot' + (connectorOnline && !localAccountMismatch ? '' : ' off')} />
           <span>{connText}</span>
         </button>
 
