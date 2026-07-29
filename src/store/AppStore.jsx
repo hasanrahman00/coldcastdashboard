@@ -101,6 +101,7 @@ export function AppProvider({ initialMe, onLogout, children }) {
   const [profiles, setProfiles] = useState([])
   const [activeProfileId, setActiveProfileId] = useState(null)
   const [connectorOnline, setConnectorOnline] = useState(false)
+  const [statusLoaded, setStatusLoaded] = useState(false) // first agentStatus poll returned (avoids flashing "different account" before profiles load)
   const [usage, setUsage] = useState({ limit: 0, used: 0, resetsDaily: false }) // scrape cap (paid resets daily; free = hard total)
   const [credits, setCredits] = useState(() => initialMe?.user?.credits ?? 0) // pay-per-use wallet (enrich / verify / domain)
   const [uiConfig, setUiConfig] = useState({ hideLogs: false, hideSettings: false })
@@ -320,6 +321,7 @@ export function AppProvider({ initialMe, onLogout, children }) {
       setProfiles(Array.isArray(d.profiles) ? d.profiles : [])
       setActiveProfileId(d.activeProfileId || null)
       setConnectorOnline(!!d.connectorOnline)
+      setStatusLoaded(true)
       setUsage({ limit: d.scrapeLimit ?? 0, used: d.scrapedToday ?? 0, resetsDaily: !!d.scrapeResetsDaily })
       // NOTE: credits are NOT taken from agentStatus — the scraper's value can lag
       // behind Core's live wallet and made the pill flicker between the persisted
@@ -553,19 +555,47 @@ export function AppProvider({ initialMe, onLogout, children }) {
   // "active" profile — those belong to other machines and would route the scrape to the
   // wrong browser (the multi-machine isolation bug). Null when this browser isn't
   // connected → the create flow blocks Run and the server refuses to start.
-  const onlineProfileId = (localExt.connected && localExt.profileId) ? localExt.profileId : null
+  // Does the extension's connected profile actually belong to the CURRENTLY logged-in
+  // account? The extension's socket can be OPEN under a DIFFERENT account's API key in
+  // the same browser (the user switched dashboard login) — that profile won't appear in
+  // OUR profile list. This is the guard that stops a different account reading as "connected".
+  const localProfileOwned = !!localExt.profileId && profiles.some((p) => p.id === localExt.profileId)
 
-  // Is THIS browser's extension connected to a specific scraper's hub? Uses the
-  // extension's per-hub report (serverStatus, keyed by host); falls back to the
-  // aggregate `connected` for older extensions that don't send per-hub status yet.
-  // Every scraper page uses this to show connected/not + gate Run before a job runs.
+  // "Connected as a different account": the extension IS connected, but not as us — so
+  // nothing here should claim "connected" for the current user. Gated on statusLoaded so
+  // it never flashes before the first profiles poll returns.
+  const localAccountMismatch = !!(
+    localExt.installed && localExt.connected && localExt.profileId && statusLoaded && !localProfileOwned
+  )
+
+  // Route jobs to THIS browser only when its profile is connected AND owned by us.
+  const onlineProfileId = (localExt.connected && localProfileOwned) ? localExt.profileId : null
+
+  // Is THIS browser's extension connected to a specific scraper's hub, FOR THIS account?
+  // Uses the extension's per-hub report (serverStatus, keyed by host); requires the
+  // profile be ours (a different account's open socket is never "connected" for us).
+  // Older extensions with no per-hub status fall back to the aggregate `connected`.
   const scraperConnected = (key) => {
-    if (!localExt.installed || !localExt.profileId) return false
+    if (!localExt.installed || !localExt.connected || !localExt.profileId) return false
+    if (statusLoaded && !localProfileOwned) return false   // connected, but as another account
     const host = SCRAPER_HOSTS[key]
     const ss = localExt.serverStatus || {}
     if (host && Object.keys(ss).length) return !!ss[host]
-    return !!localExt.connected
+    return true
   }
+
+  // Tell the extension (via its dashboard-bridge) when THIS browser is connected under a
+  // DIFFERENT account than the one logged in here, so the extension popup + sidebar can
+  // warn instead of showing a misleading "Connected". The content script writes it to
+  // chrome.storage; the popup/sidebar read it. No account identity is sent — just a flag.
+  useEffect(() => {
+    try {
+      window.postMessage(
+        { source: 'coldcast-page', type: 'dash-state', accountMismatch: localAccountMismatch },
+        window.location.origin,
+      )
+    } catch { /* not in a browser that can postMessage — ignore */ }
+  }, [localAccountMismatch])
 
   const value = {
     me,
@@ -581,6 +611,7 @@ export function AppProvider({ initialMe, onLogout, children }) {
     activeProfileId,
     onlineProfileId,
     scraperConnected,
+    localAccountMismatch,
     localProfileName: localExt.profileName,
     connectorOnline,
     usage,

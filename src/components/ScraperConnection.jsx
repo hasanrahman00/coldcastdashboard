@@ -8,7 +8,7 @@ import { useApp } from '../store/AppStore.jsx'
 //
 // `scraper` = key in SCRAPER_HOSTS (salesnav | apollo | company | enricher).
 export default function ScraperConnection({ scraper, name }) {
-  const { scraperConnected, localProfileName, localExt } = useApp()
+  const { scraperConnected, localProfileName, localExt, localAccountMismatch } = useApp()
   const connected = scraperConnected(scraper)
 
   if (connected) {
@@ -18,6 +18,21 @@ export default function ScraperConnection({ scraper, name }) {
         <span>
           Connected — jobs run in <strong>this browser</strong>
           {localProfileName ? ` (${localProfileName})` : ''}.
+        </span>
+      </div>
+    )
+  }
+
+  // The extension IS connected in this browser, but under a DIFFERENT Coldcast account
+  // than the one logged in here. Show a distinct, actionable message — never the green
+  // "connected" (the old bug) and never the plain "not connected" (which misleads too).
+  if (localAccountMismatch) {
+    return (
+      <div className="conn-status warn" role="status">
+        <span className="conn-dot" />
+        <span>
+          This browser’s extension is signed in with a <strong>different Coldcast account</strong>.
+          Open the Coldcast extension here, paste <strong>this</strong> account’s API key, and wait for “connected”.
         </span>
       </div>
     )
