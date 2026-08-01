@@ -3,18 +3,13 @@ import { PRODUCTS, getProduct } from '../lib/products.js'
 import { SERVICES } from '../lib/services.js'
 import { IconSearch } from '../lib/icons.jsx'
 
-// Products home ("Tools") — the dashboard's landing view. Enterprise console layout:
-// a search bar, a featured hero for the flagship product, then the rest grouped into
-// sections. Each card is a whole-card button (soft-tinted with the product accent + a
-// status badge); it opens that product's tab, or its teaser page if soon.
-const SECTIONS = [
-  { title: 'Lead & company scraping', ids: ['salesnav', 'apollo', 'company', 'zoominfo'] },
-  { title: 'Enrichment & verification', ids: ['linkedin', 'waterfall', 'verify', 'domain'] },
+// Products home ("Tools") — landing view. Mindcase-style layout: a horizontal
+// header (title + live search) over a scrollable category-tab row, then a single
+// card grid filtered by the active tab (or by the search query).
+const GROUPS = [
+  { key: 'scraping', title: 'Scraping', ids: ['salesnav', 'apollo', 'company', 'zoominfo'] },
+  { key: 'enrichment', title: 'Enrichment', ids: ['linkedin', 'waterfall', 'verify', 'domain'] },
 ]
-
-// The flagship product shown as the big hero banner (and excluded from its section grid
-// so it never appears twice).
-const FEATURED = 'salesnav'
 
 function Card({ p, nav }) {
   const Icon = p.icon
@@ -41,100 +36,71 @@ function Card({ p, nav }) {
 
 export default function ProductsHome({ nav }) {
   const [q, setQ] = useState('')
+  const [cat, setCat] = useState('all')
   const query = q.trim().toLowerCase()
   const searching = query.length > 0
   const match = (p) => (p.label + ' ' + (p.short || '') + ' ' + (p.body || '')).toLowerCase().includes(query)
-  // Search products + services (sndeal lives in SERVICES now, so drop the PRODUCTS copy)
-  const searchable = [...PRODUCTS.filter((p) => p.id !== 'sndeal'), ...SERVICES]
-  const results = searching ? searchable.filter(match) : []
 
-  const featured = getProduct(FEATURED)
-  const FeatIcon = featured?.icon
+  // Category → items. "All" spans every product + service; sndeal lives in
+  // SERVICES now, so drop its PRODUCTS copy.
+  const groups = GROUPS.map((g) => ({ ...g, items: g.ids.map(getProduct).filter(Boolean) }))
+  const services = { key: 'services', title: 'Services', items: SERVICES }
+  const allItems = [...PRODUCTS.filter((p) => p.id !== 'sndeal'), ...SERVICES]
+  const cats = [{ key: 'all', title: 'All', items: allItems }, ...groups, services]
+
+  const active = cats.find((c) => c.key === cat) || cats[0]
+  const shown = searching ? allItems.filter(match) : active.items
 
   return (
     <div className="phome">
-      <div className="phome-head">
-        <h2>Tools</h2>
-        <p>Every Coldcast product in one place — open one to start a job.</p>
-      </div>
-
-      <div className="phome-search">
-        <IconSearch />
-        <input
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder="Search tools…"
-          aria-label="Search tools"
-        />
-        {q && (
-          <button className="phome-search-x" onClick={() => setQ('')} aria-label="Clear search">
-            ×
-          </button>
-        )}
-      </div>
-
-      {searching ? (
-        results.length ? (
-          <div className="phome-grid">
-            {results.map((p) => (
-              <Card key={p.id} p={p} nav={nav} />
-            ))}
-          </div>
-        ) : (
-          <p className="phome-empty">No tools match “{q.trim()}”.</p>
-        )
-      ) : (
-        <>
-          {featured && (
-            <button
-              className="pcard-feat"
-              data-p={featured.id}
-              onClick={() => nav(featured.id)}
-              aria-label={`Open ${featured.label}`}
-            >
-              <span className="pcard-feat-ic">{FeatIcon ? <FeatIcon /> : featured.emoji}</span>
-              <div className="pcard-feat-body">
-                <span className="pcard-badge live">Active · Flagship</span>
-                <h3 className="pcard-feat-name">{featured.label}</h3>
-                <p className="pcard-feat-desc">{featured.body}</p>
-                <span className="pcard-feat-cta">Open tool →</span>
-              </div>
+      <div className="phome-top">
+        <div className="phome-titlewrap">
+          <h2>Tools</h2>
+          <p>{allItems.length} tools · every Coldcast product in one place.</p>
+        </div>
+        <div className="phome-search">
+          <IconSearch />
+          <input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Search tools…"
+            aria-label="Search tools"
+          />
+          {q && (
+            <button className="phome-search-x" onClick={() => setQ('')} aria-label="Clear search">
+              ×
             </button>
           )}
+        </div>
+      </div>
 
-          {SECTIONS.map((sec) => {
-            const items = sec.ids
-              .map(getProduct)
-              .filter(Boolean)
-              .filter((p) => p.id !== FEATURED)
-            if (!items.length) return null
-            return (
-              <section className="phome-sec" key={sec.title}>
-                <h3 className="phome-sec-title">
-                  {sec.title}
-                  <span className="phome-sec-count">{items.length}</span>
-                </h3>
-                <div className="phome-grid">
-                  {items.map((p) => (
-                    <Card key={p.id} p={p} nav={nav} />
-                  ))}
-                </div>
-              </section>
-            )
-          })}
+      {!searching && (
+        <div className="phome-tabs" role="tablist" aria-label="Tool categories">
+          {cats.map((c) => (
+            <button
+              key={c.key}
+              role="tab"
+              aria-selected={cat === c.key}
+              className={'phome-tab' + (cat === c.key ? ' on' : '')}
+              onClick={() => setCat(c.key)}
+            >
+              {c.title}
+              <span className="phome-tab-n">{c.items.length}</span>
+            </button>
+          ))}
+        </div>
+      )}
 
-          <section className="phome-sec">
-            <h3 className="phome-sec-title">
-              Services
-              <span className="phome-sec-count">{SERVICES.length}</span>
-            </h3>
-            <div className="phome-grid">
-              {SERVICES.map((s) => (
-                <Card key={s.id} p={s} nav={nav} />
-              ))}
-            </div>
-          </section>
-        </>
+      {shown.length ? (
+        <div className="phome-grid">
+          {shown.map((p) => (
+            <Card key={p.id} p={p} nav={nav} />
+          ))}
+        </div>
+      ) : (
+        <p className="phome-empty">
+          {searching ? `No tools match “${q.trim()}”.` : 'Nothing in this category yet.'}
+        </p>
       )}
     </div>
   )
