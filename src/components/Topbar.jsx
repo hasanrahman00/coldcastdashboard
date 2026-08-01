@@ -102,7 +102,7 @@ export default function Topbar({ route, nav, onLogout, onGuide }) {
             <>
               <span className="ug-chip ug-reset" title={`Scraping limit resets in ${resetTxt} — daily at 00:00 UTC`}>
                 <IconClock />
-                <span className="ug-val muted">{resetTxt}<em> daily reset</em></span>
+                <span className="ug-val muted">{resetTxt}<em> reset</em></span>
               </span>
               <span className="ug-div ug-div-reset" />
             </>
@@ -113,7 +113,7 @@ export default function Topbar({ route, nav, onLogout, onGuide }) {
             <span className="ug-col">
               <span className="ug-val">
                 {scrapeLeft.toLocaleString()}
-                <em>{scrapeLimit > 0 ? ` left of ${scrapeLimit.toLocaleString()} scraping limit` : ' scraping limit left'}</em>
+                <em> scrapes left</em>
               </span>
               <span className="ug-track">
                 <i style={{ width: scrapePct.toFixed(1) + '%', background: scrapeBar }} />
@@ -129,7 +129,7 @@ export default function Topbar({ route, nav, onLogout, onGuide }) {
           >
             <IconZap />
             <span className={'ug-val' + (lowCredits ? ' warn' : '')}>
-              {creditBal.toLocaleString()}<em> email credits</em>
+              {creditBal.toLocaleString()}<em> credits</em>
             </span>
           </span>
 

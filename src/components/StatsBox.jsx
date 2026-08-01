@@ -24,7 +24,7 @@ export default function StatsBox() {
     <div className="statsbar">
       <span className="sb-metric">
         <span className="sb-ic b"><IconGrid /></span>
-        <b>{totalJobs}</b> <span className="sb-lbl">Total jobs</span>
+        <b>{totalJobs}</b> <span className="sb-lbl">Jobs</span>
       </span>
       <span className="sb-sep" />
       <span className="sb-metric">
