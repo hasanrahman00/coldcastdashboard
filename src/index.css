@@ -1140,8 +1140,8 @@ body{flex-direction:column}
 .snav-item:hover .snav-ic svg{color:var(--accent)}
 .snav-label{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-transform:capitalize;letter-spacing:.01em}
 /* Active = a soft blue pill for every item. */
-.snav-item.on,.snav-item.on:hover{background:linear-gradient(135deg,rgba(0,0,0,.22),rgba(0,0,0,.12));color:#262626;font-weight:700;box-shadow:0 8px 18px -8px rgba(0,0,0,.30)}
-.snav-item.on .snav-ic svg{color:#262626}
+.snav-item.on,.snav-item.on:hover{background:rgba(0,0,0,.055);color:#000;font-weight:700;box-shadow:inset 0 0 0 1px rgba(0,0,0,.12)}
+.snav-item.on .snav-ic svg{color:#000}
 .snav-item.soon{color:rgba(0,0,0,.62)}
 .snav-item.soon .snav-ic svg{color:rgba(0,0,0,.4)}
 .snav-item.soon:hover{color:var(--text-muted)}
