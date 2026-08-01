@@ -68,7 +68,7 @@ export const PRODUCTS = [
   },
   {
     id: 'waterfall',
-    label: 'Waterfall Email Enrich',
+    label: 'Waterfall Enrich',
     soon: false,
     icon: IconLayers,
     emoji: '🌊',
