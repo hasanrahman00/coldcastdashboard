@@ -1192,7 +1192,7 @@ body{flex-direction:column}
 .ug-chip{display:inline-flex;align-items:center;gap:9px;padding:0 14px;white-space:nowrap}
 .ug-chip svg{width:16px;height:16px;stroke-width:2;color:var(--text-faint);flex-shrink:0}
 .ug-col{display:flex;flex-direction:column;gap:5px;justify-content:center}
-.ug-val{font-size:12.5px;font-weight:700;color:var(--text);line-height:1;text-transform:uppercase;letter-spacing:.01em}
+.ug-val{font-size:12.5px;font-weight:700;color:var(--text);line-height:1;letter-spacing:.01em}
 .ug-val em{font-style:normal;font-weight:500;color:var(--text-muted)}
 .ug-val.muted{font-weight:600;color:var(--text-muted)}
 .ug-val.warn{color:var(--amber)}
@@ -1202,7 +1202,7 @@ body{flex-direction:column}
 /* The reset segment now leads the usage group with a ug-div-reset divider after it; both
    are hidden together on narrow screens so no dangling separator is left. */
 
-.conn-pill{display:flex;align-items:center;gap:8px;font-family:var(--font);font-size:12.5px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.02em;padding:0 15px;height:42px;border:1px solid var(--border-strong);border-radius:14px;background:var(--bg-elev-2);cursor:pointer;transition:background .15s,border-color .15s}
+.conn-pill{display:flex;align-items:center;gap:8px;font-family:var(--font);font-size:12.5px;font-weight:600;color:var(--text-muted);letter-spacing:.02em;padding:0 15px;height:42px;border:1px solid var(--border-strong);border-radius:14px;background:var(--bg-elev-2);cursor:pointer;transition:background .15s,border-color .15s}
 .conn-pill:hover{background:var(--bg-elev-3)}
 .conn-pill .dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);transition:background .3s,box-shadow .3s;flex-shrink:0}
 .conn-pill .dot.off{background:var(--amber);box-shadow:none}
@@ -1213,7 +1213,7 @@ body{flex-direction:column}
 .tb-icon:hover{background:var(--bg-elev-3);color:var(--text)}
 .tb-icon svg{width:19px;height:19px;stroke-width:2}
 /* Book-a-demo WhatsApp CTA in the top bar — WhatsApp green so it pops on the lime bar */
-.tb-demo{display:inline-flex;align-items:center;gap:7px;height:42px;padding:0 16px;border-radius:14px;font-family:var(--font);font-size:12.5px;font-weight:700;letter-spacing:.02em;text-transform:uppercase;color:#fff;background:linear-gradient(135deg,#25d366,#12a150);border:1px solid rgba(0,0,0,.14);text-decoration:none;white-space:nowrap;flex-shrink:0;transition:filter .15s,transform .15s,box-shadow .15s;box-shadow:0 6px 16px -8px rgba(18,161,80,.75)}
+.tb-demo{display:inline-flex;align-items:center;gap:7px;height:42px;padding:0 16px;border-radius:14px;font-family:var(--font);font-size:12.5px;font-weight:700;letter-spacing:.02em;color:#fff;background:linear-gradient(135deg,#25d366,#12a150);border:1px solid rgba(0,0,0,.14);text-decoration:none;white-space:nowrap;flex-shrink:0;transition:filter .15s,transform .15s,box-shadow .15s;box-shadow:0 6px 16px -8px rgba(18,161,80,.75)}
 .tb-demo:hover{filter:brightness(1.06);transform:translateY(-1px);box-shadow:0 10px 22px -8px rgba(18,161,80,.85)}
 .tb-demo svg{width:17px;height:17px;fill:#fff}
 @media (max-width:880px){ .tb-demo{padding:0 12px} .tb-demo-t{display:none} }
@@ -1237,7 +1237,7 @@ body{flex-direction:column}
 /* Total jobs + Running as a rounded pill group on the left of the top bar (replaced the
    page title). Matches the height/radius of the right-side usage group. */
 .statsbar{display:inline-flex;align-items:center;height:42px;border:1px solid var(--border-strong);border-radius:14px;background:var(--bg-elev-2);padding:0 5px;min-width:0}
-.sb-metric{display:inline-flex;align-items:center;gap:9px;padding:0 12px;font-size:12.5px;font-weight:600;color:var(--text-muted);white-space:nowrap;text-transform:uppercase;letter-spacing:.02em}
+.sb-metric{display:inline-flex;align-items:center;gap:9px;padding:0 12px;font-size:12.5px;font-weight:600;color:var(--text-muted);white-space:nowrap;letter-spacing:.02em}
 .sb-metric b{font-size:14px;font-weight:800;letter-spacing:-.01em;color:var(--brand);line-height:1}
 .sb-ic{width:28px;height:28px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
 .sb-ic svg{width:15px;height:15px;stroke-width:2.2}
