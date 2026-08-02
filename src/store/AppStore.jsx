@@ -615,13 +615,26 @@ export function AppProvider({ initialMe, onLogout, children }) {
   // warn instead of showing a misleading "Connected". The content script writes it to
   // chrome.storage; the popup/sidebar read it. No account identity is sent — just a flag.
   useEffect(() => {
-    try {
-      window.postMessage(
-        { source: 'coldcast-page', type: 'dash-state', accountMismatch: localAccountMismatch },
-        window.location.origin,
-      )
-    } catch { /* not in a browser that can postMessage — ignore */ }
-  }, [localAccountMismatch])
+    const send = () => {
+      try {
+        window.postMessage(
+          { source: 'coldcast-page', type: 'dash-state', accountMismatch: localAccountMismatch },
+          window.location.origin,
+        )
+      } catch { /* not in a browser that can postMessage — ignore */ }
+    }
+    // Assert immediately whenever the verdict OR the extension's own reported state changes
+    // (deps below) — so the instant a DIFFERENT account's key connects (localExt.profileId
+    // flips to a profile we don't own → mismatch=true), the popup + sidebar drop the
+    // misleading green "Connected" and show "Different account", no hard refresh.
+    send()
+    // Heartbeat: re-assert on a slow cadence so a verdict the bridge missed (service-worker
+    // restart, popup/sidebar opened after the change, a reconnect race that reset storage)
+    // self-heals within a few seconds. The bridge stores this under a key that's NOT in its
+    // own state KEYS, so re-posting never loops back. Quiet while the tab is hidden.
+    const t = setInterval(() => { if (!document.hidden) send() }, 5000)
+    return () => clearInterval(t)
+  }, [localAccountMismatch, localExt.connected, localExt.profileId])
 
   const value = {
     me,
