@@ -587,6 +587,14 @@ export function AppProvider({ initialMe, onLogout, children }) {
   // OUR profile list. This is the guard that stops a different account reading as "connected".
   const localProfileOwned = !!localExt.profileId && profiles.some((p) => p.id === localExt.profileId)
 
+  // Does the SERVER (the hub) actually see THIS browser's profile online right now? This is
+  // the same authoritative signal the top-nav uses (agentStatus → hub.isOnline). The
+  // extension's own localExt.connected flag can go STALE — an evicted MV3 service worker or
+  // a dropped socket leaves chrome.storage saying connected=true — which showed a green
+  // "Connected" on a scraper page while the top-nav (server view) correctly said "Not
+  // connected". Gating the page on this keeps every surface in agreement.
+  const localProfileServerOnline = !!localExt.profileId && profiles.some((p) => p.id === localExt.profileId && p.online)
+
   // "Connected as a different account": the extension IS connected, but not as us — so
   // nothing here should claim "connected" for the current user. Gated on statusLoaded so
   // it never flashes before the first profiles poll returns.
@@ -603,7 +611,8 @@ export function AppProvider({ initialMe, onLogout, children }) {
   // Older extensions with no per-hub status fall back to the aggregate `connected`.
   const scraperConnected = (key) => {
     if (!localExt.installed || !localExt.connected || !localExt.profileId) return false
-    if (statusLoaded && !localProfileOwned) return false   // connected, but as another account
+    if (statusLoaded && !localProfileOwned) return false        // connected, but as another account
+    if (statusLoaded && !localProfileServerOnline) return false // local flag says connected, but the hub doesn't see it → match the top-nav
     const host = SCRAPER_HOSTS[key]
     const ss = localExt.serverStatus || {}
     if (host && Object.keys(ss).length) return !!ss[host]
