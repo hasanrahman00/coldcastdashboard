@@ -647,6 +647,7 @@ export function AppProvider({ initialMe, onLogout, children }) {
   // Older extensions with no per-hub status fall back to the aggregate `connected`.
   const scraperConnected = (key) => {
     if (!localExt.installed || !localExt.connected || !localExt.profileId) return false
+    if (localAccountMismatch) return false                      // different account → not connected for us. Instant (from the live key hash), so the page banner + New Job flip WITHOUT waiting for the 8s agentStatus poll to mark the profile offline.
     if (statusLoaded && !localProfileOwned) return false        // connected, but as another account
     if (statusLoaded && !localProfileServerOnline) return false // local flag says connected, but the hub doesn't see it → match the top-nav
     const host = SCRAPER_HOSTS[key]
