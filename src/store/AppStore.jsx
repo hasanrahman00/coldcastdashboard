@@ -6,9 +6,17 @@ import {
   useCallback,
   useRef,
 } from 'react'
-import { api, AuthError, SCRAPER_HOSTS } from '../lib/api.js'
+import { api, AuthError, SCRAPER_HOSTS, getSavedKey, setSavedKey } from '../lib/api.js'
 import { subscribeLocalExtension } from '../lib/extBridge.js'
 import { useToast } from './ToastProvider.jsx'
+
+// SHA-256 hex of a string. Used to compare THIS account's login key with the extension's key
+// (the extension reports only its key's HASH) to flag an extension signed in under a DIFFERENT
+// Coldcast account — reliably, and without either raw key crossing the page boundary.
+async function sha256hex(str) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(String(str)))
+  return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, '0')).join('')
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  AppStore — the authenticated app's shared state:
@@ -102,6 +110,7 @@ export function AppProvider({ initialMe, onLogout, children }) {
   const [activeProfileId, setActiveProfileId] = useState(null)
   const [connectorOnline, setConnectorOnline] = useState(false)
   const [statusLoaded, setStatusLoaded] = useState(false) // first agentStatus poll returned (avoids flashing "different account" before profiles load)
+  const [accountKeyHash, setAccountKeyHash] = useState('') // sha256 of THIS account's login key — compared with the extension's reported key hash
   const [usage, setUsage] = useState({ limit: 0, used: 0, resetsDaily: false }) // scrape cap (paid resets daily; free = hard total)
   const [credits, setCredits] = useState(() => initialMe?.user?.credits ?? 0) // pay-per-use wallet (enrich / verify / domain)
   const [uiConfig, setUiConfig] = useState({ hideLogs: false, hideSettings: false })
@@ -437,6 +446,18 @@ export function AppProvider({ initialMe, onLogout, children }) {
   // ── THIS browser's extension (dashboard bridge messages) ───────────────
   useEffect(() => subscribeLocalExtension(setLocalExt), [])
 
+  // ── Hash THIS account's login key once, so we can detect an extension signed in
+  //    under a DIFFERENT account (its reported key hash won't match ours). getSavedKey()
+  //    is set at login; fetch it via api.me() if the cache is cold. ──
+  useEffect(() => {
+    let alive = true
+    const compute = (k) => { if (k) sha256hex(String(k).trim()).then((h) => { if (alive) setAccountKeyHash(h) }).catch(() => {}) }
+    const cached = getSavedKey()
+    if (cached) compute(cached)
+    else api.me().then((d) => { if (d?.key) { setSavedKey(d.key); compute(d.key) } }).catch(() => {})
+    return () => { alive = false }
+  }, [])
+
   // ── session countdown (decrement once per second) ──────────────────────
   useEffect(() => {
     const t = setInterval(() => {
@@ -595,12 +616,17 @@ export function AppProvider({ initialMe, onLogout, children }) {
   // connected". Gating the page on this keeps every surface in agreement.
   const localProfileServerOnline = !!localExt.profileId && profiles.some((p) => p.id === localExt.profileId && p.online)
 
-  // "Connected as a different account": the extension IS connected, but not as us — so
-  // nothing here should claim "connected" for the current user. Gated on statusLoaded so
-  // it never flashes before the first profiles poll returns.
-  const localAccountMismatch = !!(
-    localExt.installed && localExt.connected && localExt.profileId && statusLoaded && !localProfileOwned
-  )
+  // "Connected as a different account". RELIABLE signal: the extension reports its key's
+  // HASH (never the raw key); if it differs from OUR logged-in account key's hash, the
+  // extension is signed in under another Coldcast account. This replaces the old
+  // profileId-ownership check, which gave FALSE NEGATIVES — the machine profileId is reused
+  // across accounts, so a profile this account once owned stays in its list and the mismatch
+  // went undetected (green "Connected" everywhere). The profileId check remains only as a
+  // fallback for older extensions that don't report a key hash yet.
+  const keyMismatch = !!(accountKeyHash && localExt.keyHash && accountKeyHash !== localExt.keyHash)
+  const localAccountMismatch = keyMismatch
+    ? !!localExt.installed   // a different key = a different account (whether or not it's fully connected)
+    : !!(localExt.installed && localExt.connected && localExt.profileId && statusLoaded && !localProfileOwned)
 
   // Route jobs to THIS browser only when its profile is connected AND owned by us.
   const onlineProfileId = (localExt.connected && localProfileOwned) ? localExt.profileId : null
