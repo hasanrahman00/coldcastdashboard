@@ -605,6 +605,16 @@ export function AppProvider({ initialMe, onLogout, children }) {
   // Route jobs to THIS browser only when its profile is connected AND owned by us.
   const onlineProfileId = (localExt.connected && localProfileOwned) ? localExt.profileId : null
 
+  // THIS browser's connection as ONE boolean — the SAME server-confirmed signal
+  // scraperConnected uses (minus the per-scraper host check). The top-nav pill reads this so
+  // it says "Connected"/"Not connected" for THE BROWSER YOU'RE IN, consistent with the page
+  // banners — instead of an account-level "X/Y connected" count that read "0/2 connected"
+  // while the page correctly said this browser wasn't connected.
+  const browserConnected = !!(
+    localExt.installed && localExt.connected && localExt.profileId &&
+    (!statusLoaded || (localProfileOwned && localProfileServerOnline))
+  )
+
   // Is THIS browser's extension connected to a specific scraper's hub, FOR THIS account?
   // Uses the extension's per-hub report (serverStatus, keyed by host); requires the
   // profile be ours (a different account's open socket is never "connected" for us).
@@ -659,6 +669,7 @@ export function AppProvider({ initialMe, onLogout, children }) {
     activeProfileId,
     onlineProfileId,
     scraperConnected,
+    browserConnected,
     localAccountMismatch,
     localProfileName: localExt.profileName,
     connectorOnline,

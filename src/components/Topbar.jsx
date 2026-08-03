@@ -30,7 +30,7 @@ function fmtTtl(secs) {
 }
 
 export default function Topbar({ route, nav, onLogout, onGuide }) {
-  const { me, uiConfig, connectorOnline, profiles, credits, usage, localAccountMismatch } = useApp()
+  const { me, uiConfig, browserConnected, credits, usage, localAccountMismatch } = useApp()
   const [open, setOpen] = useState(false)
   const ref = useRef(null)
 
@@ -78,15 +78,13 @@ export default function Topbar({ route, nav, onLogout, onGuide }) {
   const daysLeft = secondsLeft > 0 ? Math.ceil(secondsLeft / 86400) : 0
   const lowDays = daysLeft > 0 && daysLeft <= 3
 
-  // Connection status — shown ONCE here (the middle strip no longer duplicates it).
-  // A "different account" (extension connected under another Coldcast login in this
-  // browser) wins over the plain connected/not text — it's the global, every-page signal.
-  const onlineCount = profiles.filter((p) => p.online).length
+  // Connection status — shown ONCE here (the middle strip no longer duplicates it). Reads the
+  // SAME this-browser signal the page banners use (browserConnected), so the pill can't say
+  // "0/2 connected" while a page says this browser isn't connected. "Different account"
+  // (extension connected under another Coldcast login in this browser) wins over connected/not.
   const connText = localAccountMismatch
     ? 'Different account'
-    : profiles.length > 1
-      ? `${onlineCount}/${profiles.length} connected`
-      : connectorOnline ? 'Connected' : 'Not connected'
+    : browserConnected ? 'Connected' : 'Not connected'
 
 
   return (
@@ -160,7 +158,7 @@ export default function Topbar({ route, nav, onLogout, onGuide }) {
             : `${connText} · manage extensions`}
           aria-label={`Extensions: ${connText}`}
         >
-          <span className={'dot' + (connectorOnline && !localAccountMismatch ? '' : ' off')} />
+          <span className={'dot' + (browserConnected && !localAccountMismatch ? '' : ' off')} />
           <span>{connText}</span>
         </button>
 
