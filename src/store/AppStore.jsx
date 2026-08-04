@@ -468,13 +468,21 @@ export function AppProvider({ initialMe, onLogout, children }) {
     return () => clearInterval(t)
   }, [])
 
-  // expiry → toast, then logout
+  // Account expired → DON'T log out. The dashboard stays usable READ-ONLY; every product
+  // action is disabled via the derived `expired` flag + the top-nav "Expired" pill, and the
+  // server blocks running regardless. (Genuine token invalidation is still handled by
+  // guarded() → AuthError → onLogout on a real 401.) Toast the expiry once, non-blocking.
+  const expiredToasted = useRef(false)
   useEffect(() => {
-    if (me && me.secondsLeft === 0) {
-      toast('Session expired — please sign in again', 'err')
-      onLogout()
+    if (me && (me.user?.expired || me.secondsLeft === 0)) {
+      if (!expiredToasted.current) {
+        expiredToasted.current = true
+        toast('Account expired — you can still view your data. Renew to run jobs.', 'err')
+      }
+    } else {
+      expiredToasted.current = false
     }
-  }, [me, onLogout, toast])
+  }, [me, toast])
 
   // ── Waterfall Email Enricher — standalone CSV uploads (keyed by enrichJobId) ──
   // Upload a file → POST to /api/enrich/start → poll live → download the result. No
@@ -656,6 +664,12 @@ export function AppProvider({ initialMe, onLogout, children }) {
     return true
   }
 
+  // Account expired: the plan lapsed. READ-ONLY — the dashboard loads + shows past data, but
+  // EVERY product action (New Job / Create Job / Run / Resume / enrich upload) is disabled,
+  // and Core blocks running server-side too. me.user.expired is the authoritative server flag;
+  // secondsLeft<=0 is the live-countdown fallback (an account that expires mid-session).
+  const expired = !!(me && (me.user?.expired || (me.secondsLeft != null && me.secondsLeft <= 0)))
+
   // Tell the extension (via its dashboard-bridge) when THIS browser is connected under a
   // DIFFERENT account than the one logged in here, so the extension popup + sidebar can
   // warn instead of showing a misleading "Connected". The content script writes it to
@@ -684,6 +698,7 @@ export function AppProvider({ initialMe, onLogout, children }) {
 
   const value = {
     me,
+    expired,
     jobs,
     apolloJobs,
     upsertApolloJob,
@@ -700,8 +715,10 @@ export function AppProvider({ initialMe, onLogout, children }) {
     localAccountMismatch,
     localProfileName: localExt.profileName,
     connectorOnline,
-    usage,
-    credits,
+    // Expired accounts show ZERO scraping quota + ZERO email credits everywhere (top nav,
+    // waterfall, enricher) — they can't run anything, and Core enforces 0 server-side too.
+    usage: expired ? { limit: 0, used: 0, resetsDaily: false } : usage,
+    credits: expired ? 0 : credits,
     uiConfig,
     localExt,
     refreshProfiles,

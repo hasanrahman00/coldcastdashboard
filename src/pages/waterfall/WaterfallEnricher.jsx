@@ -124,7 +124,7 @@ function UploadJob({ job, enrichDownloadUrl, onRemove, onOpenLogs }) {
 }
 
 export default function WaterfallEnricher() {
-  const { enrichUploads, startEnrich, enrichDownloadUrl, removeEnrichUpload, credits } = useApp()
+  const { enrichUploads, startEnrich, enrichDownloadUrl, removeEnrichUpload, credits, expired } = useApp()
   const toast = useToast()
   const [file, setFile] = useState(null)
   const [busy, setBusy] = useState(false)
@@ -174,6 +174,13 @@ export default function WaterfallEnricher() {
         <h3 className="wf-card-t">Upload a CSV</h3>
         <div className="wf-card-s">Supports up to <b>10k rows</b>. Required headers: <b>First Name</b>, <b>Last Name</b>, <b>Website</b> — and it waterfalls through <b>Website_one</b>, <b>Website_two</b> if present. 1 credit per valid email, stops when your credits run out.</div>
 
+        {expired && (
+          <div className="conn-status warn" role="status" style={{ marginTop: 10 }}>
+            <span className="conn-dot" />
+            <span>Your Coldcast account has <strong>expired</strong> — renew to run enrichments. You can still download past results.</span>
+          </div>
+        )}
+
         <div
           className={'wf-drop' + (drag ? ' over' : '') + (file ? ' has' : '')}
           onDragOver={(e) => { e.preventDefault(); setDrag(true) }}
@@ -186,7 +193,7 @@ export default function WaterfallEnricher() {
           <span className="wf-drop-t">{file ? file.name : 'Choose a CSV file'}</span>
         </div>
 
-        <button className="btn btn-s wf-btn" disabled={!file || busy} onClick={run}>
+        <button className="btn btn-s wf-btn" disabled={!file || busy || expired} title={expired ? 'Account expired — renew to run enrichments' : ''} onClick={run}>
           {busy ? 'Starting…' : 'Upload and enrich'}
         </button>
 

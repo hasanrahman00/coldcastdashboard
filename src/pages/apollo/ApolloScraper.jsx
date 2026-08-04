@@ -17,7 +17,7 @@ export default function ApolloScraper() {
   const toast = useToast()
   const configured = api.apolloConfigured()
 
-  const { apolloJobs, upsertApolloJob, removeApolloJob, scraperConnected } = useApp()
+  const { apolloJobs, upsertApolloJob, removeApolloJob, scraperConnected, expired } = useApp()
   const connected = scraperConnected('apollo')
   const jobs = apolloJobs || []
   const [page, setPage] = useState(0)
@@ -92,8 +92,8 @@ export default function ApolloScraper() {
         <button
           className="btn btn-p"
           onClick={() => setShowNew(true)}
-          disabled={!connected}
-          title={connected ? '' : 'Connect the Coldcast extension in this browser to run a job here'}
+          disabled={!connected || expired}
+          title={expired ? 'Account expired — renew to run jobs' : connected ? '' : 'Connect the Coldcast extension in this browser to run a job here'}
         >
           <IconPlus />
           New Job
@@ -118,7 +118,7 @@ export default function ApolloScraper() {
             </div>
             <h3>No jobs yet</h3>
             <p>Create your first Apollo scraping job to get started</p>
-            <button className="btn btn-p" onClick={() => setShowNew(true)}>
+            <button className="btn btn-p" onClick={() => setShowNew(true)} disabled={expired} title={expired ? 'Account expired — renew to run jobs' : ''}>
               <IconPlus />
               Create Job
             </button>
@@ -132,7 +132,7 @@ export default function ApolloScraper() {
               <ApolloJobCard
                 key={j.id}
                 job={j}
-                anotherRunning={otherRunning}
+                anotherRunning={otherRunning || expired}
                 onRun={() => run(j.id)}
                 onStop={() => stop(j.id)}
                 onDelete={() => remove(j)}

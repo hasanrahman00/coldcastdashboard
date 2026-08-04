@@ -25,7 +25,7 @@ function jobUrlOf(j) {
 }
 
 export default function JobCard({ job, onOpenLogs }) {
-  const { jobs, profiles, activeProfileId, uiConfig, startJob, stopJob, deleteJob, downloadUrl } = useApp()
+  const { jobs, profiles, activeProfileId, uiConfig, startJob, stopJob, deleteJob, downloadUrl, expired } = useApp()
   const toast = useToast()
 
   const scrapeIdle = ['idle', 'stopped', 'done', 'failed'].includes(job.status)
@@ -158,7 +158,7 @@ export default function JobCard({ job, onOpenLogs }) {
 
       <div className="jc-a">
         {scrapeIdle && (
-          <button className="btn btn-s btn-sm" disabled={anotherRunning} title={runTitle} onClick={run}>
+          <button className="btn btn-s btn-sm" disabled={anotherRunning || expired} title={expired ? 'Account expired — renew to run jobs' : runTitle} onClick={run}>
             <IconPlay /> Run
           </button>
         )}

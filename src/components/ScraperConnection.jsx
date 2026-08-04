@@ -8,8 +8,21 @@ import { useApp } from '../store/AppStore.jsx'
 //
 // `scraper` = key in SCRAPER_HOSTS (salesnav | apollo | company | enricher).
 export default function ScraperConnection({ scraper, name }) {
-  const { scraperConnected, localProfileName, localExt, localAccountMismatch } = useApp()
+  const { scraperConnected, localProfileName, localExt, localAccountMismatch, expired } = useApp()
   const connected = scraperConnected(scraper)
+
+  // Account expired → read-only. This wins over connection state (it's WHY New Job / Run are
+  // disabled), so the page says so instead of a misleading "not connected".
+  if (expired) {
+    return (
+      <div className="conn-status warn" role="status">
+        <span className="conn-dot" />
+        <span>
+          Your Coldcast account has <strong>expired</strong>. You can still view your data — renew to run {name} jobs again.
+        </span>
+      </div>
+    )
+  }
 
   if (connected) {
     return (

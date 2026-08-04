@@ -9,7 +9,7 @@ import { IconPlus, IconChevronLeft, IconChevronRight } from '../../lib/icons.jsx
 const JOBS_PER_PAGE = 9 // 3 cols × 3 rows
 
 export default function SalesNav() {
-  const { jobs, scraperConnected } = useApp()
+  const { jobs, scraperConnected, expired } = useApp()
   const connected = scraperConnected('salesnav')
   const [page, setPage] = useState(0)
   const [showNew, setShowNew] = useState(false)
@@ -42,8 +42,8 @@ export default function SalesNav() {
         <button
           className="btn btn-p"
           onClick={() => setShowNew(true)}
-          disabled={!connected}
-          title={connected ? '' : 'Connect the Coldcast extension in this browser to run a job here'}
+          disabled={!connected || expired}
+          title={expired ? 'Account expired — renew to run jobs' : connected ? '' : 'Connect the Coldcast extension in this browser to run a job here'}
         >
           <IconPlus />
           New Job
@@ -70,7 +70,7 @@ export default function SalesNav() {
             </div>
             <h3>No jobs yet</h3>
             <p>Create your first scraping job to get started</p>
-            <button className="btn btn-p" onClick={() => setShowNew(true)}>
+            <button className="btn btn-p" onClick={() => setShowNew(true)} disabled={expired} title={expired ? 'Account expired — renew to run jobs' : ''}>
               <IconPlus />
               Create Job
             </button>

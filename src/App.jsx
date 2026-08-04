@@ -64,7 +64,9 @@ export default function App() {
       return
     }
     const cached = getCachedMe()
-    if (cached && cached.secondsLeft > 0) {
+    // Restore whenever a cached user exists (even expired → secondsLeft 0) so an expired
+    // account's dashboard paints instantly instead of flashing /#/login before api.me().
+    if (cached && cached.user) {
       setMe(cached) // optimistic restore
       setBooted(true) // render the dashboard instantly; validate in the background
     }

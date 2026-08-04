@@ -30,7 +30,7 @@ function fmtTtl(secs) {
 }
 
 export default function Topbar({ route, nav, onLogout, onGuide }) {
-  const { me, uiConfig, browserConnected, credits, usage, localAccountMismatch } = useApp()
+  const { me, uiConfig, browserConnected, credits, usage, localAccountMismatch, expired } = useApp()
   const [open, setOpen] = useState(false)
   const ref = useRef(null)
 
@@ -82,8 +82,9 @@ export default function Topbar({ route, nav, onLogout, onGuide }) {
   // SAME this-browser signal the page banners use (browserConnected), so the pill can't say
   // "0/2 connected" while a page says this browser isn't connected. "Different account"
   // (extension connected under another Coldcast login in this browser) wins over connected/not.
-  const connText = localAccountMismatch
-    ? 'Different account'
+  const connText = expired
+    ? 'Expired'
+    : localAccountMismatch ? 'Different account'
     : browserConnected ? 'Connected' : 'Not connected'
 
 
@@ -131,7 +132,15 @@ export default function Topbar({ route, nav, onLogout, onGuide }) {
             </span>
           </span>
 
-          {daysLeft > 0 && (
+          {expired ? (
+            <>
+              <span className="ug-div" />
+              <span className="ug-chip" title="Your account has expired — renew to run jobs">
+                <IconCalendar />
+                <span className="ug-val warn">Expired</span>
+              </span>
+            </>
+          ) : daysLeft > 0 && (
             <>
               <span className="ug-div" />
               <span
@@ -151,14 +160,16 @@ export default function Topbar({ route, nav, onLogout, onGuide }) {
 
         {/* Connection status lives here and ONLY here now. */}
         <button
-          className={'conn-pill' + (localAccountMismatch ? ' mismatch' : '')}
+          className={'conn-pill' + ((expired || localAccountMismatch) ? ' mismatch' : '')}
           onClick={() => nav('set')}
-          title={localAccountMismatch
+          title={expired
+            ? 'Your account has expired — renew to run jobs. You can still view your data.'
+            : localAccountMismatch
             ? 'This browser’s extension is signed in with a different Coldcast account — open the extension and paste THIS account’s API key'
             : `${connText} · manage extensions`}
           aria-label={`Extensions: ${connText}`}
         >
-          <span className={'dot' + (browserConnected && !localAccountMismatch ? '' : ' off')} />
+          <span className={'dot' + (browserConnected && !localAccountMismatch && !expired ? '' : ' off')} />
           <span>{connText}</span>
         </button>
 
