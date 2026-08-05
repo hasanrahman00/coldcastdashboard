@@ -40,6 +40,17 @@ Get-ChildItem -Force $Source |
     Where-Object { $exclude -notcontains $_.Name -and $_.Extension -ne '.zip' } |
     ForEach-Object { Copy-Item $_.FullName -Destination $stage -Recurse -Force }
 
+# Harden the STAGED copy (never the source): strip comments/whitespace from JS +
+# scrub the manifest so the shipped extension does not self-document how it works.
+# Fail-safe — if the hardener errors (e.g. esbuild missing) we WARN and ship the
+# staged copy as-is, so packing can never break.
+try {
+    & node (Join-Path $PSScriptRoot 'harden-ext.mjs') $stage
+    if ($LASTEXITCODE -ne 0) { Write-Warning ("harden-ext exited {0} - shipping un-hardened stage" -f $LASTEXITCODE) }
+} catch {
+    Write-Warning ("harden-ext failed: {0} - shipping un-hardened stage" -f $_.Exception.Message)
+}
+
 # Self-explanatory install note inside the zip
 $installTxt = @"
 COLDCAST EXTENSION - INSTALL (2 minutes)
