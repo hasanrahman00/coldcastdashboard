@@ -203,6 +203,22 @@ export const api = {
   // Live credit wallet (persisted − in-flight usage) for the header/credit pill.
   creditsBalance: () => asJson('/api/credits/balance', { base: CORE_BASE }),
 
+  // ── email verifier (Core proxies the job to the verifier engine) ─────────
+  // Core checks/reserves credits, forwards the file, and bills per email checked
+  // (verify rate 0.5). Same shape as enrich, keyed by the verify job id.
+  verifyStart: (file) => {
+    const fd = new FormData()
+    fd.append('file', file)
+    return asJson('/api/verify/start', { base: CORE_BASE, method: 'POST', body: fd })
+  },
+  verifyStatus: (id) => asJson(`/api/verify/jobs/${encodeURIComponent(id)}`, { base: CORE_BASE }),
+  verifyList: () => asJson('/api/verify/jobs', { base: CORE_BASE }),
+  verifyStop: (id) => postJson(`/api/verify/jobs/${encodeURIComponent(id)}/stop`, undefined, { base: CORE_BASE }),
+  verifyDelete: (id) => del(`/api/verify/jobs/${encodeURIComponent(id)}`, { base: CORE_BASE }),
+  // Opened as a link → token rides in the query (Core's requireAuth accepts ?token=).
+  verifyDownloadUrl: (id, fmt = 'csv') =>
+    coreUrl(`/api/verify/download/${encodeURIComponent(id)}?format=${fmt}&token=${encodeURIComponent(getToken())}`),
+
   // ── Apollo scraper (its OWN server; same Bearer auth + shared Core billing) ──
   apolloConfigured: () => Boolean(APOLLO_BASE),
   apolloJobs: () => asJson('/api/jobs', { base: APOLLO_BASE }),

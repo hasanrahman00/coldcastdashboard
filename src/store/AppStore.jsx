@@ -39,6 +39,30 @@ const ENRICH_TERMINAL = ['done', 'completed', 'failed', 'error', 'stop', 'stoppe
 // listed so the live panel matches whatever the engine sends.
 export const ENRICH_ACTIVE = ['uploading', 'queued', 'queueing', 'run', 'running', 'processing', 'started', 'stopping', 'pausing']
 
+// Verify job lifecycle (the verifier engine emits queued|running|done|failed|stopped).
+export const VERIFY_ACTIVE = ['uploading', 'queued', 'running', 'stopping']
+const VERIFY_TERMINAL = ['done', 'failed', 'error', 'stopped', 'cancelled']
+
+// Persist each verify UPLOAD (keyed by its verifyJobId) per-user, so a reload restores
+// the live progress + finished counts. Same per-user isolation as the enrich uploads.
+const VERIFY_PERSIST_FIELDS = ['status', 'verifyJobId', 'fileName', 'createdAt', 'total', 'done', 'statusCounts', 'creditsUsed', 'hasResults', 'error']
+const verifyKey = (uid) => 'vk_verify_uploads:' + (uid || 'anon')
+function readVerifyState(uid) {
+  try { return JSON.parse(localStorage.getItem(verifyKey(uid)) || '{}') || {} } catch { return {} }
+}
+function persistVerifyState(uid, map) {
+  try {
+    const out = {}
+    for (const [jid, e] of Object.entries(map || {})) {
+      if (!e || !e.status || e.status === 'idle') continue
+      const slim = {}
+      for (const f of VERIFY_PERSIST_FIELDS) if (e[f] !== undefined) slim[f] = e[f]
+      out[jid] = slim
+    }
+    localStorage.setItem(verifyKey(uid), JSON.stringify(out))
+  } catch { /* quota */ }
+}
+
 // Persist scrapeJobId → enrichJobId so a page reload RESUMES the live enrich view
 // (and prevents an accidental double-charge re-run of an already-running job).
 // Persist a compact snapshot of every Waterfall enrich UPLOAD (keyed by its enrichJobId)
@@ -131,6 +155,13 @@ export function AppProvider({ initialMe, onLogout, children }) {
   const [enrichUploads, setEnrichUploads] = useState(() => readEnrichState(uid))
   const enrichTimers = useRef({}) // enrichJobId -> setInterval handle
   const enrichErrs = useRef({})   // enrichJobId -> consecutive poll-error count
+
+  // Email verifier — standalone CSV/XLSX uploads (keyed by verifyJobId). Same
+  // upload → poll → download lifecycle as the enricher, but the result is a
+  // per-email status list and billing is per email checked.
+  const [verifyUploads, setVerifyUploads] = useState(() => readVerifyState(uid))
+  const verifyTimers = useRef({}) // verifyJobId -> setInterval handle
+  const verifyErrs = useRef({})   // verifyJobId -> consecutive poll-error count
 
   // Run an API call; a 401 anywhere → single logout. Other errors propagate so
   // the calling component can toast a useful message.
@@ -605,6 +636,114 @@ export function AppProvider({ initialMe, onLogout, children }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // ── Email verifier — standalone CSV/XLSX uploads (keyed by verifyJobId) ──────
+  const patchVerify = useCallback((id, patch) => {
+    setVerifyUploads((prev) => ({ ...prev, [id]: { ...(prev[id] || {}), ...patch } }))
+  }, [])
+
+  const stopVerifyPoll = useCallback((id) => {
+    const t = verifyTimers.current[id]
+    if (t) { clearInterval(t); delete verifyTimers.current[id] }
+    delete verifyErrs.current[id]
+  }, [])
+
+  // Delete an upload: stop polling, drop it locally, and delete it server-side
+  // (ownership-checked in Core) so it's gone everywhere — not just hidden here.
+  const removeVerifyUpload = useCallback(async (id) => {
+    stopVerifyPoll(id)
+    setVerifyUploads((prev) => { const n = { ...prev }; delete n[id]; return n })
+    try { await api.verifyDelete(id) }
+    catch (e) { if (e instanceof AuthError) onLogout() /* else best-effort — a reload reconciles */ }
+  }, [stopVerifyPoll, onLogout])
+
+  // One status poll for a verify job. Maps the engine's fields → live counts and
+  // stops on a terminal status.
+  const pollVerifyOnce = useCallback(async (id) => {
+    try {
+      const s = await api.verifyStatus(id)
+      verifyErrs.current[id] = 0
+      const status = String(s.status || 'running').toLowerCase()
+      const terminal = VERIFY_TERMINAL.includes(status)
+      patchVerify(id, {
+        status,
+        total: s.total ?? 0,
+        done: s.processed ?? 0,
+        statusCounts: s.statusCounts || {},
+        creditsUsed: typeof s.creditsUsed === 'number' ? s.creditsUsed : 0,
+        hasResults: !!s.hasResults,
+        error: s.error || null,
+      })
+      if (typeof s.balance === 'number') setCredits(s.balance)
+      if (terminal) stopVerifyPoll(id)
+    } catch (e) {
+      if (e instanceof AuthError) { stopVerifyPoll(id); onLogout(); return }
+      const n = (verifyErrs.current[id] = (verifyErrs.current[id] || 0) + 1)
+      if (n >= 4) { // ~10s of failures → the verify job is gone/unreachable
+        stopVerifyPoll(id)
+        patchVerify(id, { status: 'error', error: e.message || 'Lost the verify job' })
+      }
+    }
+  }, [patchVerify, stopVerifyPoll, onLogout])
+
+  const startVerifyPoll = useCallback((id) => {
+    stopVerifyPoll(id)
+    pollVerifyOnce(id)
+    verifyTimers.current[id] = setInterval(() => {
+      if (!document.hidden) pollVerifyOnce(id)
+    }, 2500)
+  }, [stopVerifyPoll, pollVerifyOnce])
+
+  // Start verifying an UPLOADED file: POST to Core → track by the new verify job id →
+  // poll for live counts. Returns the start response. Throws for the caller to toast.
+  const startVerify = useCallback(async (file) => {
+    try {
+      const r = await api.verifyStart(file)
+      const id = r && r.jobId
+      if (!id) throw new Error('Verifier did not return a job id')
+      patchVerify(id, {
+        verifyJobId: id, fileName: file?.name || 'upload.csv', createdAt: Date.now(),
+        status: 'queued', total: 0, done: 0, statusCounts: {}, creditsUsed: 0,
+        hasResults: false, error: null,
+      })
+      if (typeof r.balance === 'number') setCredits(r.balance)
+      startVerifyPoll(id)
+      return r
+    } catch (e) {
+      if (e instanceof AuthError) { onLogout(); return undefined }
+      throw e
+    }
+  }, [patchVerify, startVerifyPoll, onLogout])
+
+  // Persist the upload snapshot on every change so a reload restores it verbatim.
+  useEffect(() => { persistVerifyState(uid, verifyUploads) }, [uid, verifyUploads])
+
+  // On mount: load THIS user's verify jobs from the server (authoritative + cross-device),
+  // replace the local cache, and re-attach a live poll to any still-running one.
+  useEffect(() => {
+    let cancelled = false
+    api.verifyList()
+      .then((res) => {
+        if (cancelled || !res || !Array.isArray(res.jobs)) return
+        const map = {}
+        for (const j of res.jobs) {
+          if (!j || !j.verifyJobId) continue
+          map[j.verifyJobId] = {
+            verifyJobId: j.verifyJobId, fileName: j.fileName, createdAt: j.createdAt,
+            status: j.status, total: j.total, done: j.done, statusCounts: j.statusCounts || {},
+            creditsUsed: j.creditsUsed, hasResults: j.hasResults, error: null,
+          }
+        }
+        setVerifyUploads(map)
+        for (const j of res.jobs) {
+          if (j && j.verifyJobId && VERIFY_ACTIVE.includes(String(j.status || '').toLowerCase())) startVerifyPoll(j.verifyJobId)
+        }
+      })
+      .catch((e) => { if (e instanceof AuthError) onLogout() })
+    const timers = verifyTimers.current
+    return () => { cancelled = true; for (const t of Object.values(timers)) clearInterval(t) }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   // The profile a NEW job runs on: STRICTLY this browser's own profile, and only when
   // the extension here is connected. NEVER fall back to another profile or the shared
   // "active" profile — those belong to other machines and would route the scrape to the
@@ -737,6 +876,12 @@ export function AppProvider({ initialMe, onLogout, children }) {
     startEnrich,
     removeEnrichUpload,
     enrichDownloadUrl: api.enrichDownloadUrl,
+
+    // Email verifier (standalone uploads) — see the verify slice above
+    verifyUploads,
+    startVerify,
+    removeVerifyUpload,
+    verifyDownloadUrl: api.verifyDownloadUrl,
 
     // profile actions (refresh after, since these aren't streamed)
     activateProfile: async (id) => {

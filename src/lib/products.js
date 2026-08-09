@@ -102,7 +102,7 @@ export const PRODUCTS = [
   {
     id: 'verify',
     label: 'Verify Email',
-    soon: true,
+    soon: false,
     icon: IconMailCheck,
     emoji: '✅',
     title: 'Verify Email',
