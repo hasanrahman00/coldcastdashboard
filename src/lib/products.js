@@ -8,6 +8,7 @@ import {
   IconLink,
   IconUsers,
   IconWhatsApp,
+  IconZap,
 } from './icons.jsx'
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -55,6 +56,17 @@ export const PRODUCTS = [
     title: 'Sales Nav Company Scrape',
     short: 'Company & account lists from your Sales Navigator searches.',
     body: 'Export company & account lists straight from your LinkedIn Sales Navigator account searches — company names, domains, size, industry, and firmographics — with the same one-click flow as the lead scrapers.',
+  },
+  {
+    id: 'post',
+    label: 'Scrape Post Engagers',
+    navLabel: 'Post Engagers',
+    soon: false,
+    icon: IconZap,
+    emoji: '👥',
+    title: 'Scrape LinkedIn Post Engagers',
+    short: 'Everyone who reacted, commented, or reposted a LinkedIn post.',
+    body: 'Turn any LinkedIn post into a lead list — every profile that reacted, commented, or reposted it — exported straight from your own connected browser. Paste the post URL, run it, download the CSV.',
   },
   {
     id: 'linkedin',

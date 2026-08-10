@@ -130,6 +130,7 @@ export function AppProvider({ initialMe, onLogout, children }) {
   const [apolloJobs, setApolloJobs] = useState(() => readJobsCache(uid, 'apollo')) // Apollo scraper jobs (separate server) — see the SSE slice below
   const [enricherJobs, setEnricherJobs] = useState(() => readJobsCache(uid, 'enricher')) // LinkedIn URL Enricher jobs (separate server) — polled below
   const [companyJobs, setCompanyJobs] = useState(() => readJobsCache(uid, 'company')) // Company scraper jobs (separate server) — SSE below
+  const [postJobs, setPostJobs] = useState(() => readJobsCache(uid, 'post')) // LinkedIn post-engagers scraper (separate server) — SSE below
   const [profiles, setProfiles] = useState([])
   const [activeProfileId, setActiveProfileId] = useState(null)
   const [connectorOnline, setConnectorOnline] = useState(false)
@@ -380,6 +381,48 @@ export function AppProvider({ initialMe, onLogout, children }) {
     return () => { alive = false; clearInterval(poll); try { es?.close() } catch {} }
   }, [upsertCompanyJob])
 
+  // ── LinkedIn Post-engagers scraper jobs (its OWN server) — live for the tab + counters ──
+  // Same shape as the Company slice (global SSE + 5s poll); the Post tab reads this
+  // shared store. No-op when the Post scraper server isn't configured.
+  const upsertPostJob = useCallback((job) => {
+    if (!job || !job.id) return
+    setPostJobs((prev) => {
+      const i = prev.findIndex((j) => j.id === job.id)
+      if (i === -1) return [job, ...prev]
+      const next = prev.slice()
+      next[i] = job
+      return next
+    })
+  }, [])
+  const removePostJob = useCallback((id) => {
+    setPostJobs((prev) => prev.filter((j) => j.id !== id))
+  }, [])
+
+  useEffect(() => {
+    if (!api.postConfigured()) return
+    let alive = true
+    let es
+    const load = async () => {
+      try {
+        const list = await api.postJobs()
+        if (alive) setPostJobs(Array.isArray(list) ? list : [])
+      } catch { /* keep last-known; the 5s poll reconciles */ }
+    }
+    load()
+    try {
+      es = api.postEvents()
+      es.addEventListener('init', (e) => {
+        try { const d = JSON.parse(e.data); if (alive) setPostJobs(Array.isArray(d) ? d : []) } catch {}
+      })
+      es.addEventListener('job:update', (e) => { try { upsertPostJob(JSON.parse(e.data)) } catch {} })
+      es.addEventListener('job:delete', (e) => {
+        try { const { id } = JSON.parse(e.data); if (alive) setPostJobs((p) => p.filter((j) => j.id !== id)) } catch {}
+      })
+    } catch { /* EventSource unavailable → poll only */ }
+    const poll = setInterval(() => { if (!document.hidden) load() }, 5000)
+    return () => { alive = false; clearInterval(poll); try { es?.close() } catch {} }
+  }, [upsertPostJob])
+
   // ── profiles + extension status (poll, focus-refresh) ──────────────────
   const refreshProfiles = useCallback(async () => {
     try {
@@ -613,6 +656,7 @@ export function AppProvider({ initialMe, onLogout, children }) {
   useEffect(() => { writeJobsCache(uid, 'apollo', apolloJobs) }, [uid, apolloJobs])
   useEffect(() => { writeJobsCache(uid, 'enricher', enricherJobs) }, [uid, enricherJobs])
   useEffect(() => { writeJobsCache(uid, 'company', companyJobs) }, [uid, companyJobs])
+  useEffect(() => { writeJobsCache(uid, 'post', postJobs) }, [uid, postJobs])
 
   // On mount: load THIS user's jobs from the server (authoritative + cross-device), replace
   // the localStorage cache, and re-attach a live poll to any still-running one. The
@@ -846,6 +890,9 @@ export function AppProvider({ initialMe, onLogout, children }) {
     companyJobs,
     upsertCompanyJob,
     removeCompanyJob,
+    postJobs,
+    upsertPostJob,
+    removePostJob,
     profiles,
     activeProfileId,
     onlineProfileId,

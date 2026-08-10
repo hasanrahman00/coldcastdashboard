@@ -11,6 +11,7 @@ import VerifyEmail from '../pages/verify/VerifyEmail.jsx'
 import ApolloScraper from '../pages/apollo/ApolloScraper.jsx'
 import LinkedInEnricher from '../pages/enricher/LinkedInEnricher.jsx'
 import CompanyScraper from '../pages/company/CompanyScraper.jsx'
+import PostScraper from '../pages/post/PostScraper.jsx'
 import SalesNavDeal from '../pages/sndeal/SalesNavDeal.jsx'
 import ProductsHome from '../pages/ProductsHome.jsx'
 import ProductHeader from './ProductHeader.jsx'
@@ -93,6 +94,7 @@ export default function Dashboard({ onLogout }) {
     else if (route === 'apollo') page = <ApolloScraper />
     else if (route === 'linkedin') page = <LinkedInEnricher />
     else if (route === 'company') page = <CompanyScraper />
+    else if (route === 'post') page = <PostScraper />
     else if (route === 'sndeal') page = <SalesNavDeal />
     else if (product && !product.soon) page = <SalesNav />
     else if (product) page = <ComingSoon product={product} nav={nav} />

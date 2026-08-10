@@ -33,6 +33,11 @@ export const enricherUrl = (path) => ENRICHER_BASE + path
 const COMPANY_BASE = (import.meta.env.VITE_COMPANY_SCRAPER_URL || 'https://companyscraper.coldcast.io').replace(/\/$/, '')
 export const companyUrl = (path) => COMPANY_BASE + path
 
+// The LinkedIn Post-engagers scraper — its OWN server too (drives the user's browser
+// via the extension bridge). Defaults to the production host; override with VITE_POST_SCRAPER_URL.
+const POST_BASE = (import.meta.env.VITE_POST_SCRAPER_URL || 'https://linkedinpostscraper.coldcast.io').replace(/\/$/, '')
+export const postUrl = (path) => POST_BASE + path
+
 // Host (origin authority) of each scraper server — the extension reports per-hub
 // connection keyed by this same host, so the dashboard can show accurate
 // per-scraper "this browser connected / not connected" status. Empty for scrapers
@@ -44,6 +49,7 @@ export const SCRAPER_HOSTS = {
   apollo: hostOf(APOLLO_BASE),
   company: hostOf(COMPANY_BASE),
   enricher: hostOf(ENRICHER_BASE),
+  post: hostOf(POST_BASE),
 }
 
 // ── token + key storage (same localStorage keys the old dashboard used) ──────
@@ -266,6 +272,26 @@ export const api = {
   companyLogs: (id) => asJson(`/api/jobs/${id}/logs`, { base: COMPANY_BASE }),
   companyEvents: () => new EventSource(companyUrl(`/api/events?token=${encodeURIComponent(getToken())}`)),
   companyDownloadUrl: (id, fmt = 'csv') => companyUrl(`/api/jobs/${id}/${fmt}?token=${encodeURIComponent(getToken())}`),
+
+  // ── LinkedIn Post-engagers scraper (its OWN server; same Bearer auth + shared Core billing) ──
+  // One post URL → reactor / commenter / reposter profile URLs, scraped in the user's
+  // connected browser via the extension bridge. Same job API shape as Company/Apollo.
+  postConfigured: () => Boolean(POST_BASE),
+  postJobs: async () => {
+    const d = await asJson('/api/jobs', { base: POST_BASE })
+    return d && Array.isArray(d.jobs) ? d.jobs : []
+  },
+  postCreate: (payload) => postJson('/api/jobs', payload, { base: POST_BASE }),
+  postStart: (id) => postJson(`/api/jobs/${id}/start`, undefined, { base: POST_BASE }),
+  postStop: (id) => postJson(`/api/jobs/${id}/stop`, undefined, { base: POST_BASE }),
+  postDelete: (id) => del(`/api/jobs/${id}`, { base: POST_BASE }),
+  // The full job carries its own log tail — surface it as { logs } for the logs modal.
+  postLogs: async (id) => {
+    const j = await asJson(`/api/jobs/${encodeURIComponent(id)}`, { base: POST_BASE })
+    return { logs: (j && j.logs) || [] }
+  },
+  postEvents: () => new EventSource(postUrl(`/api/events?token=${encodeURIComponent(getToken())}`)),
+  postDownloadUrl: (id) => postUrl(`/api/jobs/${id}/csv?token=${encodeURIComponent(getToken())}`),
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
