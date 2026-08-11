@@ -820,7 +820,10 @@ export function AppProvider({ initialMe, onLogout, children }) {
     : !!(localExt.installed && localExt.connected && localExt.profileId && statusLoaded && !localProfileOwned)
 
   // Route jobs to THIS browser only when its profile is connected AND owned by us.
-  const onlineProfileId = (localExt.connected && localProfileOwned) ? localExt.profileId : null
+  // Route jobs to THIS browser's profile whenever the extension is connected under THIS
+  // account. Use the extension's own profileId (the hub registered it) rather than gating on
+  // the laggy salesnav agentStatus, so a freshly-connected browser can run immediately.
+  const onlineProfileId = (localExt.connected && localExt.profileId && !localAccountMismatch) ? localExt.profileId : null
 
   // THIS browser's connection as ONE boolean — the SAME server-confirmed signal
   // scraperConnected uses (minus the per-scraper host check). The top-nav pill reads this so
@@ -828,8 +831,10 @@ export function AppProvider({ initialMe, onLogout, children }) {
   // banners — instead of an account-level "X/Y connected" count that read "0/2 connected"
   // while the page correctly said this browser wasn't connected.
   const browserConnected = !!(
-    localExt.installed && localExt.connected && localExt.profileId &&
-    (!statusLoaded || (localProfileOwned && localProfileServerOnline))
+    localExt.installed && localExt.connected && localExt.profileId && !localAccountMismatch &&
+    (Object.keys(localExt.serverStatus || {}).length
+      ? Object.values(localExt.serverStatus).some(Boolean)            // modern ext: trust its live per-hub map
+      : (!statusLoaded || (localProfileOwned && localProfileServerOnline))) // legacy fallback
   )
 
   // Is THIS browser's extension connected to a specific scraper's hub, FOR THIS account?
@@ -838,12 +843,17 @@ export function AppProvider({ initialMe, onLogout, children }) {
   // Older extensions with no per-hub status fall back to the aggregate `connected`.
   const scraperConnected = (key) => {
     if (!localExt.installed || !localExt.connected || !localExt.profileId) return false
-    if (localAccountMismatch) return false                      // different account → not connected for us. Instant (from the live key hash), so the page banner + New Job flip WITHOUT waiting for the 8s agentStatus poll to mark the profile offline.
-    if (statusLoaded && !localProfileOwned) return false        // connected, but as another account
-    if (statusLoaded && !localProfileServerOnline) return false // local flag says connected, but the hub doesn't see it → match the top-nav
+    if (localAccountMismatch) return false                      // different Coldcast account (reliable keyHash check)
     const host = SCRAPER_HOSTS[key]
     const ss = localExt.serverStatus || {}
+    // The extension HOLDS the hub sockets, so its per-hub map is authoritative. Trust
+    // serverStatus[host] directly and re-derive the instant it changes (live, no reload). Do
+    // NOT gate on the salesnav-only agentStatus p.online: it lags and cross-couples every
+    // scraper (a slow/silent salesnav poll made ALL tabs read "not connected" even though the
+    // extension was connected to THIS scraper's hub).
     if (host && Object.keys(ss).length) return !!ss[host]
+    // Legacy extension (no per-hub map) → fall back to the server's whole-profile view.
+    if (statusLoaded && (!localProfileOwned || !localProfileServerOnline)) return false
     return true
   }
 
