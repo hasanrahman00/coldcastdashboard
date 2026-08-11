@@ -66,7 +66,7 @@
   --radius-full:9999px;
 
   --font:"Space Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
-  --font-nav:var(--font);
+  --font-nav:"Google Sans Code",monospace;
   --mono:"Space Mono",ui-monospace,monospace;
 
   --ease:cubic-bezier(.4,0,.2,1);
@@ -1133,7 +1133,7 @@ body{flex-direction:column}
 .side-nav{display:flex;flex-direction:column;gap:2px}
 .side-cap{font-family:var(--font-nav);font-size:11px;font-weight:700;text-transform:capitalize;letter-spacing:.01em;color:rgba(0,0,0,.45);padding:4px 11px 6px}
 .side-sep{height:1px;background:rgba(0,0,0,.14);margin:12px 6px 4px}
-.snav-item{position:relative;display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:10px 11px;border:none;background:transparent;border-radius:11px;cursor:pointer;font-family:var(--font-nav);font-size:12.5px;font-weight:600;letter-spacing:-.005em;color:rgba(0,0,0,.9);transition:background .15s,color .15s,box-shadow .15s}
+.snav-item{position:relative;display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:10px 11px;border:none;background:transparent;border-radius:11px;cursor:pointer;font-family:var(--font-nav);font-size:17px;line-height:24px;font-weight:600;letter-spacing:-.005em;color:rgba(0,0,0,.9);transition:background .15s,color .15s,box-shadow .15s}
 .snav-item:hover{background:rgba(0,0,0,.06);color:var(--text)}
 .snav-ic{width:20px;height:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .snav-ic svg{width:18px;height:18px;stroke-width:2;color:var(--accent);transition:color .15s}
