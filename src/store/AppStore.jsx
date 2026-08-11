@@ -131,6 +131,7 @@ export function AppProvider({ initialMe, onLogout, children }) {
   const [enricherJobs, setEnricherJobs] = useState(() => readJobsCache(uid, 'enricher')) // LinkedIn URL Enricher jobs (separate server) — polled below
   const [companyJobs, setCompanyJobs] = useState(() => readJobsCache(uid, 'company')) // Company scraper jobs (separate server) — SSE below
   const [postJobs, setPostJobs] = useState(() => readJobsCache(uid, 'post')) // LinkedIn post-engagers scraper (separate server) — SSE below
+  const [zoominfoJobs, setZoomInfoJobs] = useState(() => readJobsCache(uid, 'zoominfo')) // ZoomInfo scraper (separate server) — SSE below
   const [profiles, setProfiles] = useState([])
   const [activeProfileId, setActiveProfileId] = useState(null)
   const [connectorOnline, setConnectorOnline] = useState(false)
@@ -423,6 +424,46 @@ export function AppProvider({ initialMe, onLogout, children }) {
     return () => { alive = false; clearInterval(poll); try { es?.close() } catch {} }
   }, [upsertPostJob])
 
+  // ── ZoomInfo scraper jobs (its OWN server) — live for the tab + counters ──
+  const upsertZoomInfoJob = useCallback((job) => {
+    if (!job || !job.id) return
+    setZoomInfoJobs((prev) => {
+      const i = prev.findIndex((j) => j.id === job.id)
+      if (i === -1) return [job, ...prev]
+      const next = prev.slice()
+      next[i] = job
+      return next
+    })
+  }, [])
+  const removeZoomInfoJob = useCallback((id) => {
+    setZoomInfoJobs((prev) => prev.filter((j) => j.id !== id))
+  }, [])
+
+  useEffect(() => {
+    if (!api.zoominfoConfigured()) return
+    let alive = true
+    let es
+    const load = async () => {
+      try {
+        const list = await api.zoominfoJobs()
+        if (alive) setZoomInfoJobs(Array.isArray(list) ? list : [])
+      } catch { /* keep last-known; the 5s poll reconciles */ }
+    }
+    load()
+    try {
+      es = api.zoominfoEvents()
+      es.addEventListener('init', (e) => {
+        try { const d = JSON.parse(e.data); if (alive) setZoomInfoJobs(Array.isArray(d) ? d : []) } catch {}
+      })
+      es.addEventListener('job:update', (e) => { try { upsertZoomInfoJob(JSON.parse(e.data)) } catch {} })
+      es.addEventListener('job:delete', (e) => {
+        try { const { id } = JSON.parse(e.data); if (alive) setZoomInfoJobs((p) => p.filter((j) => j.id !== id)) } catch {}
+      })
+    } catch { /* EventSource unavailable → poll only */ }
+    const poll = setInterval(() => { if (!document.hidden) load() }, 5000)
+    return () => { alive = false; clearInterval(poll); try { es?.close() } catch {} }
+  }, [upsertZoomInfoJob])
+
   // ── profiles + extension status (poll, focus-refresh) ──────────────────
   const refreshProfiles = useCallback(async () => {
     try {
@@ -657,6 +698,7 @@ export function AppProvider({ initialMe, onLogout, children }) {
   useEffect(() => { writeJobsCache(uid, 'enricher', enricherJobs) }, [uid, enricherJobs])
   useEffect(() => { writeJobsCache(uid, 'company', companyJobs) }, [uid, companyJobs])
   useEffect(() => { writeJobsCache(uid, 'post', postJobs) }, [uid, postJobs])
+  useEffect(() => { writeJobsCache(uid, 'zoominfo', zoominfoJobs) }, [uid, zoominfoJobs])
 
   // On mount: load THIS user's jobs from the server (authoritative + cross-device), replace
   // the localStorage cache, and re-attach a live poll to any still-running one. The
@@ -903,6 +945,9 @@ export function AppProvider({ initialMe, onLogout, children }) {
     postJobs,
     upsertPostJob,
     removePostJob,
+    zoominfoJobs,
+    upsertZoomInfoJob,
+    removeZoomInfoJob,
     profiles,
     activeProfileId,
     onlineProfileId,

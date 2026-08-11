@@ -38,6 +38,11 @@ export const companyUrl = (path) => COMPANY_BASE + path
 const POST_BASE = (import.meta.env.VITE_POST_SCRAPER_URL || 'https://linkedinpostscraper.coldcast.io').replace(/\/$/, '')
 export const postUrl = (path) => POST_BASE + path
 
+// The ZoomInfo scraper — its OWN server too (drives the user's browser via the bridge).
+// Defaults to the production host; override with VITE_ZOOMINFO_SCRAPER_URL.
+const ZOOMINFO_BASE = (import.meta.env.VITE_ZOOMINFO_SCRAPER_URL || 'https://zoominfo.coldcast.io').replace(/\/$/, '')
+export const zoominfoUrl = (path) => ZOOMINFO_BASE + path
+
 // Host (origin authority) of each scraper server — the extension reports per-hub
 // connection keyed by this same host, so the dashboard can show accurate
 // per-scraper "this browser connected / not connected" status. Empty for scrapers
@@ -50,6 +55,7 @@ export const SCRAPER_HOSTS = {
   company: hostOf(COMPANY_BASE),
   enricher: hostOf(ENRICHER_BASE),
   post: hostOf(POST_BASE),
+  zoominfo: hostOf(ZOOMINFO_BASE),
 }
 
 // ── token + key storage (same localStorage keys the old dashboard used) ──────
@@ -292,6 +298,25 @@ export const api = {
   },
   postEvents: () => new EventSource(postUrl(`/api/events?token=${encodeURIComponent(getToken())}`)),
   postDownloadUrl: (id) => postUrl(`/api/jobs/${id}/csv?token=${encodeURIComponent(getToken())}`),
+
+  // ── ZoomInfo scraper (its OWN server; same Bearer auth + shared Core billing) ──
+  // A ZoomInfo Lite search URL → people/company rows, scraped in the user's connected
+  // browser via the extension bridge. Same job API shape as the other scrapers.
+  zoominfoConfigured: () => Boolean(ZOOMINFO_BASE),
+  zoominfoJobs: async () => {
+    const d = await asJson('/api/jobs', { base: ZOOMINFO_BASE })
+    return d && Array.isArray(d.jobs) ? d.jobs : []
+  },
+  zoominfoCreate: (payload) => postJson('/api/jobs', payload, { base: ZOOMINFO_BASE }),
+  zoominfoStart: (id) => postJson(`/api/jobs/${id}/start`, undefined, { base: ZOOMINFO_BASE }),
+  zoominfoStop: (id) => postJson(`/api/jobs/${id}/stop`, undefined, { base: ZOOMINFO_BASE }),
+  zoominfoDelete: (id) => del(`/api/jobs/${id}`, { base: ZOOMINFO_BASE }),
+  zoominfoLogs: async (id) => {
+    const j = await asJson(`/api/jobs/${encodeURIComponent(id)}`, { base: ZOOMINFO_BASE })
+    return { logs: (j && j.logs) || [] }
+  },
+  zoominfoEvents: () => new EventSource(zoominfoUrl(`/api/events?token=${encodeURIComponent(getToken())}`)),
+  zoominfoDownloadUrl: (id, fmt = 'csv') => zoominfoUrl(`/api/jobs/${id}/${fmt}?token=${encodeURIComponent(getToken())}`),
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

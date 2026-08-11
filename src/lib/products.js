@@ -104,7 +104,7 @@ export const PRODUCTS = [
   {
     id: 'zoominfo',
     label: 'Scrape ZoomInfo',
-    soon: true,
+    soon: false,
     icon: IconSearchPlus,
     emoji: '🔎',
     title: 'Scrape ZoomInfo',
