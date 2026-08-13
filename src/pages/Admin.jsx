@@ -280,7 +280,7 @@ export default function Admin() {
               <div className="adm-table-wrap">
                 <table className="adm-table">
                   <thead>
-                    <tr><th>Username</th><th>Email</th><th>Created</th><th>Expires</th><th>Days left</th><th>Plan</th><th>Allowance</th><th>Credits</th><th>Status</th><th>Profiles</th><th>API key</th><th className="adm-actions-h">Actions</th></tr>
+                    <tr><th>Username</th><th>Email</th><th>Created</th><th>Expires</th><th>Days left</th><th>Plan</th><th>Allowance</th><th>Credits</th><th>Spent</th><th>Status</th><th>Profiles</th><th>API key</th><th className="adm-actions-h">Actions</th></tr>
                   </thead>
                   <tbody>
                     {users.map((u) => {
@@ -312,6 +312,11 @@ export default function Admin() {
                             <button className="adm-limit" onClick={() => editCredits(u)} title="Click to top up the credit wallet (enrich / verify / domain)">
                               {(u.credits ?? 0).toLocaleString()}<span className="adm-limit-edit"> cr ✎</span>
                             </button>
+                          </td>
+                          <td>
+                            <span className="adm-spent" title="Lifetime credits spent (enrich / verify / domain)">
+                              {(u.creditsSpent ?? 0).toLocaleString()}<span className="adm-limit-edit"> cr</span>
+                            </span>
                           </td>
                           <td><span className="adm-badge" style={{ color: st.color, background: st.color + '18' }}>{st.label}</span></td>
                           <td>{Array.isArray(u.profiles) ? u.profiles.length : 0}</td>
@@ -375,6 +380,7 @@ function AdminStyles() {
       .adm-limit{background:none;border:none;cursor:pointer;font:inherit;color:var(--text);font-weight:600;padding:0;display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
       .adm-limit:hover{color:var(--brand)}
       .adm-limit-edit{font-size:10px;color:var(--text-faint);font-weight:600}
+      .adm-spent{display:inline-flex;align-items:center;gap:5px;color:var(--text-muted);font-weight:600;white-space:nowrap}
       .adm-actions{display:flex;gap:6px;justify-content:flex-end}
       .adm-actions-h{text-align:right}
     `}</style>
