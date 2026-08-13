@@ -114,6 +114,7 @@ export default function DomainNewJobModal({ open, onClose, onCreated }) {
           value={perPage}
           onChange={(e) => setPerPage(e.target.value)}
           placeholder="e.g. 10"
+          style={{ width: 140, maxWidth: '100%' }}
         />
       </div>
 
