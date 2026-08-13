@@ -13,6 +13,7 @@ import LinkedInEnricher from '../pages/enricher/LinkedInEnricher.jsx'
 import CompanyScraper from '../pages/company/CompanyScraper.jsx'
 import PostScraper from '../pages/post/PostScraper.jsx'
 import ZoomInfoScraper from '../pages/zoominfo/ZoomInfoScraper.jsx'
+import DomainEnricher from '../pages/domain/DomainEnricher.jsx'
 import SalesNavDeal from '../pages/sndeal/SalesNavDeal.jsx'
 import ProductsHome from '../pages/ProductsHome.jsx'
 import ProductHeader from './ProductHeader.jsx'
@@ -97,6 +98,7 @@ export default function Dashboard({ onLogout }) {
     else if (route === 'company') page = <CompanyScraper />
     else if (route === 'post') page = <PostScraper />
     else if (route === 'zoominfo') page = <ZoomInfoScraper />
+    else if (route === 'domain') page = <DomainEnricher />
     else if (route === 'sndeal') page = <SalesNavDeal />
     else if (product && !product.soon) page = <SalesNav />
     else if (product) page = <ComingSoon product={product} nav={nav} />

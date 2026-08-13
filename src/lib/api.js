@@ -43,6 +43,12 @@ export const postUrl = (path) => POST_BASE + path
 const ZOOMINFO_BASE = (import.meta.env.VITE_ZOOMINFO_SCRAPER_URL || 'https://zoominfo.coldcast.io').replace(/\/$/, '')
 export const zoominfoUrl = (path) => ZOOMINFO_BASE + path
 
+// The Domain Enricher — its OWN server (drives the user's browser via the bridge for
+// the browser-based sources; the rest are server-side). Upload a CSV of company domains.
+// Defaults to the production host; override with VITE_DOMAIN_SCRAPER_URL.
+const DOMAIN_BASE = (import.meta.env.VITE_DOMAIN_SCRAPER_URL || 'https://domainenrich.coldcast.io').replace(/\/$/, '')
+export const domainUrl = (path) => DOMAIN_BASE + path
+
 // Host (origin authority) of each scraper server — the extension reports per-hub
 // connection keyed by this same host, so the dashboard can show accurate
 // per-scraper "this browser connected / not connected" status. Empty for scrapers
@@ -56,6 +62,7 @@ export const SCRAPER_HOSTS = {
   enricher: hostOf(ENRICHER_BASE),
   post: hostOf(POST_BASE),
   zoominfo: hostOf(ZOOMINFO_BASE),
+  domain: hostOf(DOMAIN_BASE),
 }
 
 // ── token + key storage (same localStorage keys the old dashboard used) ──────
@@ -317,6 +324,28 @@ export const api = {
   },
   zoominfoEvents: () => new EventSource(zoominfoUrl(`/api/events?token=${encodeURIComponent(getToken())}`)),
   zoominfoDownloadUrl: (id, fmt = 'csv') => zoominfoUrl(`/api/jobs/${id}/${fmt}?token=${encodeURIComponent(getToken())}`),
+
+  // ── Domain Enricher (its OWN server; same Bearer auth + shared Core credit billing) ──
+  // Upload a CSV of company domains → firmographics + decision-makers, enriched in the
+  // user's connected browser via the bridge. Billed 2 credits per input domain. The CSV
+  // rides as a `csv` text field; hard cap 10,000 domains/upload (enforced server-side too).
+  domainConfigured: () => Boolean(DOMAIN_BASE),
+  domainJobs: async () => {
+    const d = await asJson('/api/jobs', { base: DOMAIN_BASE })
+    return d && Array.isArray(d.jobs) ? d.jobs : []
+  },
+  // Preflight the upload: detected columns + domain count + whether it's over the cap.
+  domainValidate: (csv) => postJson('/api/validate', { csv }, { base: DOMAIN_BASE }),
+  domainCreate: (payload) => postJson('/api/jobs', payload, { base: DOMAIN_BASE }),
+  domainStart: (id) => postJson(`/api/jobs/${id}/start`, undefined, { base: DOMAIN_BASE }),
+  domainStop: (id) => postJson(`/api/jobs/${id}/stop`, undefined, { base: DOMAIN_BASE }),
+  domainDelete: (id) => del(`/api/jobs/${id}`, { base: DOMAIN_BASE }),
+  domainLogs: async (id) => {
+    const j = await asJson(`/api/jobs/${encodeURIComponent(id)}`, { base: DOMAIN_BASE })
+    return { logs: (j && j.logs) || [] }
+  },
+  domainEvents: () => new EventSource(domainUrl(`/api/events?token=${encodeURIComponent(getToken())}`)),
+  domainDownloadUrl: (id) => domainUrl(`/api/jobs/${id}/csv?token=${encodeURIComponent(getToken())}`),
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

@@ -123,7 +123,7 @@ export const PRODUCTS = [
   {
     id: 'domain',
     label: 'Enrich Domain',
-    soon: true,
+    soon: false,
     icon: IconAtSign,
     emoji: '🌐',
     title: 'Enrich Domain',
