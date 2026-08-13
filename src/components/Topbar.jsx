@@ -17,6 +17,9 @@ import {
 import StatsBox from './StatsBox.jsx'
 import { waLink } from '../lib/whatsapp.js'
 
+// Chrome Web Store listing for the Coldcast extension (env-overridable).
+const EXT_STORE_URL = import.meta.env.VITE_EXT_STORE_URL || 'https://chromewebstore.google.com/detail/bljolejpindiokpikdpalhofcbiphfoi'
+
 function fmtTtl(secs) {
   if (secs <= 0) return 'Expired'
   const d = Math.floor(secs / 86400)
@@ -172,6 +175,16 @@ export default function Topbar({ route, nav, onLogout, onGuide }) {
           <span className={'dot' + (browserConnected && !localAccountMismatch && !expired ? '' : ' off')} />
           <span>{connText}</span>
         </button>
+
+        <a
+          className="tb-ext"
+          href={EXT_STORE_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          title="Get the Coldcast Chrome extension"
+        >
+          <IconPuzzle /> <span className="tb-demo-t">Extension</span>
+        </a>
 
         <a
           className="tb-demo"

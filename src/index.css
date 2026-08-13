@@ -1218,6 +1218,9 @@ body{flex-direction:column}
 .tb-demo{display:inline-flex;align-items:center;gap:7px;height:42px;padding:0 16px;border-radius:14px;font-family:var(--font-nav);font-size:14px;line-height:20px;font-weight:700;letter-spacing:.02em;color:#fff;background:linear-gradient(135deg,#25d366,#12a150);border:1px solid rgba(0,0,0,.14);text-decoration:none;white-space:nowrap;flex-shrink:0;transition:filter .15s,transform .15s,box-shadow .15s;box-shadow:0 6px 16px -8px rgba(18,161,80,.75)}
 .tb-demo:hover{filter:brightness(1.06);transform:translateY(-1px);box-shadow:0 10px 22px -8px rgba(18,161,80,.85)}
 .tb-demo svg{width:17px;height:17px;fill:#fff}
+.tb-ext{display:inline-flex;align-items:center;gap:7px;height:42px;padding:0 15px;border-radius:14px;font-family:var(--font-nav);font-size:14px;line-height:20px;font-weight:600;letter-spacing:.02em;color:#000;background:var(--bg-elev-2);border:1px solid var(--border-strong);text-decoration:none;white-space:nowrap;flex-shrink:0;transition:background .15s,border-color .15s}
+.tb-ext:hover{background:var(--bg-elev-3)}
+.tb-ext svg{width:17px;height:17px}
 @media (max-width:880px){ .tb-demo{padding:0 12px} .tb-demo-t{display:none} }
 .acct{position:relative;flex:0 0 auto}
 .acct-btn{display:flex;align-items:center;gap:10px;height:42px;padding:0 12px 0 5px;border:1px solid var(--border-strong);border-radius:999px;background:var(--bg-elev-2);cursor:pointer;transition:all .15s}
