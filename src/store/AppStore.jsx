@@ -567,6 +567,26 @@ export function AppProvider({ initialMe, onLogout, children }) {
     }
   }, [refreshCredits])
 
+  // ── Live meters off the SSE stream (no hard refresh) ─────────────────────
+  // The credit wallet + scrape-usage meters are otherwise poll-only (every 8s), so
+  // they lag behind a running job's debits. Each scraper's SSE `job:update` mutates
+  // its jobs array the instant the server reports progress/billing — so we watch
+  // those arrays and, while a job is active, refresh the meters right after the
+  // change (debounced 1.2s to coalesce a burst of row-progress events). Credits +
+  // usage now tick live as a job runs, without a reload — and stay quiet when idle
+  // (the 8s poll covers that) so Core isn't hammered.
+  useEffect(() => {
+    const active = [jobs, apolloJobs, companyJobs, postJobs, zoominfoJobs, domainJobs]
+      .some((list) => (list || []).some((j) => j && (j.status === 'running' || j.status === 'queued')))
+    if (!active) return
+    const t = setTimeout(() => {
+      if (document.hidden) return
+      refreshCredits()
+      refreshProfiles()
+    }, 1200)
+    return () => clearTimeout(t)
+  }, [jobs, apolloJobs, companyJobs, postJobs, zoominfoJobs, domainJobs, refreshCredits, refreshProfiles])
+
   // ── Default the active-profile radio to THIS BROWSER ───────────────────
   // The profile connected through the dashboard's own browser (localExt) is the
   // one the user is sitting in — the sensible default to scrape with. Once it's
