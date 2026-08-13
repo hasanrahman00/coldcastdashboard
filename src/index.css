@@ -66,7 +66,7 @@
   --radius-full:9999px;
 
   --font:"Space Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
-  --font-nav:"Google Sans Code",monospace;
+  --font-nav:"Plus Jakarta Sans",system-ui,-apple-system,sans-serif;
   --mono:"Space Mono",ui-monospace,monospace;
 
   --ease:cubic-bezier(.4,0,.2,1);
@@ -1133,7 +1133,7 @@ body{flex-direction:column}
 .side-nav{display:flex;flex-direction:column;gap:2px}
 .side-cap{font-family:var(--font-nav);font-size:11px;font-weight:700;text-transform:capitalize;letter-spacing:.01em;color:rgba(0,0,0,.45);padding:4px 11px 6px}
 .side-sep{height:1px;background:rgba(0,0,0,.14);margin:12px 6px 4px}
-.snav-item{position:relative;display:flex;align-items:center;gap:8px;width:100%;text-align:left;padding:10px 11px;border:none;background:transparent;border-radius:11px;cursor:pointer;font-family:var(--font-nav);font-size:13px;line-height:20px;font-weight:600;letter-spacing:-.005em;color:rgba(0,0,0,.9);transition:background .15s,color .15s,box-shadow .15s}
+.snav-item{position:relative;display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:10px 11px;border:none;background:transparent;border-radius:11px;cursor:pointer;font-family:var(--font-nav);font-size:14px;line-height:20px;font-weight:600;letter-spacing:-.005em;color:rgba(0,0,0,.9);transition:background .15s,color .15s,box-shadow .15s}
 .snav-item:hover{background:rgba(0,0,0,.06);color:var(--text)}
 .snav-ic{width:20px;height:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .snav-ic svg{width:18px;height:18px;stroke-width:2;color:var(--accent);transition:color .15s}
@@ -1164,6 +1164,7 @@ body{flex-direction:column}
   padding:14px 28px;
   background:#fafafa;border-bottom:1px solid var(--border);
   position:relative;z-index:5;flex-shrink:0;
+  font-family:var(--font-nav);
 }
 .tb-right{display:flex;align-items:center;gap:10px;min-width:0}
 /* Brand lockup — still used by the standalone Admin header. */
@@ -1202,7 +1203,7 @@ body{flex-direction:column}
 /* The reset segment now leads the usage group with a ug-div-reset divider after it; both
    are hidden together on narrow screens so no dangling separator is left. */
 
-.conn-pill{display:flex;align-items:center;gap:8px;font-family:var(--font);font-size:12.5px;font-weight:600;color:#000;letter-spacing:.02em;padding:0 15px;height:42px;border:1px solid var(--border-strong);border-radius:14px;background:var(--bg-elev-2);cursor:pointer;transition:background .15s,border-color .15s}
+.conn-pill{display:flex;align-items:center;gap:8px;font-family:var(--font-nav);font-size:14px;line-height:20px;font-weight:600;color:#000;letter-spacing:.02em;padding:0 15px;height:42px;border:1px solid var(--border-strong);border-radius:14px;background:var(--bg-elev-2);cursor:pointer;transition:background .15s,border-color .15s}
 .conn-pill:hover{background:var(--bg-elev-3)}
 .conn-pill .dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);transition:background .3s,box-shadow .3s;flex-shrink:0}
 .conn-pill .dot.off{background:var(--amber);box-shadow:none}
@@ -1213,7 +1214,7 @@ body{flex-direction:column}
 .tb-icon:hover{background:var(--bg-elev-3);color:var(--text)}
 .tb-icon svg{width:19px;height:19px;stroke-width:2}
 /* Book-a-demo WhatsApp CTA in the top bar — WhatsApp green so it pops on the lime bar */
-.tb-demo{display:inline-flex;align-items:center;gap:7px;height:42px;padding:0 16px;border-radius:14px;font-family:var(--font);font-size:12.5px;font-weight:700;letter-spacing:.02em;color:#fff;background:linear-gradient(135deg,#25d366,#12a150);border:1px solid rgba(0,0,0,.14);text-decoration:none;white-space:nowrap;flex-shrink:0;transition:filter .15s,transform .15s,box-shadow .15s;box-shadow:0 6px 16px -8px rgba(18,161,80,.75)}
+.tb-demo{display:inline-flex;align-items:center;gap:7px;height:42px;padding:0 16px;border-radius:14px;font-family:var(--font-nav);font-size:14px;line-height:20px;font-weight:700;letter-spacing:.02em;color:#fff;background:linear-gradient(135deg,#25d366,#12a150);border:1px solid rgba(0,0,0,.14);text-decoration:none;white-space:nowrap;flex-shrink:0;transition:filter .15s,transform .15s,box-shadow .15s;box-shadow:0 6px 16px -8px rgba(18,161,80,.75)}
 .tb-demo:hover{filter:brightness(1.06);transform:translateY(-1px);box-shadow:0 10px 22px -8px rgba(18,161,80,.85)}
 .tb-demo svg{width:17px;height:17px;fill:#fff}
 @media (max-width:880px){ .tb-demo{padding:0 12px} .tb-demo-t{display:none} }

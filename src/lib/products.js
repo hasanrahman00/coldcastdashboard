@@ -60,7 +60,6 @@ export const PRODUCTS = [
   {
     id: 'post',
     label: 'Scrape Post Engagers',
-    navLabel: 'Post Engagers',
     soon: false,
     icon: IconZap,
     emoji: '👥',
