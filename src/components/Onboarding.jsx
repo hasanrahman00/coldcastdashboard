@@ -9,9 +9,9 @@ import {
   IconWhatsApp, IconPlay, IconGlobe,
 } from '../lib/icons.jsx'
 
-// Hosted .zip — same source as the Extension page. Kept in sync intentionally:
-// both read VITE_EXT_DOWNLOAD_URL, falling back to the app's own /public copy.
-const EXT_URL = import.meta.env.VITE_EXT_DOWNLOAD_URL || '/coldcast-extension.zip'
+// Chrome Web Store listing — same link as the Extension page. Auto-updates, no
+// unpacking. Overridable per-env via VITE_EXT_STORE_URL.
+const EXT_URL = import.meta.env.VITE_EXT_STORE_URL || 'https://chromewebstore.google.com/detail/bljolejpindiokpikdpalhofcbiphfoi'
 
 // A little green check for completed steps (no IconCheck in the set).
 function Check() {
@@ -105,24 +105,19 @@ export default function Onboarding({ open, onClose, nav }) {
             </p>
           </Step>
 
-          {/* 2 — Download & install the extension */}
-          <Step n={2} state={st('install', installed)} emoji="🧩" title="Download & install the extension">
-            <p>Download the extension, unzip it, and load it into Chrome.</p>
+          {/* 2 — Install the extension from the Chrome Web Store */}
+          <Step n={2} state={st('install', installed)} emoji="🧩" title="Install the extension">
+            <p>Add the Coldcast extension to Chrome from the Web Store — one click, and it auto-updates.</p>
             <a
               className="btn btn-p onb-dl"
               href={EXT_URL}
-              download="coldcast-extension.zip"
               target="_blank"
               rel="noopener noreferrer"
             >
-              <IconDownload /> Download extension (.zip)
+              <IconDownload /> Add to Chrome
             </a>
             <ol className="onb-mini">
-              <li>Right-click the downloaded <b>.zip</b> → <b>Extract All</b>. Keep the folder somewhere
-                permanent (deleting it removes the extension).</li>
-              <li>Open <code>chrome://extensions</code> and turn on <b>Developer mode</b> (top-right).</li>
-              <li>Click <b>Load unpacked</b> and pick the extracted folder (the one with{' '}
-                <code>manifest.json</code> directly inside).</li>
+              <li>On the store page, click <b>Add to Chrome</b> → <b>Add extension</b>.</li>
               <li>Pin the Coldcast icon to your toolbar from the puzzle-piece menu.</li>
             </ol>
             {installed && <p className="onb-ok">✓ Extension detected in this browser.</p>}
