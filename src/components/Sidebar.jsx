@@ -1,6 +1,6 @@
 import { PRODUCTS } from '../lib/products.js'
 import { SERVICES } from '../lib/services.js'
-import { IconLogo, IconGrid } from '../lib/icons.jsx'
+import { IconLogo } from '../lib/icons.jsx'
 
 // Left sidebar — the brand plus the FULL product list, always visible (no scrolling
 // row that hides tools). Dashboard first, then the live products, a divider, and the
@@ -26,7 +26,7 @@ export default function Sidebar({ route, nav }) {
         title={label}
         onClick={() => nav(p.id)}
       >
-        <span className="snav-ic"><Icon /></span>
+        <span className="snav-ic snav-emoji">{p.emoji || <Icon />}</span>
         <span className="snav-label">{label}</span>
         {p.badge && !p.soon && <span className="snav-deal">{p.badge}</span>}
         {p.soon && <span className="snav-soon">Soon</span>}
@@ -50,7 +50,7 @@ export default function Sidebar({ route, nav }) {
           title="Dashboard"
           onClick={() => nav('home')}
         >
-          <span className="snav-ic"><IconGrid /></span>
+          <span className="snav-ic snav-emoji">📊</span>
           <span className="snav-label">Dashboard</span>
         </button>
 
@@ -79,7 +79,7 @@ export default function Sidebar({ route, nav }) {
               title={s.label}
               onClick={() => nav(s.id)}
             >
-              <span className="snav-ic"><Icon /></span>
+              <span className="snav-ic snav-emoji">{s.emoji || <Icon />}</span>
               <span className="snav-label">{s.label}</span>
               {s.deal && s.badge && <span className="snav-deal">{s.badge}</span>}
             </button>

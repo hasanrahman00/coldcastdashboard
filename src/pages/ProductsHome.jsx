@@ -21,9 +21,7 @@ function Card({ p, nav }) {
       aria-label={p.soon ? `${p.label} — coming soon` : `Open ${p.label}`}
     >
       <div className="pcard-top">
-        <span className="pcard-ic">
-          <Icon />
-        </span>
+        <span className="pcard-ic">{p.emoji || <Icon />}</span>
         <span className={'pcard-badge ' + (p.soon ? 'soon' : p.deal ? 'deal' : 'live')}>
           {p.soon ? 'Soon' : p.badge || 'Active'}
         </span>
