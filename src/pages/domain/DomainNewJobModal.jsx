@@ -5,7 +5,6 @@ import { useToast } from '../../store/ToastProvider.jsx'
 import { useApp } from '../../store/AppStore.jsx'
 
 const subLabel = { color: 'var(--text-faint)', fontWeight: 500, textTransform: 'none', letterSpacing: 0 }
-const selStyle = { width: '100%', background: 'var(--bg-elev-2)', border: '1px solid var(--border)', borderRadius: 10, padding: '11px 14px', color: 'var(--text)', font: 'inherit', fontSize: 14 }
 
 // New domain-enrichment job — upload a CSV of company domains (Company + Website columns).
 // Runs in the user's connected browser via the bridge; billed 2 credits per input domain.
@@ -106,10 +105,16 @@ export default function DomainNewJobModal({ open, onClose, onCreated }) {
       </div>
 
       <div className="fg">
-        <label>👥 Contacts per domain <span style={subLabel}>— cap per company</span></label>
-        <select value={perPage} onChange={(e) => setPerPage(e.target.value)} style={selStyle}>
-          {[5, 10, 25].map((n) => <option key={n} value={n}>{n} contacts</option>)}
-        </select>
+        <label>👥 Contacts per domain <span style={subLabel}>— cap per company (1–25)</span></label>
+        <input
+          type="number"
+          min="1"
+          max="25"
+          step="1"
+          value={perPage}
+          onChange={(e) => setPerPage(e.target.value)}
+          placeholder="e.g. 10"
+        />
       </div>
 
       <button
