@@ -149,8 +149,20 @@ export default function Admin() {
   const [authed, setAuthed] = useState(false)
   const [users, setUsers] = useState([])
   const [proxy, setProxy] = useState(null)
+  const [proxyTest, setProxyTest] = useState(null)
+  const [testing, setTesting] = useState(false)
   const [loading, setLoading] = useState(true)
   const toast = useToast()
+
+  // End-to-end: lease a proxy like the scraper does, prove egress, release.
+  const runProxyTest = async () => {
+    setTesting(true); setProxyTest(null)
+    try {
+      const r = await admin.proxySelfTest()
+      setProxyTest(r)
+      toast(r.routed ? 'Proxy routing OK ✓' : (r.proxy === null ? 'No proxy (browser-mode)' : 'Test done'), r.routed ? 'ok' : 'err')
+    } catch (e) { toast(e.message, 'err') } finally { setTesting(false) }
+  }
 
   const refresh = useCallback(async () => {
     // Proxy pool health — best-effort, never blocks the user table.
@@ -285,6 +297,22 @@ export default function Admin() {
               🛰️ Proxy pool healthy — {proxy.alive}/{proxy.total} live · {proxy.owned} dedicated to {proxy.paidActive} paying {proxy.paidActive === 1 ? 'user' : 'users'} · {proxy.idle} idle.
             </div>
           )}
+          {proxy && proxy.total > 0 && (
+            <div className="proxy-test">
+              <button className="btn btn-g btn-sm" onClick={runProxyTest} disabled={testing}>
+                {testing ? 'Testing…' : '🧪 Test proxy lease'}
+              </button>
+              {proxyTest && (
+                <span className="proxy-test-r">
+                  {proxyTest.proxy === null
+                    ? `— ${proxyTest.note || 'no proxy'}`
+                    : proxyTest.routed
+                      ? `✓ routed — user ${proxyTest.userId} → ${proxyTest.proxyId} → exit IP ${proxyTest.exitIp}`
+                      : `✗ not routed (exit ${proxyTest.exitIp || 'n/a'}, core ${proxyTest.coreIp || 'n/a'})${proxyTest.error ? ' · ' + proxyTest.error : ''}`}
+                </span>
+              )}
+            </div>
+          )}
           <CreateUser onCreated={refresh} />
 
           <div className="sbox">
@@ -406,6 +434,8 @@ function AdminStyles() {
       .proxy-alert-body{font-size:13px;line-height:1.5;color:var(--text)}
       .proxy-alert-body strong{color:#d97706}
       .proxy-ok{font-size:12.5px;color:var(--text-muted);background:var(--bg-elev-2);border:1px solid var(--border);border-radius:10px;padding:9px 14px;margin-bottom:16px}
+      .proxy-test{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:-6px 0 16px}
+      .proxy-test-r{font-size:12px;color:var(--text-muted);font-family:var(--mono)}
     `}</style>
   )
 }

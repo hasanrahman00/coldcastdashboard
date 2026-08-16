@@ -413,4 +413,6 @@ export const admin = {
   remove: (id) => adminReq(`/api/auth/users/${encodeURIComponent(id)}`, { method: 'DELETE' }),
   // Proxy pool health → { total, alive, owned, idle, paidActive, shortage }.
   proxyStatus: () => adminReq('/api/proxy/status'),
+  // End-to-end proxy self-test (acquire → prove egress IP → release) → { proxyId, exitIp, routed }.
+  proxySelfTest: (userId) => adminReq('/api/proxy/self-test' + (userId ? `?userId=${encodeURIComponent(userId)}` : '')),
 }
