@@ -148,10 +148,13 @@ function CreateUser({ onCreated }) {
 export default function Admin() {
   const [authed, setAuthed] = useState(false)
   const [users, setUsers] = useState([])
+  const [proxy, setProxy] = useState(null)
   const [loading, setLoading] = useState(true)
   const toast = useToast()
 
   const refresh = useCallback(async () => {
+    // Proxy pool health — best-effort, never blocks the user table.
+    admin.proxyStatus().then(setProxy).catch(() => {})
     try {
       const d = await admin.listUsers()
       setUsers(Array.isArray(d?.users) ? d.users : [])
@@ -172,7 +175,7 @@ export default function Admin() {
     setAdminPassword(saved)
     admin
       .listUsers()
-      .then((d) => { setUsers(Array.isArray(d?.users) ? d.users : []); setAuthed(true) })
+      .then((d) => { setUsers(Array.isArray(d?.users) ? d.users : []); setAuthed(true); admin.proxyStatus().then(setProxy).catch(() => {}) })
       .catch(() => { sessionStorage.removeItem(PW_KEY); setAdminPassword('') })
       .finally(() => setLoading(false))
   }, [])
@@ -267,6 +270,21 @@ export default function Admin() {
 
       <main className="mn">
         <div className="cnt">
+          {proxy && proxy.shortage > 0 && (
+            <div className="proxy-alert">
+              <span className="proxy-alert-ic">⚠</span>
+              <div className="proxy-alert-body">
+                <strong>Buy {proxy.shortage} more {proxy.shortage === 1 ? 'proxy' : 'proxies'}.</strong>
+                {' '}{proxy.paidActive} paying {proxy.paidActive === 1 ? 'user' : 'users'} · {proxy.alive}/{proxy.total} live in pool
+                {' '}({proxy.owned} dedicated, {proxy.idle} idle). Waiting users borrow a spare per run until you top up.
+              </div>
+            </div>
+          )}
+          {proxy && proxy.shortage === 0 && proxy.total > 0 && (
+            <div className="proxy-ok">
+              🛰️ Proxy pool healthy — {proxy.alive}/{proxy.total} live · {proxy.owned} dedicated to {proxy.paidActive} paying {proxy.paidActive === 1 ? 'user' : 'users'} · {proxy.idle} idle.
+            </div>
+          )}
           <CreateUser onCreated={refresh} />
 
           <div className="sbox">
@@ -383,6 +401,11 @@ function AdminStyles() {
       .adm-spent{display:inline-flex;align-items:center;gap:5px;color:var(--text-muted);font-weight:600;white-space:nowrap}
       .adm-actions{display:flex;gap:6px;justify-content:flex-end}
       .adm-actions-h{text-align:right}
+      .proxy-alert{display:flex;gap:12px;align-items:flex-start;background:rgba(245,158,11,.10);border:1px solid rgba(245,158,11,.35);border-radius:12px;padding:13px 16px;margin-bottom:16px}
+      .proxy-alert-ic{font-size:18px;line-height:1.2;flex-shrink:0}
+      .proxy-alert-body{font-size:13px;line-height:1.5;color:var(--text)}
+      .proxy-alert-body strong{color:#d97706}
+      .proxy-ok{font-size:12.5px;color:var(--text-muted);background:var(--bg-elev-2);border:1px solid var(--border);border-radius:10px;padding:9px 14px;margin-bottom:16px}
     `}</style>
   )
 }

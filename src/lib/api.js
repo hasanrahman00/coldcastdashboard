@@ -411,4 +411,6 @@ export const admin = {
   setPlan: (id, plan) => adminPost(`/api/auth/users/${encodeURIComponent(id)}/plan`, { plan }), // 'free' | 'paid'
   setCredits: (id, credits) => adminPost(`/api/auth/users/${encodeURIComponent(id)}/credits`, { credits }),
   remove: (id) => adminReq(`/api/auth/users/${encodeURIComponent(id)}`, { method: 'DELETE' }),
+  // Proxy pool health → { total, alive, owned, idle, paidActive, shortage }.
+  proxyStatus: () => adminReq('/api/proxy/status'),
 }
