@@ -49,6 +49,11 @@ export const zoominfoUrl = (path) => ZOOMINFO_BASE + path
 const DOMAIN_BASE = (import.meta.env.VITE_DOMAIN_SCRAPER_URL || 'https://domainenrich.coldcast.io').replace(/\/$/, '')
 export const domainUrl = (path) => DOMAIN_BASE + path
 
+// The LinkedIn Search scraper — its OWN server (People/Services search + enrichment,
+// via the bridge). Defaults to the production host; override with VITE_LISEARCH_SCRAPER_URL.
+const LISEARCH_BASE = (import.meta.env.VITE_LISEARCH_SCRAPER_URL || 'https://linkedin-scraper.coldcast.io').replace(/\/$/, '')
+export const lisearchUrl = (path) => LISEARCH_BASE + path
+
 // Host (origin authority) of each scraper server — the extension reports per-hub
 // connection keyed by this same host, so the dashboard can show accurate
 // per-scraper "this browser connected / not connected" status. Empty for scrapers
@@ -63,6 +68,7 @@ export const SCRAPER_HOSTS = {
   post: hostOf(POST_BASE),
   zoominfo: hostOf(ZOOMINFO_BASE),
   domain: hostOf(DOMAIN_BASE),
+  lisearch: hostOf(LISEARCH_BASE),
 }
 
 // ── token + key storage (same localStorage keys the old dashboard used) ──────
@@ -346,6 +352,25 @@ export const api = {
   },
   domainEvents: () => new EventSource(domainUrl(`/api/events?token=${encodeURIComponent(getToken())}`)),
   domainDownloadUrl: (id) => domainUrl(`/api/jobs/${id}/csv?token=${encodeURIComponent(getToken())}`),
+
+  // ── LinkedIn Search scraper (its OWN server; same Bearer auth + shared Core billing) ──
+  // A LinkedIn People or Services search URL → rows (+ optional Lusha/ContactOut/SalesQL
+  // enrichment), scraped in the user's connected browser via the bridge.
+  lisearchConfigured: () => Boolean(LISEARCH_BASE),
+  lisearchJobs: async () => {
+    const d = await asJson('/api/jobs', { base: LISEARCH_BASE })
+    return d && Array.isArray(d.jobs) ? d.jobs : []
+  },
+  lisearchCreate: (payload) => postJson('/api/jobs', payload, { base: LISEARCH_BASE }),
+  lisearchStart: (id) => postJson(`/api/jobs/${id}/start`, undefined, { base: LISEARCH_BASE }),
+  lisearchStop: (id) => postJson(`/api/jobs/${id}/stop`, undefined, { base: LISEARCH_BASE }),
+  lisearchDelete: (id) => del(`/api/jobs/${id}`, { base: LISEARCH_BASE }),
+  lisearchLogs: async (id) => {
+    const j = await asJson(`/api/jobs/${encodeURIComponent(id)}`, { base: LISEARCH_BASE })
+    return { logs: (j && j.logs) || [] }
+  },
+  lisearchEvents: () => new EventSource(lisearchUrl(`/api/events?token=${encodeURIComponent(getToken())}`)),
+  lisearchDownloadUrl: (id) => lisearchUrl(`/api/jobs/${id}/csv?token=${encodeURIComponent(getToken())}`),
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

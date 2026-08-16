@@ -68,6 +68,16 @@ export const PRODUCTS = [
     body: 'Turn any LinkedIn post into a lead list — every profile that reacted, commented, or reposted it — exported straight from your own connected browser. Paste the post URL, run it, download the CSV.',
   },
   {
+    id: 'lisearch',
+    label: 'Scrape LinkedIn Search',
+    soon: false,
+    icon: IconSearchPlus,
+    emoji: '🕵️',
+    title: 'Scrape LinkedIn Search',
+    short: 'People & Services search → clean CSV, optionally enriched.',
+    body: 'Export any LinkedIn People or Services search into a clean CSV — names, headlines, locations, and profile URLs — scraped in your own connected browser, with optional email + company enrichment (Lusha / ContactOut / SalesQL).',
+  },
+  {
     id: 'linkedin',
     label: 'LinkedIn URL Enrich',
     soon: false,

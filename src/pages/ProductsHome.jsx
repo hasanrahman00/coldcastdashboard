@@ -7,7 +7,7 @@ import { IconSearch } from '../lib/icons.jsx'
 // header (title + live search) over a scrollable category-tab row, then a single
 // card grid filtered by the active tab (or by the search query).
 const GROUPS = [
-  { key: 'scraping', title: 'Scraping', ids: ['salesnav', 'apollo', 'company', 'post', 'zoominfo'] },
+  { key: 'scraping', title: 'Scraping', ids: ['salesnav', 'apollo', 'company', 'post', 'lisearch', 'zoominfo'] },
   { key: 'enrichment', title: 'Enrichment', ids: ['linkedin', 'waterfall', 'verify', 'domain'] },
 ]
 
