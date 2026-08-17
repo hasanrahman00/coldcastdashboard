@@ -170,9 +170,6 @@ export default function JobCard({ job, onOpenLogs }) {
         <button className="btn btn-csv btn-sm" onClick={() => dl('csv')}>
           <IconDownload /> CSV
         </button>
-        <button className="btn btn-xlsx btn-sm" onClick={() => dl('xlsx')}>
-          <IconDownload /> XLSX
-        </button>
         {!uiConfig.hideLogs && (
           <button className="btn btn-logs btn-sm" onClick={() => onOpenLogs(job)}>
             <IconLogsLines /> Logs
