@@ -44,7 +44,11 @@ export default function LinkedInSearchScraper() {
       else toast(m, 'err')
     }
   }
-  const stop = async (id) => { try { await api.lisearchStop(id) } catch (e) { toast(e.message || 'Could not stop', 'err') } }
+  const stop = async (id) => {
+    const j = jobs.find((x) => x.id === id)
+    if (j) upsertLisearchJob({ ...j, status: 'stopping', stopRequested: true }) // instant feedback; server confirms
+    try { await api.lisearchStop(id) } catch (e) { toast(e.message || 'Could not stop', 'err') }
+  }
   const remove = async (job) => {
     const running = job.status === 'running' || job.status === 'queued'
     if (!window.confirm(running ? 'This job is still running. Delete it now?' : 'Delete this job and all its data?')) return

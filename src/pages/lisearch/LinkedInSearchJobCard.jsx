@@ -4,7 +4,8 @@ import {
 
 // Reuses the shared .jc* card CSS. LinkedIn People/Services search rows; CSV export.
 export default function LinkedInSearchJobCard({ job, anotherRunning, onRun, onStop, onDelete, onOpenLogs, downloadUrl }) {
-  const scrapeBusy = job.status === 'running' || job.status === 'queued'
+  const stopping = job.status === 'stopping'
+  const scrapeBusy = job.status === 'running' || job.status === 'queued' || stopping
   const scrapeIdle = !scrapeBusy
   const total = (job.counts && job.counts.total) ?? 0
   const hasData = total > 0 || job.hasCsv
@@ -15,7 +16,7 @@ export default function LinkedInSearchJobCard({ job, anotherRunning, onRun, onSt
     : ''
 
   let stCls = 'idle', stTxt = 'Ready to run', StIcon = IconRetry
-  if (scrapeBusy) { stCls = 'run'; stTxt = job.status === 'queued' ? 'Queued…' : 'Scraping…' }
+  if (scrapeBusy) { stCls = 'run'; stTxt = stopping ? 'Stopping…' : (job.status === 'queued' ? 'Queued…' : 'Scraping…') }
   else if (job.status === 'error') { stCls = 'bad'; stTxt = job.error ? `Failed — ${job.error}` : 'Failed'; StIcon = IconWarn }
   else if (job.status === 'stopped') { stCls = 'idle'; stTxt = 'Stopped' }
   else if (hasData) { stCls = 'ok'; stTxt = 'File available' }
@@ -43,7 +44,7 @@ export default function LinkedInSearchJobCard({ job, anotherRunning, onRun, onSt
           <button className="btn btn-s btn-sm" disabled={anotherRunning} title={runTitle} onClick={onRun}><IconPlay /> Run</button>
         )}
         {scrapeBusy && (
-          <button className="btn btn-w btn-sm" onClick={onStop}><IconStop /> Stop</button>
+          <button className="btn btn-w btn-sm" onClick={onStop} disabled={stopping}><IconStop /> {stopping ? 'Stopping…' : 'Stop'}</button>
         )}
         <button className="btn btn-csv btn-sm" onClick={() => window.open(downloadUrl, '_blank')} disabled={!hasData}><IconDownload /> CSV</button>
         <button className="btn btn-logs btn-sm" onClick={onOpenLogs}><IconLogsLines /> Logs</button>

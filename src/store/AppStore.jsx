@@ -532,18 +532,24 @@ export function AppProvider({ initialMe, onLogout, children }) {
       } catch { /* keep last-known; the 5s poll reconciles */ }
     }
     load()
-    try {
-      es = api.lisearchEvents()
-      es.addEventListener('init', (e) => {
-        try { const d = JSON.parse(e.data); if (alive) setLisearchJobs(Array.isArray(d) ? d : []) } catch {}
-      })
-      es.addEventListener('job:update', (e) => { try { upsertLisearchJob(JSON.parse(e.data)) } catch {} })
-      es.addEventListener('job:delete', (e) => {
-        try { const { id } = JSON.parse(e.data); if (alive) setLisearchJobs((p) => p.filter((j) => j.id !== id)) } catch {}
-      })
-    } catch { /* EventSource unavailable → poll only */ }
+    let retry
+    const connect = () => {
+      try {
+        es = api.lisearchEvents()
+        es.addEventListener('init', (e) => {
+          try { const d = JSON.parse(e.data); if (alive) setLisearchJobs(Array.isArray(d) ? d : []) } catch {}
+        })
+        es.addEventListener('job:update', (e) => { try { upsertLisearchJob(JSON.parse(e.data)) } catch {} })
+        es.addEventListener('job:delete', (e) => {
+          try { const { id } = JSON.parse(e.data); if (alive) setLisearchJobs((p) => p.filter((j) => j.id !== id)) } catch {}
+        })
+        // Revive the stream if it fully closes (token rejected / server closed / slept tab).
+        es.onerror = () => { if (es.readyState === EventSource.CLOSED && alive) { clearTimeout(retry); retry = setTimeout(connect, 3000) } }
+      } catch { /* EventSource unavailable → poll only */ }
+    }
+    connect()
     const poll = setInterval(() => { if (!document.hidden) load() }, 5000)
-    return () => { alive = false; clearInterval(poll); try { es?.close() } catch {} }
+    return () => { alive = false; clearTimeout(retry); clearInterval(poll); try { es?.close() } catch {} }
   }, [upsertLisearchJob])
 
   // ── profiles + extension status (poll, focus-refresh) ──────────────────
