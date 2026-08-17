@@ -5,19 +5,17 @@ import { useToast } from '../../store/ToastProvider.jsx'
 import { useApp } from '../../store/AppStore.jsx'
 
 const subLabel = { color: 'var(--text-faint)', fontWeight: 500, textTransform: 'none', letterSpacing: 0 }
-const selStyle = { width: 140, maxWidth: '100%', background: 'var(--bg-elev-2)', border: '1px solid var(--border)', borderRadius: 10, padding: '11px 14px', color: 'var(--text)', font: 'inherit', fontSize: 14 }
 
 const isSearchUrl = (u) => /linkedin\.com\/(search\/results\/(people|services)|services)/i.test(u)
 
-// New LinkedIn Search job — a list name + a LinkedIn People or Services search URL,
-// with optional enrichment. Runs in the user's connected browser via the bridge.
+// New LinkedIn Search job — a list name + a LinkedIn People or Services search URL.
+// Contacts are enriched automatically; the job pages through results in the user's
+// connected browser until they pause it.
 export default function LinkedInSearchNewJobModal({ open, onClose, onCreated }) {
   const toast = useToast()
   const { onlineProfileId } = useApp()
   const [name, setName] = useState('')
   const [url, setUrl] = useState('')
-  const [maxResults, setMaxResults] = useState(100)
-  const [enrich, setEnrich] = useState(false)
   const [busy, setBusy] = useState(false)
 
   const submit = async () => {
@@ -30,8 +28,8 @@ export default function LinkedInSearchNewJobModal({ open, onClose, onCreated }) 
       const job = await api.lisearchCreate({
         name: name.trim() || 'LinkedIn Search',
         searchUrl: u,
-        maxResults: Number(maxResults) || 100,
-        enrich,
+        maxResults: 1000, // page through to LinkedIn's ceiling; you pause when you have enough
+        enrich: true,     // enrichment is always on
         profileId: onlineProfileId,
       })
       onCreated?.(job)
@@ -49,7 +47,8 @@ export default function LinkedInSearchNewJobModal({ open, onClose, onCreated }) 
     <Modal open={open} onClose={onClose} title="🕵️ New LinkedIn Search Job">
       <p style={{ margin: '-2px 0 16px', fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.5 }}>
         Export a LinkedIn <b>People</b> or <b>Services</b> search into a clean CSV — names, headlines,
-        locations, profile URLs — scraped in your connected browser 👇
+        locations, profile URLs, plus <b>email &amp; company</b> where we can find them — scraped in your
+        connected browser. It pages through results until you pause it 👇
       </p>
 
       <div className="fg">
@@ -60,18 +59,6 @@ export default function LinkedInSearchNewJobModal({ open, onClose, onCreated }) 
       <div className="fg">
         <label>🔗 LinkedIn search URL <span style={subLabel}>— a People or Services results link</span></label>
         <textarea rows="3" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://www.linkedin.com/search/results/people/?keywords=…" />
-      </div>
-
-      <div className="fg">
-        <label>🔢 Max results <span style={subLabel}>— rows to collect</span></label>
-        <input type="number" min="1" max="1000" step="1" value={maxResults} onChange={(e) => setMaxResults(e.target.value)} placeholder="e.g. 100" style={selStyle} />
-      </div>
-
-      <div className="fg">
-        <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', textTransform: 'none', letterSpacing: 0 }}>
-          <input type="checkbox" checked={enrich} onChange={(e) => setEnrich(e.target.checked)} style={{ width: 16, height: 16 }} />
-          <span>✉️ Enrich contacts <span style={subLabel}>— add email + company via Lusha / ContactOut / SalesQL (sign in to those in this browser)</span></span>
-        </label>
       </div>
 
       <button
