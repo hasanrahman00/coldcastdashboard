@@ -4,6 +4,7 @@ import JobCard from './JobCard.jsx'
 import NewJobModal from './NewJobModal.jsx'
 import LogsModal from './LogsModal.jsx'
 import ScraperConnection from '../../components/ScraperConnection.jsx'
+import ProviderStatus from '../../components/ProviderStatus.jsx'
 import { IconPlus, IconChevronLeft, IconChevronRight } from '../../lib/icons.jsx'
 
 const JOBS_PER_PAGE = 9 // 3 cols × 3 rows
@@ -36,6 +37,7 @@ export default function SalesNav() {
   return (
     <div>
       <ScraperConnection scraper="salesnav" name="Sales Navigator scraping" />
+      <ProviderStatus />
 
       {/* Centered New Job — sticky so it stays visible on any job page */}
       <div className="newjob-bar">

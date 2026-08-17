@@ -149,6 +149,7 @@ export function AppProvider({ initialMe, onLogout, children }) {
     installed: false, connected: false, hasKey: false,
     profileId: '', profileName: '', authError: '',
     serverStatus: {}, // { '<scraper host>': bool } — per-hub connection for THIS browser
+    providers: null,  // { lusha, contactout, salesql, linkedin } login booleans; null until a modern ext reports it
   })
   // Per-scrape-job enrich state, keyed by job id. Kept OUT of the `jobs` array
   // because SSE replaces job objects wholesale on every job:update (which would

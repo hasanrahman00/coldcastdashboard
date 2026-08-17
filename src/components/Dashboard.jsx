@@ -120,7 +120,7 @@ export default function Dashboard({ onLogout }) {
         <main className="mn">
           {/* data-p sets --pc for the whole page so job cards can tint with the product accent */}
           <div className="cnt" data-p={activeProduct && !activeProduct.soon ? route : undefined}>
-            {activeProduct && !activeProduct.soon && <ProductHeader product={activeProduct} />}
+            {activeProduct && !activeProduct.soon && activeProduct.id !== 'salesnav' && <ProductHeader product={activeProduct} />}
             {page}
           </div>
         </main>
