@@ -12,7 +12,7 @@ const PROVIDERS = [
   { key: 'lusha',      label: 'Free Lusha' },
   { key: 'contactout', label: 'Free ContactOut' },
   { key: 'salesql',    label: 'Free SalesQL' },
-  { key: 'linkedin',   label: 'LinkedIn' },
+  { key: 'linkedin',   label: 'LinkedIn Sales Navigator' },
 ]
 
 const Check = () => (
