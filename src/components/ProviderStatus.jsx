@@ -6,10 +6,12 @@ import { useApp } from '../store/AppStore.jsx'
 // every few seconds while the dashboard is open, so logging in or out of a
 // provider flips its badge within seconds — no reload. This helps non-technical
 // users see, at a glance, exactly which sources to sign into before a job runs.
+// Lusha / ContactOut / SalesQL only need a FREE account — that's all the scraper
+// uses. LinkedIn is the user's own Sales Nav session (not a free signup).
 const PROVIDERS = [
-  { key: 'lusha',      label: 'Lusha' },
-  { key: 'contactout', label: 'ContactOut' },
-  { key: 'salesql',    label: 'SalesQL' },
+  { key: 'lusha',      label: 'Free Lusha' },
+  { key: 'contactout', label: 'Free ContactOut' },
+  { key: 'salesql',    label: 'Free SalesQL' },
   { key: 'linkedin',   label: 'LinkedIn' },
 ]
 
@@ -51,8 +53,11 @@ export default function ProviderStatus() {
 
       {providers && off.length > 0 && (
         <p className="provstat-hint">
-          Log in to enrich from: <strong>{off.map((p) => p.label).join(', ')}</strong> — open each site in this browser and sign in.
+          Not logged in: <strong>{off.map((p) => p.label).join(', ')}</strong>. A <strong>free account</strong> for each is enough — open the site in this browser and sign in to enrich.
         </p>
+      )}
+      {providers && off.length === 0 && (
+        <p className="provstat-hint">All set — a <strong>free account</strong> for each source is all the scraper needs.</p>
       )}
       {!providers && (
         <p className="provstat-hint">Checking sign-in status… update the Coldcast extension if this doesn’t appear.</p>
