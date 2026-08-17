@@ -1369,7 +1369,7 @@ body{flex-direction:column}
 input[type=password]{font-family:var(--font)}
 
 /* ── Per-scraper "this browser" connection status ─────────────────────────── */
-.conn-status{display:flex;align-items:center;gap:10px;margin:0 0 16px;padding:11px 15px;border-radius:12px;font-size:13px;font-weight:600;line-height:1.45;border:1px solid var(--border)}
+.conn-status{display:flex;align-items:center;justify-content:center;text-align:center;gap:10px;margin:0 0 16px;padding:11px 15px;border-radius:12px;font-size:13px;font-weight:600;line-height:1.45;border:1px solid var(--border)}
 .conn-status .conn-dot{flex:none;width:9px;height:9px;border-radius:999px}
 .conn-status strong{font-weight:800}
 .conn-status.ok{background:color-mix(in srgb,#16a34a 9%,var(--bg-elev-1));border-color:color-mix(in srgb,#16a34a 30%,var(--border));color:color-mix(in srgb,#166534 80%,var(--text))}
