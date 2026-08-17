@@ -23,7 +23,7 @@ function loadStored(source) {
 // One source card on the Setup page. First click "Get a free account" → reveals
 // email + password (persisted). After that the button becomes "Refetch", which
 // pulls a fresh account and REPLACES the shown one (e.g. if it didn't work).
-export default function FreeAccountCard({ name, source }) {
+export default function FreeAccountCard({ name, source, warn }) {
   const toast = useToast()
   const [acct, setAcct] = useState(() => loadStored(source))
   const [loading, setLoading] = useState(false)
@@ -57,6 +57,8 @@ export default function FreeAccountCard({ name, source }) {
         </a>
       </div>
 
+      {warn && <p className="fa-warn">⚠ {warn}</p>}
+
       {acct ? (
         <div className="fa-creds">
           <div className="fa-row">
@@ -85,6 +87,7 @@ export default function FreeAccountCard({ name, source }) {
 
       <style>{`
         .free-acct{display:flex;flex-direction:column;gap:10px}
+        .fa-warn{margin:0;font-size:12px;font-weight:700;color:#000;line-height:1.4;background:#fef3c7;border:1px solid #fcd34d;border-radius:8px;padding:7px 10px}
         .fa-get{align-self:flex-start}
         .fa-creds{display:flex;flex-direction:column;gap:8px}
         .fa-row{display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--bg-elev-2);border:1px solid var(--border);border-radius:8px;padding:7px 10px}

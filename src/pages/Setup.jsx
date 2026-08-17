@@ -7,8 +7,8 @@ export default function Setup() {
     <div className="sbox">
       <div className="enrich-grid">
         <FreeAccountCard name="Lusha" source="lusha" />
-        <FreeAccountCard name="SalesQL" source="salesql" />
-        <FreeAccountCard name="ContactOut" source="contactout" />
+        <FreeAccountCard name="SalesQL" source="salesql" warn="Sign up with your own Gmail — you need your own free account, then log in." />
+        <FreeAccountCard name="ContactOut" source="contactout" warn="Sign up with your own Gmail — you need your own free account, then log in." />
       </div>
     </div>
   )

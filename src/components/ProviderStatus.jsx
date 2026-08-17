@@ -11,8 +11,10 @@ import { useApp } from '../store/AppStore.jsx'
 // badge links to that source's login page so the user can sign in in one click.
 const PROVIDERS = [
   { key: 'lusha',      label: 'Free Lusha',               url: 'https://www.lusha.com/login/' },
-  { key: 'contactout', label: 'Free ContactOut',          url: 'https://contactout.com/login' },
-  { key: 'salesql',    label: 'Free SalesQL',             url: 'https://salesql.com/' },
+  // SalesQL & ContactOut need the user's OWN free account (their own Gmail) — send
+  // them to the Setup page, which explains that + fetches/gets the free account.
+  { key: 'contactout', label: 'Free ContactOut',          url: '#/setup' },
+  { key: 'salesql',    label: 'Free SalesQL',             url: '#/setup' },
   { key: 'linkedin',   label: 'LinkedIn Sales Navigator', url: 'https://www.linkedin.com/sales/' },
 ]
 
@@ -43,8 +45,10 @@ export default function ProviderStatus() {
       <div className="provstat-chips">
         {PROVIDERS.map((p) => {
           const state = !providers ? 'unknown' : (providers[p.key] ? 'on' : 'off')
+          const external = /^https?:/.test(p.url)   // provider login opens in a new tab; #/setup navigates in-app
           return (
-            <a key={p.key} className={`provchip ${state}`} href={p.url} target="_blank" rel="noopener noreferrer"
+            <a key={p.key} className={`provchip ${state}`} href={p.url}
+              {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
               title={state === 'on' ? `${p.label} — logged in (click to open)` : state === 'off' ? `${p.label} — not logged in (click to log in)` : `${p.label} — click to log in`}>
               <span className="provchip-ic">{state === 'on' ? <Check /> : state === 'off' ? <Cross /> : '…'}</span>
               {p.label}
