@@ -7,12 +7,13 @@ import { useApp } from '../store/AppStore.jsx'
 // provider flips its badge within seconds — no reload. This helps non-technical
 // users see, at a glance, exactly which sources to sign into before a job runs.
 // Lusha / ContactOut / SalesQL only need a FREE account — that's all the scraper
-// uses. LinkedIn is the user's own Sales Nav session (not a free signup).
+// uses. LinkedIn is the user's own Sales Nav session (not a free signup). Each
+// badge links to that source's login page so the user can sign in in one click.
 const PROVIDERS = [
-  { key: 'lusha',      label: 'Free Lusha' },
-  { key: 'contactout', label: 'Free ContactOut' },
-  { key: 'salesql',    label: 'Free SalesQL' },
-  { key: 'linkedin',   label: 'LinkedIn Sales Navigator' },
+  { key: 'lusha',      label: 'Free Lusha',               url: 'https://www.lusha.com/login/' },
+  { key: 'contactout', label: 'Free ContactOut',          url: 'https://contactout.com/login' },
+  { key: 'salesql',    label: 'Free SalesQL',             url: 'https://salesql.com/' },
+  { key: 'linkedin',   label: 'LinkedIn Sales Navigator', url: 'https://www.linkedin.com/sales/' },
 ]
 
 const Check = () => (
@@ -43,10 +44,11 @@ export default function ProviderStatus() {
         {PROVIDERS.map((p) => {
           const state = !providers ? 'unknown' : (providers[p.key] ? 'on' : 'off')
           return (
-            <span key={p.key} className={`provchip ${state}`} title={state === 'on' ? `${p.label} — logged in` : state === 'off' ? `${p.label} — not logged in` : `${p.label} — checking…`}>
+            <a key={p.key} className={`provchip ${state}`} href={p.url} target="_blank" rel="noopener noreferrer"
+              title={state === 'on' ? `${p.label} — logged in (click to open)` : state === 'off' ? `${p.label} — not logged in (click to log in)` : `${p.label} — click to log in`}>
               <span className="provchip-ic">{state === 'on' ? <Check /> : state === 'off' ? <Cross /> : '…'}</span>
               {p.label}
-            </span>
+            </a>
           )
         })}
       </div>

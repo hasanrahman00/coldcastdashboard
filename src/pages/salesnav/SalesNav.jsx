@@ -50,6 +50,13 @@ export default function SalesNav() {
           <IconPlus />
           New Job
         </button>
+        <button
+          className="btn btn-g"
+          onClick={() => { window.location.hash = '#/setup' }}
+          title="Get free Lusha, ContactOut & SalesQL accounts"
+        >
+          Fetch Free Accounts
+        </button>
       </div>
 
       <div className="jg-head">
