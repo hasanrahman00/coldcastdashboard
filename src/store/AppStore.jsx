@@ -557,7 +557,20 @@ export function AppProvider({ initialMe, onLogout, children }) {
   const refreshProfiles = useCallback(async () => {
     try {
       const d = await api.agentStatus()
-      setProfiles(Array.isArray(d.profiles) ? d.profiles : [])
+      // Dedup by id: Core can return the SAME profileId more than once (a duplicate
+      // profile doc gets created when the extension registers the same fresh
+      // profileId across several hub sockets at once / re-registers). Collapse them
+      // to one row per id so the list doesn't show the same browser many times; if
+      // any duplicate is online, the kept row is online.
+      const rawProfiles = Array.isArray(d.profiles) ? d.profiles : []
+      const byId = new Map()
+      for (const p of rawProfiles) {
+        if (!p || !p.id) continue
+        const ex = byId.get(p.id)
+        if (ex) { if (p.online) ex.online = true }
+        else byId.set(p.id, { ...p })
+      }
+      setProfiles([...byId.values()])
       setActiveProfileId(d.activeProfileId || null)
       setConnectorOnline(!!d.connectorOnline)
       setStatusLoaded(true)
