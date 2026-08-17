@@ -1382,8 +1382,8 @@ input[type=password]{font-family:var(--font)}
 /* Provider login badges — live ✓/✗ per enrichment source (see ProviderStatus.jsx) */
 .provstat{margin:0 0 16px;padding:12px 15px;border-radius:12px;border:1px solid var(--border);background:var(--bg-elev-1);text-align:center}
 .provstat-head{display:flex;align-items:baseline;justify-content:center;gap:12px;margin-bottom:10px}
-.provstat-title{font-size:11.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--text)}
-.provstat-count{font-size:12px;font-weight:700;color:color-mix(in srgb,var(--text) 55%,transparent)}
+.provstat-title{font-size:11.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:#000}
+.provstat-count{font-size:12px;font-weight:700;color:#000}
 .provstat-chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
 .provchip{display:inline-flex;align-items:center;gap:7px;padding:6px 12px;border-radius:999px;font-size:12.5px;font-weight:700;border:1px solid var(--border);line-height:1}
 .provchip-ic{display:inline-flex;width:14px;height:14px;align-items:center;justify-content:center;font-weight:800}
@@ -1391,8 +1391,8 @@ input[type=password]{font-family:var(--font)}
 .provchip.on{background:color-mix(in srgb,#16a34a 10%,var(--bg-elev-1));border-color:color-mix(in srgb,#16a34a 32%,var(--border));color:color-mix(in srgb,#166534 82%,var(--text))}
 .provchip.off{background:color-mix(in srgb,#dc2626 9%,var(--bg-elev-1));border-color:color-mix(in srgb,#dc2626 32%,var(--border));color:color-mix(in srgb,#991b1b 82%,var(--text))}
 .provchip.unknown{color:color-mix(in srgb,var(--text) 50%,transparent);opacity:.8}
-.provstat-hint{margin:10px 0 0;font-size:12px;font-weight:500;line-height:1.5;color:color-mix(in srgb,var(--text) 62%,transparent)}
-.provstat-hint strong{font-weight:800;color:color-mix(in srgb,#991b1b 78%,var(--text))}
+.provstat-hint{margin:10px 0 0;font-size:12px;font-weight:600;line-height:1.5;color:#000}
+.provstat-hint strong{font-weight:800;color:#000}
 
 /* ── Sales Nav 75% OFF deal page ─────────────────────────────────────────── */
 .deal-wrap{display:grid;grid-template-columns:1.05fr .95fr;gap:22px;align-items:stretch;align-content:center;max-width:1000px;min-height:calc(100vh - 230px)}
