@@ -53,7 +53,7 @@ export default function FreeAccountCard({ name, source, warn }) {
       <div className="enrich-h">
         <b>{name}</b>
         <a className="enrich-action" href={LOGIN_URLS[name]} target="_blank" rel="noopener noreferrer">
-          Open &amp; log in →
+          Login Free {name} →
         </a>
       </div>
 
