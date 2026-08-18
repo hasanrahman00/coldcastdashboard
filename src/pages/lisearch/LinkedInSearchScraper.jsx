@@ -75,7 +75,7 @@ export default function LinkedInSearchScraper() {
         <button
           className="btn btn-p"
           onClick={() => setShowNew(true)}
-          disabled={!connected || expired}
+          disabled={!connected || expired || !!busyJob}
           title={expired ? 'Account expired — renew to run jobs' : connected ? '' : 'Connect the Coldcast extension in this browser to run a job here'}
         >
           <IconPlus />
