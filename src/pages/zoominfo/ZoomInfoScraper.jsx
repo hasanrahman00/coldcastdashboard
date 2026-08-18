@@ -14,7 +14,7 @@ export default function ZoomInfoScraper() {
   const toast = useToast()
   const configured = api.zoominfoConfigured()
 
-  const { zoominfoJobs, upsertZoomInfoJob, removeZoomInfoJob, scraperConnected, expired } = useApp()
+  const { zoominfoJobs, upsertZoomInfoJob, removeZoomInfoJob, scraperConnected, expired, busyJob } = useApp()
   const connected = scraperConnected('zoominfo')
   const jobs = zoominfoJobs || []
   const [page, setPage] = useState(0)
@@ -90,14 +90,14 @@ export default function ZoomInfoScraper() {
             <div className="empty-ic">🔎</div>
             <h3>No jobs yet</h3>
             <p>Paste a ZoomInfo (Lite) people or company search URL to export it</p>
-            <button className="btn btn-p" onClick={() => setShowNew(true)} disabled={expired} title={expired ? 'Account expired — renew to run jobs' : ''}>
+            <button className="btn btn-p" onClick={() => setShowNew(true)} disabled={expired || !!busyJob} title={expired ? 'Account expired — renew to run jobs' : busyJob ? 'Finish your running job first — only one at a time' : ''}>
               <IconPlus />
               Create Job
             </button>
           </div>
         ) : (
           slice.map((j) => {
-            const otherRunning = jobs.some((x) => x.id !== j.id && (x.status === 'running' || x.status === 'queued'))
+            const otherRunning = !!busyJob && busyJob.id !== j.id
             return (
               <ZoomInfoJobCard
                 key={j.id}

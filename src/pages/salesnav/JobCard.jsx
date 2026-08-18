@@ -25,7 +25,7 @@ function jobUrlOf(j) {
 }
 
 export default function JobCard({ job, onOpenLogs }) {
-  const { jobs, profiles, activeProfileId, uiConfig, startJob, stopJob, deleteJob, downloadUrl, expired } = useApp()
+  const { jobs, profiles, activeProfileId, uiConfig, startJob, stopJob, deleteJob, downloadUrl, expired, busyJob } = useApp()
   const toast = useToast()
 
   const scrapeIdle = ['idle', 'stopped', 'done', 'failed'].includes(job.status)
@@ -33,10 +33,9 @@ export default function JobCard({ job, onOpenLogs }) {
   const scrapeBusy = scrapeRun || job.status === 'stopping'
   const hasData = job.hasData || job.totalLeads > 0
 
-  const anotherRunning = jobs.some(
-    (x) => x.id !== job.id && (x.status === 'running' || x.status === 'stopping'),
-  )
-  const runTitle = anotherRunning ? 'You already have a job running. Stop it first.' : 'Start scraping'
+  // One job at a time across ALL scrapers (not just this one).
+  const anotherRunning = !!busyJob && busyJob.id !== job.id
+  const runTitle = anotherRunning ? `You already have a job running (${busyJob.scraper}). Stop it before starting another.` : 'Start scraping'
 
   const profile = profiles.find((p) => p.id === (job.profileId || activeProfileId))
   const profileLabel = profile ? profile.name || profile.id : job.profileId ? 'Unknown profile' : ''

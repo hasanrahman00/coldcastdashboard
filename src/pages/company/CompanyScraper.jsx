@@ -17,7 +17,7 @@ export default function CompanyScraper() {
   const toast = useToast()
   const configured = api.companyConfigured()
 
-  const { companyJobs, upsertCompanyJob, removeCompanyJob, scraperConnected, expired } = useApp()
+  const { companyJobs, upsertCompanyJob, removeCompanyJob, scraperConnected, expired, busyJob } = useApp()
   const connected = scraperConnected('company')
   const jobs = companyJobs || []
   const [page, setPage] = useState(0)
@@ -127,16 +127,14 @@ export default function CompanyScraper() {
             </div>
             <h3>No jobs yet</h3>
             <p>Create your first Company scraping job to get started</p>
-            <button className="btn btn-p" onClick={() => setShowNew(true)} disabled={expired} title={expired ? 'Account expired — renew to run jobs' : ''}>
+            <button className="btn btn-p" onClick={() => setShowNew(true)} disabled={expired || !!busyJob} title={expired ? 'Account expired — renew to run jobs' : busyJob ? 'Finish your running job first — only one at a time' : ''}>
               <IconPlus />
               Create Job
             </button>
           </div>
         ) : (
           slice.map((j) => {
-            const otherRunning = jobs.some(
-              (x) => x.id !== j.id && (x.status === 'running' || x.status === 'stopping'),
-            )
+            const otherRunning = !!busyJob && busyJob.id !== j.id   // one job at a time across ALL scrapers
             return (
               <CompanyJobCard
                 key={j.id}

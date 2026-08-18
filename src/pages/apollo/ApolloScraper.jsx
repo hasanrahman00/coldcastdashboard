@@ -17,7 +17,7 @@ export default function ApolloScraper() {
   const toast = useToast()
   const configured = api.apolloConfigured()
 
-  const { apolloJobs, upsertApolloJob, removeApolloJob, scraperConnected, expired } = useApp()
+  const { apolloJobs, upsertApolloJob, removeApolloJob, scraperConnected, expired, busyJob } = useApp()
   const connected = scraperConnected('apollo')
   const jobs = apolloJobs || []
   const [page, setPage] = useState(0)
@@ -118,16 +118,14 @@ export default function ApolloScraper() {
             </div>
             <h3>No jobs yet</h3>
             <p>Create your first Apollo scraping job to get started</p>
-            <button className="btn btn-p" onClick={() => setShowNew(true)} disabled={expired} title={expired ? 'Account expired — renew to run jobs' : ''}>
+            <button className="btn btn-p" onClick={() => setShowNew(true)} disabled={expired || !!busyJob} title={expired ? 'Account expired — renew to run jobs' : busyJob ? 'Finish your running job first — only one at a time' : ''}>
               <IconPlus />
               Create Job
             </button>
           </div>
         ) : (
           slice.map((j) => {
-            const otherRunning = jobs.some(
-              (x) => x.id !== j.id && (x.status === 'running' || x.status === 'stopping'),
-            )
+            const otherRunning = !!busyJob && busyJob.id !== j.id   // one job at a time across ALL scrapers
             return (
               <ApolloJobCard
                 key={j.id}

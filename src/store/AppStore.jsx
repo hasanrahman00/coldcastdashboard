@@ -4,6 +4,7 @@ import {
   useEffect,
   useState,
   useCallback,
+  useMemo,
   useRef,
 } from 'react'
 import { api, AuthError, SCRAPER_HOSTS, getSavedKey, setSavedKey } from '../lib/api.js'
@@ -1029,6 +1030,24 @@ export function AppProvider({ initialMe, onLogout, children }) {
   // secondsLeft<=0 is the live-countdown fallback (an account that expires mid-session).
   const expired = !!(me && (me.user?.expired || (me.secondsLeft != null && me.secondsLeft <= 0)))
 
+  // ── One scraper at a time (per user, across ALL products) ─────────────────
+  // Each scraper runs on its OWN backend, so their per-user caps can't stop a
+  // user running two products at once. This is the dashboard-wide guard: the
+  // FIRST active job across every scraper. Pages disable Run/New Job whenever it's
+  // set (a running job's own Stop stays enabled by excluding its id).
+  const busyJob = useMemo(() => {
+    const A = ['running', 'stopping', 'queued', 'queueing', 'starting', 'pausing']
+    const scan = (list, label, set) => {
+      for (const j of (list || [])) {
+        if ((set || A).includes(String((j && j.status) || '').toLowerCase())) return { scraper: label, id: j.id, name: j.name || '' }
+      }
+      return null
+    }
+    return scan(jobs, 'Sales Nav') || scan(apolloJobs, 'Apollo') || scan(companyJobs, 'Company')
+        || scan(postJobs, 'Post Engagers') || scan(zoominfoJobs, 'ZoomInfo') || scan(domainJobs, 'Domain Enricher')
+        || scan(lisearchJobs, 'LinkedIn Search') || scan(enricherJobs, 'URL Enricher', ENRICH_ACTIVE) || null
+  }, [jobs, apolloJobs, companyJobs, postJobs, zoominfoJobs, domainJobs, lisearchJobs, enricherJobs])
+
   // Tell the extension (via its dashboard-bridge) when THIS browser is connected under a
   // DIFFERENT account than the one logged in here, so the extension popup + sidebar can
   // warn instead of showing a misleading "Connected". The content script writes it to
@@ -1092,6 +1111,7 @@ export function AppProvider({ initialMe, onLogout, children }) {
     credits: expired ? 0 : credits,
     uiConfig,
     localExt,
+    busyJob,   // the user's one active job across ALL scrapers (or null) — one-at-a-time gate
     refreshProfiles,
 
     // job actions (SSE pushes the resulting state back, so no manual refetch)

@@ -16,7 +16,7 @@ export default function PostScraper() {
   const toast = useToast()
   const configured = api.postConfigured()
 
-  const { postJobs, upsertPostJob, removePostJob, scraperConnected, expired } = useApp()
+  const { postJobs, upsertPostJob, removePostJob, scraperConnected, expired, busyJob } = useApp()
   const connected = scraperConnected('post')
   const jobs = postJobs || []
   const [page, setPage] = useState(0)
@@ -100,14 +100,14 @@ export default function PostScraper() {
             <div className="empty-ic">👥</div>
             <h3>No jobs yet</h3>
             <p>Paste a LinkedIn post URL to pull everyone who engaged with it</p>
-            <button className="btn btn-p" onClick={() => setShowNew(true)} disabled={expired} title={expired ? 'Account expired — renew to run jobs' : ''}>
+            <button className="btn btn-p" onClick={() => setShowNew(true)} disabled={expired || !!busyJob} title={expired ? 'Account expired — renew to run jobs' : busyJob ? 'Finish your running job first — only one at a time' : ''}>
               <IconPlus />
               Create Job
             </button>
           </div>
         ) : (
           slice.map((j) => {
-            const otherRunning = jobs.some((x) => x.id !== j.id && (x.status === 'running' || x.status === 'queued'))
+            const otherRunning = !!busyJob && busyJob.id !== j.id
             return (
               <PostJobCard
                 key={j.id}

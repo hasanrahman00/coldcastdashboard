@@ -14,7 +14,7 @@ export default function DomainEnricher() {
   const toast = useToast()
   const configured = api.domainConfigured()
 
-  const { domainJobs, upsertDomainJob, removeDomainJob, scraperConnected, expired } = useApp()
+  const { domainJobs, upsertDomainJob, removeDomainJob, scraperConnected, expired, busyJob } = useApp()
   const connected = scraperConnected('domain')
   const jobs = domainJobs || []
   const [page, setPage] = useState(0)
@@ -90,14 +90,14 @@ export default function DomainEnricher() {
             <div className="empty-ic">🌐</div>
             <h3>No jobs yet</h3>
             <p>Upload a CSV of company domains to enrich — firmographics + key contacts</p>
-            <button className="btn btn-p" onClick={() => setShowNew(true)} disabled={expired} title={expired ? 'Account expired — renew to run jobs' : ''}>
+            <button className="btn btn-p" onClick={() => setShowNew(true)} disabled={expired || !!busyJob} title={expired ? 'Account expired — renew to run jobs' : busyJob ? 'Finish your running job first — only one at a time' : ''}>
               <IconPlus />
               Create Job
             </button>
           </div>
         ) : (
           slice.map((j) => {
-            const otherRunning = jobs.some((x) => x.id !== j.id && (x.status === 'running' || x.status === 'queued'))
+            const otherRunning = !!busyJob && busyJob.id !== j.id
             return (
               <DomainJobCard
                 key={j.id}

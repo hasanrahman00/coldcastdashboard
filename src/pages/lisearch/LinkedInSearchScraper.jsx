@@ -14,7 +14,7 @@ export default function LinkedInSearchScraper() {
   const toast = useToast()
   const configured = api.lisearchConfigured()
 
-  const { lisearchJobs, upsertLisearchJob, removeLisearchJob, scraperConnected, expired } = useApp()
+  const { lisearchJobs, upsertLisearchJob, removeLisearchJob, scraperConnected, expired, busyJob } = useApp()
   const connected = scraperConnected('lisearch')
   const jobs = lisearchJobs || []
   const [page, setPage] = useState(0)
@@ -94,14 +94,14 @@ export default function LinkedInSearchScraper() {
             <div className="empty-ic">🕵️</div>
             <h3>No jobs yet</h3>
             <p>Paste a LinkedIn People or Services search URL to export it</p>
-            <button className="btn btn-p" onClick={() => setShowNew(true)} disabled={expired} title={expired ? 'Account expired — renew to run jobs' : ''}>
+            <button className="btn btn-p" onClick={() => setShowNew(true)} disabled={expired || !!busyJob} title={expired ? 'Account expired — renew to run jobs' : busyJob ? 'Finish your running job first — only one at a time' : ''}>
               <IconPlus />
               Create Job
             </button>
           </div>
         ) : (
           slice.map((j) => {
-            const otherRunning = jobs.some((x) => x.id !== j.id && (x.status === 'running' || x.status === 'queued'))
+            const otherRunning = !!busyJob && busyJob.id !== j.id
             return (
               <LinkedInSearchJobCard
                 key={j.id}
