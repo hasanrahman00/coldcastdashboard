@@ -838,6 +838,7 @@ textarea{resize:vertical;min-height:80px;font-family:var(--mono);font-size:12.5p
 }
 .sbox-ic svg{width:18px;height:18px;stroke-width:2}
 .sbox h3{font-size:15.5px;font-weight:600;letter-spacing:-.01em}
+.sbox-title{margin-bottom:16px}
 .sbox p{color:var(--text-muted);font-size:13px;margin-bottom:18px;line-height:1.6;margin-top:2px}
 code{
   background:var(--bg);

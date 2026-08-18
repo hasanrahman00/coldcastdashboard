@@ -5,6 +5,7 @@ import FreeAccountCard from '../components/FreeAccountCard.jsx'
 export default function Setup() {
   return (
     <div className="sbox">
+      <h3 className="sbox-title">Enrichment sources</h3>
       <div className="enrich-grid">
         <FreeAccountCard name="Lusha" source="lusha" />
         <FreeAccountCard name="SalesQL" source="salesql" warn="Sign up with your own Gmail — you need your own free account, then log in." />
