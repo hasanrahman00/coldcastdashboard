@@ -196,17 +196,27 @@ export function AppProvider({ initialMe, onLogout, children }) {
     let es
     let closed = false
     let retry
+    let backoff = 3000  // reconnect delay; grows on repeated failures, resets on a healthy stream
+    let failures = 0    // consecutive SSE closes without a successful reopen
 
     const load = async () => {
+      if (closed) return
       try {
         const list = await api.jobs()
         if (!closed && Array.isArray(list)) setJobs(list)
-      } catch { /* keep last-known; the SSE + next poll reconcile */ }
+      } catch (e) {
+        // An expired/invalid token surfaces here as an AuthError. An SSE 401 only
+        // CLOSES the stream (no catchable error), so this paired load() is how we
+        // detect a dead token — stop the reconnect loop and log out.
+        if (e instanceof AuthError) { closed = true; clearTimeout(retry); onLogout(); return }
+        /* else keep last-known; the SSE + next poll reconcile */
+      }
     }
 
     const connect = () => {
       try { es = api.events() } catch { return }
       es.addEventListener('init', (ev) => {
+        failures = 0; backoff = 3000  // healthy stream → reset the backoff
         try { setJobs(JSON.parse(ev.data) || []) } catch { /* ignore */ }
       })
       es.addEventListener('job:update', (ev) => {
@@ -231,10 +241,15 @@ export function AppProvider({ initialMe, onLogout, children }) {
       })
       // Reconnect once fully CLOSED (token rejected / server closed it). Transient
       // drops auto-reconnect; a silent stall is covered by the poll + visibility revive.
+      // Exponential backoff (capped at 30s) so a persistently-failing endpoint isn't
+      // hammered every 3s; after several straight failures the token is likely dead —
+      // a load() confirms (AuthError → onLogout) and stops the loop.
       es.onerror = () => {
         if (es.readyState === EventSource.CLOSED && !closed) {
           clearTimeout(retry)
-          retry = setTimeout(connect, 3000)
+          if (++failures >= 4) load()
+          retry = setTimeout(connect, backoff)
+          backoff = Math.min(backoff * 2, 30000)
         }
       }
     }
