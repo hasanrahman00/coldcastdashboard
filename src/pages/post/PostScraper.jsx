@@ -168,9 +168,13 @@ function PostLogsModal({ job, onClose }) {
           {copied ? '✓ Copied' : '📋 Copy logs'}
         </button>
       </div>
-      <pre style={{ maxHeight: '55vh', overflow: 'auto', background: 'var(--bg-elev-2)', border: '1px solid var(--border)', borderRadius: 10, padding: 14, fontFamily: "ui-monospace, 'SF Mono', 'JetBrains Mono', Menlo, Consolas, monospace", fontSize: 12.5, lineHeight: 1.65, whiteSpace: 'pre-wrap', color: 'var(--text)', margin: 0 }}>
-        {logs.length ? logs.join('\n') : 'No logs yet.'}
-      </pre>
+      <div style={{ maxHeight: '55vh', overflow: 'auto', background: 'var(--bg-elev-2)', border: '1px solid var(--border)', borderRadius: 10, padding: 14, fontFamily: "'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace", fontSize: 12.5, lineHeight: 1.6, color: 'var(--text)' }}>
+        {logs.length
+          ? logs.map((line, i) => (
+              <div key={i} style={{ padding: '5px 0', whiteSpace: 'pre-wrap', wordBreak: 'break-word', letterSpacing: 0.1 }}>{line}</div>
+            ))
+          : <div style={{ color: 'var(--text-muted)' }}>No logs yet.</div>}
+      </div>
     </Modal>
   )
 }
