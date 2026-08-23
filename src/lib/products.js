@@ -105,6 +105,7 @@ export const PRODUCTS = [
     soon: false,
     icon: IconLayers,
     emoji: '🌊',
+    image: '/email-icon.png',   // @-envelope email icon (public/); falls back to emoji
     title: 'Waterfall Email Enrich',
     short: 'Chain providers to maximize verified-email coverage.',
     body: 'Chain your providers in a waterfall to maximize verified-email coverage. Each lead falls through to the next source until a valid, deliverable address is found — then runs through the built-in verifier.',
@@ -124,11 +125,13 @@ export const PRODUCTS = [
   },
   {
     id: 'zoominfo',
-    label: 'Scrape ZoomInfo',
+    label: 'Scrape ZoomInfo Leads',   // big page header + tools card
+    navLabel: 'Scrape ZoomInfo',       // sidebar tab
     soon: false,
     icon: IconSearchPlus,
     emoji: '🔎',
-    title: 'Scrape ZoomInfo',
+    image: '/zoominfo-icon.png',   // ZoomInfo logo (public/); falls back to emoji
+    title: 'Scrape ZoomInfo Leads',
     short: 'Pull contacts & accounts from ZoomInfo into clean CSVs.',
     body: 'Pull contacts and accounts from ZoomInfo into clean, enriched CSVs — direct dials, work emails, and company data — without manual exports or seat limits.',
   },
