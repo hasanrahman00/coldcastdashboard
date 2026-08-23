@@ -26,7 +26,7 @@ export default function Sidebar({ route, nav }) {
         title={label}
         onClick={() => nav(p.id)}
       >
-        <span className="snav-ic snav-emoji">{p.emoji || <Icon />}</span>
+        <span className="snav-ic snav-emoji">{p.image ? <img className="snav-img" src={p.image} alt="" /> : (p.emoji || <Icon />)}</span>
         <span className="snav-label">{label}</span>
         {p.badge && !p.soon && <span className="snav-deal">{p.badge}</span>}
         {p.soon && <span className="snav-soon">Soon</span>}

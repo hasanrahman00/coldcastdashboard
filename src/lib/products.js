@@ -28,11 +28,12 @@ import {
 export const PRODUCTS = [
   {
     id: 'salesnav',
-    label: 'Scrape LinkedIn Sales',
+    label: 'LinkedIn Sales Navigator',
     soon: false,
     icon: IconGlobe,
     emoji: '🧭',
-    title: 'Scrape LinkedIn Sales',
+    image: '/salesnav-icon.webp',   // Sales Navigator app icon (public/); falls back to emoji
+    title: 'LinkedIn Sales Navigator Scraper',
     short: 'Enriched lead lists from your LinkedIn Sales Navigator searches.',
     body: 'Export clean, enriched lead lists from your LinkedIn Sales Navigator searches — names, titles, verified emails, and company firmographics — in one click.',
   },

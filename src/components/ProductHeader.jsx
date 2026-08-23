@@ -6,7 +6,9 @@ export default function ProductHeader({ product }) {
   const Icon = product.icon
   return (
     <div className="phead" data-p={product.id}>
-      <span className="phead-ic">{product.emoji || <Icon />}</span>
+      <span className={'phead-ic' + (product.image ? ' phead-ic-img' : '')}>
+        {product.image ? <img src={product.image} alt="" /> : (product.emoji || <Icon />)}
+      </span>
       <h2 className="phead-name">{product.label}</h2>
     </div>
   )

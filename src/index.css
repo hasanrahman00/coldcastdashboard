@@ -1332,6 +1332,10 @@ body{flex-direction:column}
 .phead-emoji{font-size:28px;line-height:1}
 .phead-ic{width:40px;height:40px;flex:none;border-radius:11px;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.14);color:var(--brand);font-size:22px;line-height:1}
 .phead-ic svg{width:22px;height:22px;stroke-width:2}
+/* Product with a real app-icon image (products.js `image`) — fill the tile, clip to its radius. */
+.phead-ic.phead-ic-img{background:none;overflow:hidden}
+.phead-ic.phead-ic-img img{width:100%;height:100%;object-fit:cover;display:block}
+.snav-emoji img.snav-img{width:18px;height:18px;border-radius:5px;object-fit:cover;display:block}
 .phead-name{font-size:23px;font-weight:800;letter-spacing:-.02em;line-height:1.1;color:var(--text)}
 
 /* ═══════════════════ COMING SOON module ═══════════════════ */
