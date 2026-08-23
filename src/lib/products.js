@@ -130,7 +130,7 @@ export const PRODUCTS = [
     soon: false,
     icon: IconSearchPlus,
     emoji: '🔎',
-    image: '/zoominfo-icon.png',   // ZoomInfo logo (public/); falls back to emoji
+    image: '/zoominfo-icon-v2.png',   // ZoomInfo logo (public/); falls back to emoji
     title: 'Scrape ZoomInfo Leads',
     short: 'Pull contacts & accounts from ZoomInfo into clean CSVs.',
     body: 'Pull contacts and accounts from ZoomInfo into clean, enriched CSVs — direct dials, work emails, and company data — without manual exports or seat limits.',
