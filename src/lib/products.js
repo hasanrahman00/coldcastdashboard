@@ -28,7 +28,8 @@ import {
 export const PRODUCTS = [
   {
     id: 'salesnav',
-    label: 'LinkedIn Sales Navigator',
+    label: 'LinkedIn Sales Navigator Scraper',   // big page header
+    navLabel: 'LinkedIn Sales Navigator',        // shorter sidebar tab
     soon: false,
     icon: IconGlobe,
     emoji: '🧭',
