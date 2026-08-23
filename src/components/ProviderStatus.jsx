@@ -7,16 +7,24 @@ import { useApp } from '../store/AppStore.jsx'
 // provider flips its badge within seconds — no reload. This helps non-technical
 // users see, at a glance, exactly which sources to sign into before a job runs.
 // Lusha / ContactOut / SalesQL only need a FREE account — that's all the scraper
-// uses. LinkedIn is the user's own Sales Nav session (not a free signup). Each
-// badge links to that source's login page so the user can sign in in one click.
-const PROVIDERS = [
-  { key: 'lusha',      label: 'Free Lusha',               url: 'https://www.lusha.com/login/' },
+// uses. Each badge links to that source's login page so the user can sign in in
+// one click.
+//
+// The LinkedIn entry differs per product: the Sales Nav scraper needs the user's
+// Sales Navigator session, the post-engagers scraper only needs a regular LinkedIn
+// login. Detection is identical (both are the same LinkedIn session cookie); only
+// the label + login link change. Pass `linkedin="linkedin"` for the post scraper.
+const BASE = [
+  { key: 'lusha',      label: 'Free Lusha',      url: 'https://www.lusha.com/login/' },
   // SalesQL & ContactOut need the user's OWN free account (their own Gmail) — send
   // them to the Setup page, which explains that + fetches/gets the free account.
-  { key: 'contactout', label: 'Free ContactOut',          url: '#/setup' },
-  { key: 'salesql',    label: 'Free SalesQL',             url: '#/setup' },
-  { key: 'linkedin',   label: 'LinkedIn Sales Navigator', url: 'https://www.linkedin.com/sales/' },
+  { key: 'contactout', label: 'Free ContactOut', url: '#/setup' },
+  { key: 'salesql',    label: 'Free SalesQL',    url: '#/setup' },
 ]
+const LINKEDIN = {
+  salesnav: { key: 'linkedin', label: 'LinkedIn Sales Navigator', url: 'https://www.linkedin.com/sales/' },
+  linkedin: { key: 'linkedin', label: 'LinkedIn',                 url: 'https://www.linkedin.com/feed/' },
+}
 
 const Check = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -29,8 +37,9 @@ const Cross = () => (
   </svg>
 )
 
-export default function ProviderStatus() {
+export default function ProviderStatus({ linkedin = 'salesnav' }) {
   const { localExt } = useApp()
+  const PROVIDERS = [...BASE, LINKEDIN[linkedin] || LINKEDIN.salesnav]
   const providers = (localExt && localExt.providers) || null
   const on = providers ? PROVIDERS.filter((p) => providers[p.key]) : []
   const off = providers ? PROVIDERS.filter((p) => !providers[p.key]) : []

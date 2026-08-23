@@ -6,6 +6,7 @@ import Modal from '../../components/Modal.jsx'
 import PostJobCard from './PostJobCard.jsx'
 import PostNewJobModal from './PostNewJobModal.jsx'
 import ScraperConnection from '../../components/ScraperConnection.jsx'
+import ProviderStatus from '../../components/ProviderStatus.jsx'
 import { IconPlus, IconChevronLeft, IconChevronRight } from '../../lib/icons.jsx'
 
 const JOBS_PER_PAGE = 9 // 3 cols × 3 rows — matches the other scraper grids
@@ -76,16 +77,24 @@ export default function PostScraper() {
   return (
     <div>
       <ScraperConnection scraper="post" name="Post-engagers scraping" />
+      <ProviderStatus linkedin="linkedin" />
 
       <div className="newjob-bar">
         <button
           className="btn btn-p"
           onClick={() => setShowNew(true)}
           disabled={!connected || expired || !!busyJob}
-          title={expired ? 'Account expired — renew to run jobs' : connected ? '' : 'Connect the Coldcast extension in this browser to run a job here'}
+          title={expired ? 'Account expired — renew to run jobs' : busyJob ? `You already have a job running (${busyJob.scraper}). Only one at a time.` : connected ? '' : 'Connect the Coldcast extension in this browser to run a job here'}
         >
           <IconPlus />
           New Job
+        </button>
+        <button
+          className="btn btn-g"
+          onClick={() => { window.location.hash = '#/setup' }}
+          title="Get free Lusha, ContactOut & SalesQL accounts"
+        >
+          Fetch Free Accounts
         </button>
       </div>
 
