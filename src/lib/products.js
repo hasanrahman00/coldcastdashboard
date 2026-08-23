@@ -100,7 +100,8 @@ export const PRODUCTS = [
   },
   {
     id: 'waterfall',
-    label: 'Waterfall Enrich',
+    label: 'Waterfall Email Enrich',   // big page header + tools card
+    navLabel: 'Email Enrichment',        // sidebar tab
     soon: false,
     icon: IconLayers,
     emoji: '🌊',
