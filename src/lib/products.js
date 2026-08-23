@@ -52,12 +52,13 @@ export const PRODUCTS = [
   },
   {
     id: 'company',
-    label: 'Sales Nav Company Scrape',
-    navLabel: 'Scrape Company',
+    label: 'Sales Navigator Account Scraper',   // big page header + tools card
+    navLabel: 'Sales Navigator Account',         // sidebar tab
     soon: false,
     icon: IconUsers,
     emoji: '🏢',
-    title: 'Sales Nav Company Scrape',
+    image: '/salesnav-icon.webp',   // same Sales Navigator app icon as the salesnav product
+    title: 'Sales Navigator Account Scraper',
     short: 'Company & account lists from your Sales Navigator searches.',
     body: 'Export company & account lists straight from your LinkedIn Sales Navigator account searches — company names, domains, size, industry, and firmographics — with the same one-click flow as the lead scrapers.',
   },
