@@ -62,7 +62,7 @@ export const PRODUCTS = [
   {
     id: 'post',
     label: 'LinkedIn Post React & Engage Scraper',   // big page header + tools card
-    navLabel: 'LinkedIn Post React & Engage',         // shorter sidebar tab
+    navLabel: 'LinkedIn React & Engage',              // shorter sidebar tab (avoids truncation)
     soon: false,
     icon: IconZap,
     emoji: '👥',
