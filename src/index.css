@@ -1308,6 +1308,9 @@ body{flex-direction:column}
 .pcard-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:13px}
 .pcard-ic{width:40px;height:40px;flex:none;border-radius:11px;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.14);color:var(--brand);font-size:22px;line-height:1}
 .pcard-ic svg{width:21px;height:21px;stroke-width:2}
+/* Product with a real app-icon image (products.js `image`) — fill the tile, clip to its radius. */
+.pcard-ic.pcard-ic-img{background:none;overflow:hidden}
+.pcard-ic.pcard-ic-img img{width:100%;height:100%;object-fit:cover;display:block}
 .pcard-badge{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;padding:3px 8px;border-radius:999px;line-height:1.4;white-space:nowrap;border:1px solid transparent}
 .pcard-badge.live{color:#059669;background:rgba(0,0,0,.12);border-color:rgba(0,0,0,.28)}
 .pcard-badge.soon{color:#b45309;background:rgba(232,194,88,.12);border-color:rgba(232,194,88,.28)}
