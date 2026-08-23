@@ -61,11 +61,13 @@ export const PRODUCTS = [
   },
   {
     id: 'post',
-    label: 'Scrape Post Engagers',
+    label: 'LinkedIn Post React & Engage Scraper',   // big page header + tools card
+    navLabel: 'LinkedIn Post React & Engage',         // shorter sidebar tab
     soon: false,
     icon: IconZap,
     emoji: '👥',
-    title: 'Scrape LinkedIn Post Engagers',
+    image: '/linkedin-post-icon.png',   // LinkedIn app icon (public/); falls back to emoji
+    title: 'LinkedIn Post React & Engage Scraper',
     short: 'Everyone who reacted, commented, or reposted a LinkedIn post.',
     body: 'Turn any LinkedIn post into a lead list — every profile that reacted, commented, or reposted it — exported straight from your own connected browser. Paste the post URL, run it, download the CSV.',
   },
