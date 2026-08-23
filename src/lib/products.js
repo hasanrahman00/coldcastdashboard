@@ -40,11 +40,13 @@ export const PRODUCTS = [
   },
   {
     id: 'apollo',
-    label: 'Scrape Apollo',
+    label: 'Scrape Apollo Leads',   // big page header + tools card
+    navLabel: 'Scrape Apollo',       // sidebar tab
     soon: false,
     icon: IconFeather,
     emoji: '🚀',
-    title: 'Scrape Apollo',
+    image: '/apollo-icon.png',   // Apollo.io logo (public/); falls back to emoji
+    title: 'Scrape Apollo Leads',
     short: 'Targeted contact & company lists from your Apollo searches.',
     body: 'Export targeted contact and company lists straight from your Apollo searches — names, titles, verified emails, and firmographics — with the same one-click flow as the Sales Nav scraper.',
   },
