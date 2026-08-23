@@ -69,7 +69,7 @@ export const PRODUCTS = [
     soon: false,
     icon: IconZap,
     emoji: '👥',
-    image: '/linkedin-post-icon.png',   // LinkedIn app icon (public/); falls back to emoji
+    image: '/linkedin-icon-v2.jpg',   // LinkedIn app icon (public/); falls back to emoji
     title: 'LinkedIn Post React & Engage Scraper',
     short: 'Everyone who reacted, commented, or reposted a LinkedIn post.',
     body: 'Turn any LinkedIn post into a lead list — every profile that reacted, commented, or reposted it — exported straight from your own connected browser. Paste the post URL, run it, download the CSV.',
@@ -81,7 +81,7 @@ export const PRODUCTS = [
     soon: false,
     icon: IconSearchPlus,
     emoji: '🕵️',
-    image: '/linkedin-post-icon.png',   // LinkedIn app icon (same as the post product)
+    image: '/linkedin-icon-v2.jpg',   // LinkedIn app icon (same as the post product)
     title: 'LinkedIn Search & Service URL Scraper',
     short: 'People & Services search → clean CSV, optionally enriched.',
     body: 'Export any LinkedIn People or Services search into a clean CSV — names, headlines, locations, and profile URLs — scraped in your own connected browser, with optional email + company enrichment (Lusha / ContactOut / SalesQL).',
@@ -93,7 +93,7 @@ export const PRODUCTS = [
     soon: false,
     icon: IconLink,
     emoji: '🔗',
-    image: '/linkedin-post-icon.png',   // LinkedIn app icon (same as the post product)
+    image: '/linkedin-icon-v2.jpg',   // LinkedIn app icon (same as the post product)
     title: 'LinkedIn URL Enrichment',
     short: 'Turn LinkedIn profile URLs into names, emails & firmographics.',
     body: 'Upload a list of LinkedIn profile URLs and get back names, titles, verified business emails, phones, and company firmographics — enriched in your own connected browser across Lusha, ContactOut, and SalesQL, then merged into one clean CSV.',
