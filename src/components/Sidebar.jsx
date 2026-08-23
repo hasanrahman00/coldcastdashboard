@@ -50,7 +50,7 @@ export default function Sidebar({ route, nav }) {
           title="Dashboard"
           onClick={() => nav('home')}
         >
-          <span className="snav-ic snav-emoji">📊</span>
+          <span className="snav-ic snav-emoji"><IconLogo /></span>
           <span className="snav-label">Dashboard</span>
         </button>
 
