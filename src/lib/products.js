@@ -77,7 +77,7 @@ export const PRODUCTS = [
   {
     id: 'lisearch',
     label: 'LinkedIn Search & Service Scraper',   // big page header + tools card
-    navLabel: 'LinkedIn Search & Services',        // sidebar tab
+    navLabel: 'LinkedIn Search',                   // sidebar tab (short — full name truncated)
     soon: false,
     icon: IconSearchPlus,
     emoji: '🕵️',
