@@ -653,7 +653,7 @@ export function AppProvider({ initialMe, onLogout, children }) {
   // usage now tick live as a job runs, without a reload — and stay quiet when idle
   // (the 8s poll covers that) so Core isn't hammered.
   useEffect(() => {
-    const active = [jobs, apolloJobs, companyJobs, postJobs, zoominfoJobs, domainJobs]
+    const active = [jobs, apolloJobs, companyJobs, postJobs, zoominfoJobs, domainJobs, lisearchJobs, enricherJobs]
       .some((list) => (list || []).some((j) => j && (j.status === 'running' || j.status === 'queued')))
     if (!active) return
     const t = setTimeout(() => {
@@ -662,7 +662,7 @@ export function AppProvider({ initialMe, onLogout, children }) {
       refreshProfiles()
     }, 1200)
     return () => clearTimeout(t)
-  }, [jobs, apolloJobs, companyJobs, postJobs, zoominfoJobs, domainJobs, refreshCredits, refreshProfiles])
+  }, [jobs, apolloJobs, companyJobs, postJobs, zoominfoJobs, domainJobs, lisearchJobs, enricherJobs, refreshCredits, refreshProfiles])
 
   // ── Default the active-profile radio to THIS BROWSER ───────────────────
   // The profile connected through the dashboard's own browser (localExt) is the
