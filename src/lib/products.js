@@ -149,11 +149,13 @@ export const PRODUCTS = [
   },
   {
     id: 'domain',
-    label: 'Enrich Domain',
+    label: 'Enrich Website With AI',   // big page header + tools card
+    navLabel: 'AI SDR',                  // sidebar tab
     soon: false,
     icon: IconAtSign,
     emoji: '🌐',
-    title: 'Enrich Domain',
+    image: '/aisdr-icon.png',   // AI SDR icon (public/); falls back to emoji
+    title: 'Enrich Website With AI',
     short: 'Turn company domains into full firmographics.',
     body: 'Turn a list of company domains into full firmographics — company name, industry, size, location, socials, and key contacts — in one upload. The same enrichment engine behind the scraper, pointed straight at domains.',
   },
