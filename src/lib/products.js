@@ -137,11 +137,13 @@ export const PRODUCTS = [
   },
   {
     id: 'verify',
-    label: 'Verify Email',
+    label: 'Remove Catch-all & Bounced Emails',   // big page header + tools card
+    navLabel: 'Catch Email Verify',                 // sidebar tab
     soon: false,
     icon: IconMailCheck,
     emoji: '✅',
-    title: 'Verify Email',
+    image: '/verify-icon.jpg',   // email-verify icon (public/); falls back to emoji
+    title: 'Remove Catch-all & Bounced Emails',
     short: 'Bulk-validate emails — syntax, MX, SMTP, catch-all & risk.',
     body: 'Validate any email list in bulk — syntax, MX, SMTP, catch-all, and risk scoring — so you only send to deliverable addresses and protect your sender reputation. This is the engine that powers the waterfall enricher.',
   },
