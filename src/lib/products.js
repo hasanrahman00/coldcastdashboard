@@ -76,13 +76,13 @@ export const PRODUCTS = [
   },
   {
     id: 'lisearch',
-    label: 'LinkedIn Search & Service Scraper',   // big page header + tools card
+    label: 'LinkedIn Search & Service URL Scraper',   // big page header + tools card
     navLabel: 'LinkedIn Search',                   // sidebar tab (short — full name truncated)
     soon: false,
     icon: IconSearchPlus,
     emoji: '🕵️',
     image: '/linkedin-post-icon.png',   // LinkedIn app icon (same as the post product)
-    title: 'LinkedIn Search & Service Scraper',
+    title: 'LinkedIn Search & Service URL Scraper',
     short: 'People & Services search → clean CSV, optionally enriched.',
     body: 'Export any LinkedIn People or Services search into a clean CSV — names, headlines, locations, and profile URLs — scraped in your own connected browser, with optional email + company enrichment (Lusha / ContactOut / SalesQL).',
   },
