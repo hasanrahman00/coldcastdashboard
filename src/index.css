@@ -1123,9 +1123,9 @@ body{flex-direction:column}
 
 /* Left sidebar — a clean LIGHT panel with emoji nav and a solid accent "pill" for the
    active item (à la the reference). */
-.side{flex:0 0 244px;width:244px;display:flex;flex-direction:column;background:#fafafa;overflow-y:auto;padding:0 12px 18px;scrollbar-width:thin;box-shadow:6px 0 22px -16px rgba(0,0,0,.5)}
-.side::-webkit-scrollbar{width:6px}
-.side::-webkit-scrollbar-thumb{background:rgba(0,0,0,.18);border-radius:999px}
+.side{flex:0 0 290px;width:290px;display:flex;flex-direction:column;background:#fafafa;overflow-y:auto;padding:0 12px 18px;scrollbar-width:none;box-shadow:6px 0 22px -16px rgba(0,0,0,.5)}
+/* Hide the sidebar scrollbar (the gray vertical line) — still scrolls via wheel/trackpad. */
+.side::-webkit-scrollbar{width:0;height:0;display:none}
 .side-brand{display:flex;align-items:center;gap:11px;cursor:pointer;padding:16px 8px 14px;position:sticky;top:0;background:#fafafa;z-index:1}
 .side-logo{width:36px;height:36px;border-radius:11px;background:#D3FF27;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(211,255,39,.4);flex-shrink:0;position:relative}
 .side-logo::after{content:'';position:absolute;inset:0;border-radius:11px;background:linear-gradient(135deg,rgba(0,0,0,.28),transparent 55%)}
