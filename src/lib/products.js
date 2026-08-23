@@ -76,21 +76,25 @@ export const PRODUCTS = [
   },
   {
     id: 'lisearch',
-    label: 'Scrape LinkedIn Search',
+    label: 'LinkedIn Search & Service Scraper',   // big page header + tools card
+    navLabel: 'LinkedIn Search & Services',        // sidebar tab
     soon: false,
     icon: IconSearchPlus,
     emoji: '🕵️',
-    title: 'Scrape LinkedIn Search',
+    image: '/linkedin-post-icon.png',   // LinkedIn app icon (same as the post product)
+    title: 'LinkedIn Search & Service Scraper',
     short: 'People & Services search → clean CSV, optionally enriched.',
     body: 'Export any LinkedIn People or Services search into a clean CSV — names, headlines, locations, and profile URLs — scraped in your own connected browser, with optional email + company enrichment (Lusha / ContactOut / SalesQL).',
   },
   {
     id: 'linkedin',
-    label: 'LinkedIn URL Enrich',
+    label: 'LinkedIn URL Enrichment',   // big page header + tools card
+    navLabel: 'LinkedIn URL Enrich',      // sidebar tab (unchanged)
     soon: false,
     icon: IconLink,
     emoji: '🔗',
-    title: 'LinkedIn URL Enrich',
+    image: '/linkedin-post-icon.png',   // LinkedIn app icon (same as the post product)
+    title: 'LinkedIn URL Enrichment',
     short: 'Turn LinkedIn profile URLs into names, emails & firmographics.',
     body: 'Upload a list of LinkedIn profile URLs and get back names, titles, verified business emails, phones, and company firmographics — enriched in your own connected browser across Lusha, ContactOut, and SalesQL, then merged into one clean CSV.',
   },
