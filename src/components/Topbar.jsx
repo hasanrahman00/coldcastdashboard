@@ -2,7 +2,8 @@ import { useState, useRef, useEffect } from 'react'
 import { useApp } from '../store/AppStore.jsx'
 import { useToast } from '../store/ToastProvider.jsx'
 import { getProduct } from '../lib/products.js'
-import { IconKeyOutline, IconSignout } from '../lib/icons.jsx'
+import { waLink } from '../lib/whatsapp.js'
+import { IconKeyOutline, IconSignout, IconWhatsApp } from '../lib/icons.jsx'
 
 // Topbar icons — ported VERBATIM from the approved mockup (bare <svg>, CSS-sized).
 const IcBars = () => <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
@@ -142,6 +143,26 @@ export default function Topbar({ route, nav, onLogout, onGuide }) {
           <button className="acct-item" onClick={() => { setOpen(false); nav('api') }}>
             <IconKeyOutline /> API key
           </button>
+          <a
+            className="acct-item"
+            href={waLink('Hi! I’d like to book a demo of Coldcast.')}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ textDecoration: 'none' }}
+            onClick={() => setOpen(false)}
+          >
+            <IconWhatsApp /> Book a demo
+          </a>
+          <a
+            className="acct-item"
+            href={waLink('Hi! I have a question about Coldcast.')}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ textDecoration: 'none' }}
+            onClick={() => setOpen(false)}
+          >
+            <IconWhatsApp /> WhatsApp us
+          </a>
           <div className="acct-sep" />
           <button className="acct-item danger" onClick={() => { setOpen(false); onLogout() }}>
             <IconSignout /> Sign out
