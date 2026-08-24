@@ -18,7 +18,6 @@ import LinkedInSearchScraper from '../pages/lisearch/LinkedInSearchScraper.jsx'
 import SalesNavDeal from '../pages/sndeal/SalesNavDeal.jsx'
 import ProductsHome from '../pages/ProductsHome.jsx'
 import ServicesHome from '../pages/ServicesHome.jsx'
-import ProductHeader from './ProductHeader.jsx'
 import ComingSoon from '../pages/ComingSoon.jsx'
 import Settings from '../pages/Settings.jsx'
 import Setup from '../pages/Setup.jsx'
@@ -122,7 +121,6 @@ export default function Dashboard({ onLogout }) {
         <main className="mn">
           {/* data-p sets --pc for the whole page so job cards can tint with the product accent */}
           <div className="cnt" data-p={activeProduct && !activeProduct.soon ? route : undefined}>
-            {activeProduct && !activeProduct.soon && <ProductHeader product={activeProduct} />}
             {page}
           </div>
         </main>

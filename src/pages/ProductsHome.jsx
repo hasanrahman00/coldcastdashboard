@@ -77,7 +77,7 @@ export default function ProductsHome({ nav }) {
   const recent = Object.entries(arrays)
     .flatMap(([pid, arr]) => (arr || []).map((j) => ({ key: `${pid}-${j.id}`, pid, j })))
     .sort((a, b) => jobMs(b.j) - jobMs(a.j))
-    .slice(0, 6)
+    .slice(0, 5)
 
   return (
     <div className="thome">
