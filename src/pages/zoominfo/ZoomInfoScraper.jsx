@@ -5,7 +5,6 @@ import { useToast } from '../../store/ToastProvider.jsx'
 import Modal from '../../components/Modal.jsx'
 import ZoomInfoJobCard from './ZoomInfoJobCard.jsx'
 import ZoomInfoNewJobModal from './ZoomInfoNewJobModal.jsx'
-import ScraperConnection from '../../components/ScraperConnection.jsx'
 import { IconPlus, IconChevronLeft, IconChevronRight } from '../../lib/icons.jsx'
 
 const JOBS_PER_PAGE = 9
@@ -65,8 +64,6 @@ export default function ZoomInfoScraper() {
 
   return (
     <div>
-      <ScraperConnection scraper="zoominfo" name="ZoomInfo scraping" />
-
       <div className="newjob-bar">
         <button
           className="btn btn-p"

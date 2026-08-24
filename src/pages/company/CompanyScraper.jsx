@@ -5,8 +5,6 @@ import { useToast } from '../../store/ToastProvider.jsx'
 import Modal from '../../components/Modal.jsx'
 import CompanyJobCard from './CompanyJobCard.jsx'
 import CompanyNewJobModal from './CompanyNewJobModal.jsx'
-import ScraperConnection from '../../components/ScraperConnection.jsx'
-import ProviderStatus from '../../components/ProviderStatus.jsx'
 import { IconPlus, IconChevronLeft, IconChevronRight } from '../../lib/icons.jsx'
 
 const JOBS_PER_PAGE = 9 // 3 cols × 3 rows — matches the Sales Nav grid
@@ -95,10 +93,6 @@ export default function CompanyScraper() {
 
   return (
     <div>
-      <ScraperConnection scraper="company" name="Company scraping" />
-      {/* Company enriches via Lusha + ContactOut + LinkedIn — no SalesQL, so hide it. */}
-      <ProviderStatus exclude={['salesql']} />
-
       {/* Centered New Job — same sticky bar as the Sales Nav tab */}
       <div className="newjob-bar">
         <button

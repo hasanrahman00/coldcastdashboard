@@ -5,7 +5,6 @@ import { useToast } from '../../store/ToastProvider.jsx'
 import Modal from '../../components/Modal.jsx'
 import LinkedInSearchJobCard from './LinkedInSearchJobCard.jsx'
 import LinkedInSearchNewJobModal from './LinkedInSearchNewJobModal.jsx'
-import ScraperConnection from '../../components/ScraperConnection.jsx'
 import { IconPlus, IconChevronLeft, IconChevronRight } from '../../lib/icons.jsx'
 
 const JOBS_PER_PAGE = 9
@@ -69,8 +68,6 @@ export default function LinkedInSearchScraper() {
 
   return (
     <div>
-      <ScraperConnection scraper="lisearch" name="LinkedIn search scraping" />
-
       <div className="newjob-bar">
         <button
           className="btn btn-p"

@@ -3,7 +3,6 @@ import { api } from '../../lib/api.js'
 import { useToast } from '../../store/ToastProvider.jsx'
 import Modal from '../../components/Modal.jsx'
 import EnricherJobCard from './EnricherJobCard.jsx'
-import ScraperConnection from '../../components/ScraperConnection.jsx'
 import { useApp } from '../../store/AppStore.jsx'
 import { IconUpload, IconChevronLeft, IconChevronRight } from '../../lib/icons.jsx'
 
@@ -134,8 +133,6 @@ export default function LinkedInEnricher() {
 
   return (
     <div className="wf">
-      <ScraperConnection scraper="enricher" name="LinkedIn enrichment" />
-
       {/* Inline upload area — shown by default (same pattern as the Waterfall enricher) */}
       <div className="wf-card">
         <h3 className="wf-card-t">Upload LinkedIn URLs</h3>

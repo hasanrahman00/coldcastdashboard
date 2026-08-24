@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { useApp } from '../store/AppStore.jsx'
 import { useToast } from '../store/ToastProvider.jsx'
-import { IconUsers } from '../lib/icons.jsx'
+import { IconUsers, IconAtSign } from '../lib/icons.jsx'
 import LocalExtBanner from '../components/LocalExtBanner.jsx'
+import ProviderStatus from '../components/ProviderStatus.jsx'
 
 function ProfileCard({ p, isActive, isThisBrowser, onActivate, onDelete, onRename }) {
   const online = !!p.online
@@ -140,6 +141,28 @@ export default function Settings() {
   return (
     <>
       <LocalExtBanner />
+
+      {/* Enrichment sources — moved here from the scraper pages so those stay clean. */}
+      <div className="sbox">
+        <div className="sbox-h">
+          <div className="sbox-ic"><IconAtSign /></div>
+          <h3>Enrichment sources</h3>
+        </div>
+        <p>
+          Sign in to Lusha, ContactOut, SalesQL & LinkedIn in <b>this browser</b> to enrich your scrapes —
+          a free account for each is enough. Grab free accounts below, then sign in.
+        </p>
+        <ProviderStatus />
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 14 }}>
+          <button
+            className="btn btn-p"
+            onClick={() => { window.location.hash = '#/setup' }}
+            title="Get free Lusha, ContactOut & SalesQL accounts"
+          >
+            Fetch Free Accounts
+          </button>
+        </div>
+      </div>
 
       {/* Profiles */}
       <div className="sbox">
