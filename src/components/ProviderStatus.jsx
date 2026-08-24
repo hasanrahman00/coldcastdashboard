@@ -37,9 +37,11 @@ const Cross = () => (
   </svg>
 )
 
-export default function ProviderStatus({ linkedin = 'salesnav' }) {
+// `exclude` hides sources a given scraper doesn't use (e.g. the Company scraper enriches via
+// Lusha + ContactOut + LinkedIn only, so it passes exclude={['salesql']}). Default shows all.
+export default function ProviderStatus({ linkedin = 'salesnav', exclude = [] }) {
   const { localExt } = useApp()
-  const PROVIDERS = [...BASE, LINKEDIN[linkedin] || LINKEDIN.salesnav]
+  const PROVIDERS = [...BASE, LINKEDIN[linkedin] || LINKEDIN.salesnav].filter((p) => !exclude.includes(p.key))
   const providers = (localExt && localExt.providers) || null
   const on = providers ? PROVIDERS.filter((p) => providers[p.key]) : []
   const off = providers ? PROVIDERS.filter((p) => !providers[p.key]) : []
