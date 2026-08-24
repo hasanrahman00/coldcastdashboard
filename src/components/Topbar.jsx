@@ -55,7 +55,7 @@ export default function Topbar({ route, nav, onLogout, onGuide }) {
   const scrapeUsed  = usage?.used ?? 0
   const scrapePct   = scrapeLimit > 0 ? Math.min(100, (scrapeUsed / scrapeLimit) * 100) : 0
   const scrapeLeft  = Math.max(0, scrapeLimit - scrapeUsed)
-  const scrapeBar   = scrapePct >= 100 ? '#dc2626' : scrapePct >= 90 ? '#d97706' : '#2563eb'
+  const scrapeBar   = scrapePct >= 100 ? '#dc2626' : scrapePct >= 90 ? '#d97706' : '#6366f1'
   // Daily scrape quota resets at 00:00 UTC (PAID accounts only — free = hard total, no
   // reset). Show how long until it refills so users know when they get more rows. The
   // topbar re-renders every second (session countdown), so this recomputes live.
@@ -176,16 +176,8 @@ export default function Topbar({ route, nav, onLogout, onGuide }) {
           <span>{connText}</span>
         </button>
 
-        <a
-          className="tb-ext"
-          href={EXT_STORE_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          title="Get the Coldcast Chrome extension"
-        >
-          <IconPuzzle /> <span className="tb-demo-t">Extension</span>
-        </a>
-
+        {/* Extension + Settings now live in the sidebar footer — the topbar stays calm:
+            resources, connection, the demo CTA, and the account menu. */}
         <a
           className="tb-demo"
           href={waLink('Hi! I’d like to book a demo of Coldcast.')}
@@ -195,10 +187,6 @@ export default function Topbar({ route, nav, onLogout, onGuide }) {
         >
           <IconWhatsApp /> <span className="tb-demo-t">Demo</span>
         </a>
-
-        <button className="tb-icon" onClick={() => nav('set')} title="Settings">
-          <IconGear />
-        </button>
 
         <div className="acct" ref={ref}>
           <button

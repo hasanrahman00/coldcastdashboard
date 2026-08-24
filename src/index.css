@@ -12,9 +12,9 @@
   --chip-hover:#f0f0f0;
 
   /* Borders — light-gray hairline on white */
-  --border:#e5e5e5;
-  --border-strong:#d4d4d4;
-  --border-focus:rgba(26,26,26,.55);
+  --border:#e9ebf0;
+  --border-strong:#d9dce3;
+  --border-focus:rgba(99,102,241,.55);
 
   /* Text — dark ramp on white */
   --text:#1a1a1a;
@@ -22,18 +22,30 @@
   --text-dim:#737373;
   --text-faint:#a3a3a3;
 
-  /* Brand & accent — MONO black (was indigo). Buttons/active-nav/links/focus all
-     go black; the rest stays semantic (green/amber/red). Ink ON a black fill is
-     --lime-ink (white). */
-  --brand:#0a0a0a;
-  --brand-2:#000000;
-  --brand-3:#262626;
-  --accent:#1a1a1a;
+  /* Brand & accent — INDIGO (the intended dashboard theme, restored from a mono-black
+     detour; App.jsx already themes Crisp 'indigo'). Buttons/active-nav/links/focus go
+     indigo; the rest stays semantic (green/amber/red). The lime logo mark stays lime
+     (hardcoded), never reintroduced into the UI. Ink ON an indigo fill is --lime-ink. */
+  --brand:#6366f1;
+  --brand-2:#4f46e5;
+  --brand-3:#4338ca;
+  --accent:#6366f1;
+  --accent-soft:rgba(99,102,241,.12);
+  --accent-line:rgba(99,102,241,.28);
   --surface:#fafafa;
   --surface-2:#f5f5f5;
-  --brand-grad:linear-gradient(135deg,#262626 0%,#0a0a0a 100%);
-  --brand-grad-soft:linear-gradient(135deg,rgba(0,0,0,.05),rgba(0,0,0,.03));
+  --brand-grad:linear-gradient(135deg,#6366f1 0%,#4f46e5 100%);
+  --brand-grad-soft:linear-gradient(135deg,rgba(99,102,241,.08),rgba(99,102,241,.04));
   --lime-ink:#ffffff;
+
+  /* Dark, sectioned sidebar rail (the redesign). */
+  --side-bg:#0f1116;
+  --side-bg-2:#171a22;
+  --side-line:#22262f;
+  --side-ink:#cfd4de;
+  --side-ink-dim:#8990a0;
+  --side-label:#626a79;
+  --side-active:#20242e;
 
   /* Status TEXT colors — kept semantic, darkened for legibility on white */
   --blue:#2563eb;--blueglow:rgba(37,99,235,.10);
@@ -58,11 +70,12 @@
   --shadow-lg:0 20px 40px -12px rgba(0,0,0,.10),0 6px 12px -6px rgba(0,0,0,.08);
   --shadow-glow:0 10px 30px -8px rgba(0,0,0,.10);
 
-  /* Sharp corners (Mindcase). --radius-full stays round for avatars/pills. */
-  --radius-sm:0;
-  --radius:0;
-  --radius-lg:0;
-  --radius-xl:0;
+  /* Soft corners — the redesign (was 0 everywhere, which read as harsh/unfinished).
+     --radius-full stays round for avatars/pills. */
+  --radius-sm:7px;
+  --radius:10px;
+  --radius-lg:14px;
+  --radius-xl:18px;
   --radius-full:9999px;
 
   --font:"Plus Jakarta Sans",system-ui,-apple-system,sans-serif;
@@ -1121,43 +1134,61 @@ body{flex-direction:column}
 .shell{flex:1;display:flex;min-height:0;overflow:hidden}
 .shell-main{flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden}
 
-/* Left sidebar — a clean LIGHT panel with emoji nav and a solid accent "pill" for the
-   active item (à la the reference). */
-.side{flex:0 0 290px;width:290px;display:flex;flex-direction:column;background:#fafafa;overflow-y:auto;padding:0 12px 18px;scrollbar-width:none;box-shadow:6px 0 22px -16px rgba(0,0,0,.5)}
-/* Hide the sidebar scrollbar (the gray vertical line) — still scrolls via wheel/trackpad. */
-.side::-webkit-scrollbar{width:0;height:0;display:none}
-.side-brand{display:flex;align-items:center;gap:11px;cursor:pointer;padding:16px 8px 14px;position:sticky;top:0;background:#fafafa;z-index:1}
-.side-logo{width:36px;height:36px;border-radius:11px;background:#D3FF27;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(211,255,39,.4);flex-shrink:0;position:relative}
-.side-logo::after{content:'';position:absolute;inset:0;border-radius:11px;background:linear-gradient(135deg,rgba(0,0,0,.28),transparent 55%)}
-.side-logo svg{width:24px;height:24px;color:#0a0a0a;position:relative;z-index:1;filter:drop-shadow(0 1px 2px rgba(0,0,0,.25))}
-.side-brand h1{font-family:var(--font-nav);font-size:18px;font-weight:800;color:var(--text);letter-spacing:-.02em;white-space:nowrap}
-.side-nav{display:flex;flex-direction:column;gap:7px}
-.side-cap{font-family:var(--font-nav);font-size:11px;font-weight:700;text-transform:capitalize;letter-spacing:.01em;color:rgba(0,0,0,.45);padding:4px 11px 6px}
-.side-sep{height:1px;background:rgba(0,0,0,.14);margin:12px 6px 4px}
-.snav-item{position:relative;display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:10px 11px;border:none;background:transparent;border-radius:11px;cursor:pointer;font-family:var(--font-nav);font-size:14px;line-height:20px;font-weight:600;letter-spacing:-.005em;color:rgba(0,0,0,.9);transition:background .15s,color .15s,box-shadow .15s}
-.snav-item:hover{background:rgba(0,0,0,.06);color:var(--text)}
-.snav-ic{width:22px;height:22px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.snav-emoji{font-size:17px;line-height:1}
-.snav-ic svg{width:19px;height:19px;stroke-width:2;color:var(--accent);transition:color .15s}
-.snav-item:hover .snav-ic svg{color:var(--accent)}
-.snav-label{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-transform:capitalize;letter-spacing:0}
-/* Active = a soft blue pill for every item. */
-.snav-item.on,.snav-item.on:hover{background:rgba(0,0,0,.055);color:#000;font-weight:700;box-shadow:inset 0 0 0 1px rgba(0,0,0,.12)}
-.snav-item.on .snav-ic svg{color:#000}
-.snav-item.soon{color:rgba(0,0,0,.62)}
-.snav-item.soon .snav-ic svg{color:rgba(0,0,0,.4)}
-.snav-item.soon:hover{color:var(--text-muted)}
-.snav-item.soon:hover .snav-ic svg{color:var(--accent)}
-.snav-soon{margin-left:auto;font-size:8.5px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:rgba(0,0,0,.62);background:rgba(0,0,0,.12);border:1px solid rgba(0,0,0,.16);padding:2px 5px;border-radius:5px;line-height:1.3}
-.snav-deal{margin-left:auto;font-size:8.5px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:#fff;background:linear-gradient(135deg,#22c55e,#16a34a);border:1px solid transparent;padding:2px 6px;border-radius:5px;line-height:1.3;box-shadow:0 2px 8px -2px rgba(22,163,74,.7)}
+/* Left sidebar — dark, SECTIONED rail (the redesign). Brand + account switcher up top,
+   grouped scrollable nav (Scrapers / Enrichment / Services), a utility footer pinned to the
+   bottom. Active row = a subtle pill (a shade up from the rail) + indigo icon + thin indigo
+   edge bar; per-tool color tints are gone. */
+.side{flex:0 0 256px;width:256px;display:flex;flex-direction:column;background:var(--side-bg);color:var(--side-ink);overflow:hidden;border-right:1px solid #000}
+.side-brand{display:flex;align-items:center;gap:11px;cursor:pointer;padding:18px 16px 12px;flex-shrink:0}
+.side-logo{width:32px;height:32px;border-radius:9px;background:#D3FF27;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 1px rgba(211,255,39,.35),0 6px 16px -4px rgba(211,255,39,.5);flex-shrink:0;position:relative}
+.side-logo::after{content:'';position:absolute;inset:0;border-radius:9px;background:linear-gradient(135deg,rgba(0,0,0,.28),transparent 55%)}
+.side-logo svg{width:20px;height:20px;color:#0a0a0a;position:relative;z-index:1}
+.side-brand h1{font-family:var(--font-nav);font-size:17px;font-weight:800;color:#fff;letter-spacing:-.02em;white-space:nowrap}
+
+/* account / org switcher */
+.side-acct{display:flex;align-items:center;gap:10px;margin:2px 12px 10px;padding:9px 11px;width:calc(100% - 24px);background:var(--side-bg-2);border:1px solid var(--side-line);border-radius:var(--radius);cursor:pointer;transition:border-color .15s;flex-shrink:0;text-align:left;font-family:var(--font-nav)}
+.side-acct:hover{border-color:#2e3340}
+.side-acct .sa-ava{width:26px;height:26px;border-radius:7px;background:var(--brand-grad);color:#fff;display:grid;place-items:center;font-weight:700;font-size:12px;flex-shrink:0}
+.side-acct .sa-who{flex:1;min-width:0}
+.side-acct .sa-who b{display:block;font-size:12.5px;color:#e9ebf2;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.side-acct .sa-who span{display:block;font-size:11px;color:var(--side-ink-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.side-acct .sa-cx{color:var(--side-ink-dim);flex-shrink:0}
+
+.side-nav{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:1px;padding:2px 12px 12px;scrollbar-width:thin;scrollbar-color:#20242e transparent}
+.side-nav::-webkit-scrollbar{width:8px}
+.side-nav::-webkit-scrollbar-thumb{background:#20242e;border-radius:8px}
+.side-cap{display:flex;align-items:center;gap:6px;font-family:var(--font-nav);font-size:10.5px;font-weight:700;letter-spacing:.10em;text-transform:uppercase;color:var(--side-label);padding:15px 10px 5px}
+.side-sep{display:none}
+.snav-item{position:relative;display:flex;align-items:center;gap:11px;width:100%;text-align:left;padding:8px 10px;border:none;background:transparent;border-radius:var(--radius-sm);cursor:pointer;font-family:var(--font-nav);font-size:13px;line-height:19px;font-weight:500;letter-spacing:0;color:var(--side-ink);transition:background .13s,color .13s}
+.snav-item:hover{background:#181b22;color:#fff}
+.snav-ic{width:20px;height:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.snav-emoji{font-size:15px;line-height:1}
+.snav-ic svg{width:17px;height:17px;stroke-width:1.9;color:var(--side-ink-dim);transition:color .13s}
+.snav-item:hover .snav-ic svg{color:#aab1c2}
+.snav-label{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;letter-spacing:0}
+/* Active = subtle pill + indigo icon + thin indigo edge bar. */
+.snav-item.on,.snav-item.on:hover{background:var(--side-active);color:#fff;font-weight:600}
+.snav-item.on .snav-ic svg{color:var(--accent)}
+.snav-item.on::before{content:'';position:absolute;left:-12px;top:7px;bottom:7px;width:3px;border-radius:0 3px 3px 0;background:var(--accent)}
+.snav-item.soon{color:var(--side-ink-dim)}
+.snav-item.soon .snav-ic svg{color:#565d6c}
+.snav-item.soon:hover{color:var(--side-ink)}
+.snav-item.soon:hover .snav-ic svg{color:#aab1c2}
+.snav-soon{margin-left:auto;font-size:8.5px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--side-ink-dim);background:#1c2029;border:1px solid var(--side-line);padding:2px 6px;border-radius:999px;line-height:1.3}
+.snav-deal{margin-left:auto;font-size:8.5px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:#d6f57a;background:rgba(196,240,66,.14);border:1px solid rgba(196,240,66,.22);padding:2px 7px;border-radius:999px;line-height:1.3}
+
+/* utility footer, pinned bottom */
+.side-foot{flex-shrink:0;padding:9px 12px;border-top:1px solid var(--side-line);display:flex;flex-direction:column;gap:1px}
 
 /* Collapse the sidebar to an icon rail on narrow screens. */
 @media (max-width:880px){
-  .side{flex-basis:62px;width:62px;padding:0 9px 14px}
-  .side-brand{justify-content:center;padding:14px 0 12px}
+  .side{flex-basis:64px;width:64px}
+  .side-brand{justify-content:center;padding:16px 0 12px}
   .side-brand h1,.side-cap{display:none}
+  .side-acct{justify-content:center;padding:8px;margin:2px 10px 8px;width:calc(100% - 20px)}
+  .side-acct .sa-who,.side-acct .sa-cx{display:none}
   .snav-label,.snav-soon,.snav-deal{display:none}
-  .snav-item{justify-content:center;padding:10px}
+  .snav-item{justify-content:center;padding:9px}
 }
 
 /* ═══════════════════ TOP BAR (main-column header) ═══════════════════ */
@@ -1338,7 +1369,7 @@ body{flex-direction:column}
 /* Product with a real app-icon image (products.js `image`) — fill the tile, clip to its radius. */
 .phead-ic.phead-ic-img{background:none;overflow:hidden}
 .phead-ic.phead-ic-img img{width:100%;height:100%;object-fit:cover;display:block}
-.snav-emoji img.snav-img{width:22px;height:22px;border-radius:6px;object-fit:contain;display:block}
+.snav-emoji img.snav-img{width:20px;height:20px;border-radius:5px;object-fit:contain;display:block}
 .phead-name{font-size:23px;font-weight:800;letter-spacing:-.02em;line-height:1.1;color:var(--text)}
 
 /* ═══════════════════ COMING SOON module ═══════════════════ */
@@ -1449,8 +1480,8 @@ input[type=password]{font-family:var(--font)}
 .svc-submit:disabled{opacity:.5;cursor:not-allowed}
 .svc-submit svg{width:18px;height:18px;fill:#fff}
 .svc-fine{font-size:11.5px;color:var(--text-faint);text-align:center;margin:12px 0 0;line-height:1.5}
-/* Services nav area — subtle blue caption; active pills inherit .snav-item.on (blue) */
-.side-cap-svc{color:#262626}
+/* Services nav area — caption uses the shared dark-rail label color (.side-cap). */
+.side-cap-svc{color:var(--side-label)}
 
 /* ═══════════════════ FREE PLAYBOOK (Services) ═══════════════════ */
 .pb-page{max-width:1000px;margin:0 auto;padding-bottom:32px}
