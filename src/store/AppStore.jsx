@@ -644,6 +644,33 @@ export function AppProvider({ initialMe, onLogout, children }) {
     }
   }, [refreshCredits])
 
+  // ── account status (poll Core's LIVE /api/auth/me) ─────────────────────
+  // `me` carries the plan / expiry / limits and is set once at LOGIN. When an admin RENEWS a
+  // user (extends expiry, bumps the plan / daily limit) the change lives in Core, but the
+  // dashboard's cached `me` stayed stale until a logout + re-login. Poll /me (+ refresh on
+  // focus/visible, the key trigger when the user returns to the tab after being renewed) so the
+  // new status shows up live — no re-login. api.me() recomputes secondsLeft from the fresh
+  // expiresAt, so the countdown re-syncs (and jumps back up on a renewal). guarded → a real 401
+  // logs out; a transient network error is swallowed so the poll survives.
+  const refreshMe = useCallback(async () => {
+    const d = await guarded(() => api.me())
+    if (d) setMe((m) => ({ ...(m || {}), ...d }))
+    return d
+  }, [guarded])
+
+  useEffect(() => {
+    refreshMe().catch(() => {})   // also freshens on every mount/reload (initialMe can be a stale cache)
+    const poll = setInterval(() => { if (!document.hidden) refreshMe().catch(() => {}) }, 15000)
+    const onFocus = () => { if (!document.hidden) refreshMe().catch(() => {}) }
+    window.addEventListener('focus', onFocus)
+    document.addEventListener('visibilitychange', onFocus)
+    return () => {
+      clearInterval(poll)
+      window.removeEventListener('focus', onFocus)
+      document.removeEventListener('visibilitychange', onFocus)
+    }
+  }, [refreshMe])
+
   // ── Live meters off the SSE stream (no hard refresh) ─────────────────────
   // The credit wallet + scrape-usage meters are otherwise poll-only (every 8s), so
   // they lag behind a running job's debits. Each scraper's SSE `job:update` mutates
@@ -1169,11 +1196,7 @@ export function AppProvider({ initialMe, onLogout, children }) {
 
     // api key
     saveKey: (key) => guarded(() => api.saveKey(key)),
-    refreshMe: async () => {
-      const d = await guarded(() => api.me())
-      if (d) setMe((m) => ({ ...(m || {}), ...d }))
-      return d
-    },
+    refreshMe,   // the polled account refresh (defined above) — single source of truth
   }
 
   return <AppCtx.Provider value={value}>{children}</AppCtx.Provider>
