@@ -80,31 +80,19 @@ export default function Billing() {
       </div>
 
       {/* ── Credit packs ─────────────────────────────────────── */}
-      <h3 className="bill-sec">Credit packs</h3>
+      <h3 className="bill-sec">Credits</h3>
       <div className="bill-packs">
         <div className="bpack pop">
-          <span className="bpack-pop">Best value</span>
           <span className="bpack-tag">Enrichment credits</span>
           <div className="bpack-price"><b>$30</b><em>/ 1,000 credits</em></div>
           <div className="bpack-unit">$0.03 per credit</div>
           <ul className="bpack-feats">
             <li><IcCheck /> 1 credit · email enrichment</li>
             <li><IcCheck /> 3 credits · domain enrichment</li>
+            <li><IcCheck /> ½ credit · email verification</li>
             <li><IcCheck /> Credits never expire</li>
           </ul>
-          <button className="btn btn-p" onClick={() => contact('Hi! I’d like to buy 1,000 Coldcast enrichment credits ($30).')}>Buy credits</button>
-        </div>
-
-        <div className="bpack">
-          <span className="bpack-tag">Verification credits</span>
-          <div className="bpack-price"><b>$10</b><em>/ 10,000 verifications</em></div>
-          <div className="bpack-unit">$0.001 per email checked</div>
-          <ul className="bpack-feats">
-            <li><IcCheck /> Bulk email validation</li>
-            <li><IcCheck /> Syntax · MX · SMTP · catch-all</li>
-            <li><IcCheck /> Protect sender reputation</li>
-          </ul>
-          <button className="btn btn-g" onClick={() => contact('Hi! I’d like to buy 10,000 Coldcast verification credits ($10).')}>Buy credits</button>
+          <button className="btn btn-p" onClick={() => contact('Hi! I’d like to buy 1,000 Coldcast credits ($30).')}>Buy credits</button>
         </div>
       </div>
 
@@ -166,7 +154,7 @@ export default function Billing() {
         .bsc-cta .btn{width:100%;justify-content:center}
         .bsc-note{font-size:11px;color:var(--text-dim);line-height:1.4}
 
-        .bill-packs{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-bottom:34px}
+        .bill-packs{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,360px));gap:16px;margin-bottom:34px;justify-content:start}
         .bpack{position:relative;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-xl);box-shadow:var(--shadow-sm);padding:24px 24px 22px;display:flex;flex-direction:column;gap:12px}
         .bpack.pop{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent), var(--shadow-md)}
         .bpack-pop{position:absolute;top:-11px;left:22px;background:var(--brand-grad);color:#fff;font-size:10.5px;font-weight:700;letter-spacing:.03em;padding:4px 11px;border-radius:999px;box-shadow:var(--shadow-sm)}
