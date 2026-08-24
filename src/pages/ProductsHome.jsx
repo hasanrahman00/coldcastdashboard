@@ -1,5 +1,8 @@
 import { useApp } from '../store/AppStore.jsx'
 import { getProduct } from '../lib/products.js'
+import { SERVICES } from '../lib/services.js'
+
+const badgeCls = (s) => (s.deal ? 'deal' : s.badge === 'Free' ? 'free' : 'dfy')
 
 // Home ("Dashboard") — greeting hero, grouped tool cards (real product logos kept), and a
 // recent-jobs strip aggregated across every scraper. Matches the approved shell mockup.
@@ -99,6 +102,26 @@ export default function ProductsHome({ nav }) {
           </div>
         </section>
       ))}
+
+      <section className="thome-sec">
+        <div className="thome-sechead"><h3>Services</h3><span className="rule" /></div>
+        <div className="thome-grid">
+          {SERVICES.map((s) => {
+            const Icon = s.icon
+            return (
+              <button className="thome-card" key={s.id} onClick={() => nav(s.id)} aria-label={s.label}>
+                <span className="thome-go"><ArrowGo /></span>
+                <span className="thome-ic">{s.emoji || <Icon />}</span>
+                <h4 className="thome-name">{s.label}</h4>
+                <p className="thome-desc">{s.short}</p>
+                <div className="thome-foot">
+                  <span className={'thome-badge ' + badgeCls(s)}>{s.badge}</span>
+                </div>
+              </button>
+            )
+          })}
+        </div>
+      </section>
 
       <section className="thome-sec">
         <div className="thome-sechead"><h3>Recent jobs</h3><span className="rule" /></div>

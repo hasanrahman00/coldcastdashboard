@@ -1,24 +1,36 @@
 import { useState, useRef, useEffect } from 'react'
 import { useApp } from '../store/AppStore.jsx'
+import { useToast } from '../store/ToastProvider.jsx'
+import { getProduct } from '../lib/products.js'
 import {
   IconGear,
-  IconChevronDown,
   IconKeyOutline,
   IconSignout,
   IconChain,
-  IconChartBar,
-  IconZap,
-  IconClock,
-  IconCalendar,
   IconDownload,
-  IconWhatsApp,
   IconPuzzle,
 } from '../lib/icons.jsx'
-import StatsBox from './StatsBox.jsx'
-import { waLink } from '../lib/whatsapp.js'
 
-// Chrome Web Store listing for the Coldcast extension (env-overridable).
-const EXT_STORE_URL = import.meta.env.VITE_EXT_STORE_URL || 'https://chromewebstore.google.com/detail/bljolejpindiokpikdpalhofcbiphfoi'
+// Topbar icons — ported VERBATIM from the approved mockup (bare <svg>, CSS-sized).
+const IcBars = () => <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
+const IcBolt = () => <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" /></svg>
+const IcCal = () => <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" strokeWidth="1.8" /><path d="M3 9h18M8 3v4M16 3v4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
+const IcHelp = () => <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.7" /><path d="M9.5 9.5a2.5 2.5 0 013.8-1.8c1.6.9 1 2.7-.3 3.3-.8.4-1 .8-1 1.5M12 17h.01" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" /></svg>
+const IcBell = () => <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9a6 6 0 1112 0c0 5 2 6 2 6H4s2-1 2-6zM10 20a2 2 0 004 0" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" /></svg>
+
+// Breadcrumb labels — mirror the sidebar's (mockup) labels EXACTLY so the crumb never
+// disagrees with the nav item you clicked. Product routes use the short mockup names, not
+// products.js navLabel (which differs, e.g. "LinkedIn Sales Navigator").
+const PAGE_NAMES = {
+  home: 'Dashboard', set: 'Settings', setup: 'Setup', api: 'API key', ext: 'Extension',
+  salesnav: 'Sales Navigator', company: 'Sales Nav Accounts', apollo: 'Apollo',
+  zoominfo: 'ZoomInfo', lisearch: 'LinkedIn Search', post: 'Post Engagers',
+  linkedin: 'LinkedIn URL Enrich', waterfall: 'Waterfall Enrich', verify: 'Email Verify',
+  domain: 'AI SDR · Domain',
+  sndeal: 'Sales Nav Deal', prospectteam: 'Hire Prospect Team', coldinfra: 'Cold Infrastructure',
+  requestfeature: 'Request Feature', playbook: 'Free Playbook',
+}
+const pageName = (route) => PAGE_NAMES[route] || getProduct(route)?.navLabel || getProduct(route)?.label || 'Dashboard'
 
 function fmtTtl(secs) {
   if (secs <= 0) return 'Expired'
@@ -34,31 +46,25 @@ function fmtTtl(secs) {
 
 export default function Topbar({ route, nav, onLogout, onGuide }) {
   const { me, uiConfig, browserConnected, credits, usage, localAccountMismatch, expired } = useApp()
+  const toast = useToast()
   const [open, setOpen] = useState(false)
   const ref = useRef(null)
 
   useEffect(() => {
-    const onDoc = (e) => {
-      if (ref.current && !ref.current.contains(e.target)) setOpen(false)
-    }
+    const onDoc = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false) }
     document.addEventListener('click', onDoc)
     return () => document.removeEventListener('click', onDoc)
   }, [])
 
   const username = me?.user?.username || '—'
   const secondsLeft = me?.secondsLeft ?? 0
-  // Scrape budget — ONE row allowance shared across ALL scrapers (Sales Nav,
-  // Apollo, ZoomInfo…), separate from the credit wallet. Shown as a live usage
-  // bar: it fills (and "left" drops) in real time as a job runs, because
-  // AppStore polls /api/agent/status every 8s.
+
+  // Scrape budget — one row allowance shared across ALL scrapers. Fills live as a job runs.
   const scrapeLimit = usage?.limit ?? 0
-  const scrapeUsed  = usage?.used ?? 0
-  const scrapePct   = scrapeLimit > 0 ? Math.min(100, (scrapeUsed / scrapeLimit) * 100) : 0
-  const scrapeLeft  = Math.max(0, scrapeLimit - scrapeUsed)
-  const scrapeBar   = scrapePct >= 100 ? '#dc2626' : scrapePct >= 90 ? '#d97706' : '#6366f1'
-  // Daily scrape quota resets at 00:00 UTC (PAID accounts only — free = hard total, no
-  // reset). Show how long until it refills so users know when they get more rows. The
-  // topbar re-renders every second (session countdown), so this recomputes live.
+  const scrapeUsed = usage?.used ?? 0
+  const scrapePct = scrapeLimit > 0 ? Math.min(100, (scrapeUsed / scrapeLimit) * 100) : 0
+  const scrapeLeft = Math.max(0, scrapeLimit - scrapeUsed)
+  const scrapeBar = scrapePct >= 100 ? '#dc2626' : scrapePct >= 90 ? '#d97706' : '#6366f1'
   const resetsDaily = !!usage?.resetsDaily && scrapeLimit > 0
   let resetTxt = ''
   if (resetsDaily) {
@@ -68,165 +74,105 @@ export default function Topbar({ route, nav, onLogout, onGuide }) {
     const m = Math.floor((ms % 3600000) / 60000)
     resetTxt = h >= 1 ? `${h}h ${m}m` : `${m}m`
   }
-
   const scrapeTitle = scrapeLimit > 0
-    ? `Scraping rows — ${scrapeUsed.toLocaleString()} used of ${scrapeLimit.toLocaleString()} (${scrapePct.toFixed(0)}%) · ${scrapeLeft.toLocaleString()} left. One budget shared across ALL your scrapers; ticks down live as a job runs. ${resetsDaily ? `Resets in ${resetTxt} — daily at 00:00 UTC.` : 'Total allowance (no daily reset).'}`
+    ? `Scraping rows — ${scrapeUsed.toLocaleString()} used of ${scrapeLimit.toLocaleString()} (${scrapePct.toFixed(0)}%) · ${scrapeLeft.toLocaleString()} left. Shared across ALL your scrapers. ${resetsDaily ? `Resets in ${resetTxt} (daily 00:00 UTC).` : 'Total allowance (no daily reset).'}`
     : 'Scrape limit not loaded — check you are logged in and the scraper API is reachable.'
+
   const creditBal = credits ?? 0
   const lowCredits = creditBal > 0 && creditBal < 50
-
-  // Account validity — days until this account/plan expires. `secondsLeft` (declared above)
-  // is recomputed from expiresAt and ticks down live (AppStore). Ceil so the final partial
-  // day still reads "1 day left" instead of 0.
   const daysLeft = secondsLeft > 0 ? Math.ceil(secondsLeft / 86400) : 0
   const lowDays = daysLeft > 0 && daysLeft <= 3
 
-  // Connection status — shown ONCE here (the middle strip no longer duplicates it). Reads the
-  // SAME this-browser signal the page banners use (browserConnected), so the pill can't say
-  // "0/2 connected" while a page says this browser isn't connected. "Different account"
-  // (extension connected under another Coldcast login in this browser) wins over connected/not.
-  const connText = expired
-    ? 'Expired'
+  const connText = expired ? 'Expired'
     : localAccountMismatch ? 'Different account'
     : browserConnected ? 'Connected' : 'Not connected'
-
+  const connLive = browserConnected && !localAccountMismatch && !expired
 
   return (
     <header className="topbar">
-      <StatsBox />
+      <div className="tb-crumb">
+        <span className="home" onClick={() => nav('home')}>Coldcast</span>
+        <span className="sl">/</span>
+        <b>{pageName(route)}</b>
+      </div>
+      <div className="tb-spacer" />
 
-      <div className="tb-right">
-        {/* One calm, neutral container holds all account resources — scrape budget,
-            credits, and (when applicable) the reset countdown — instead of three
-            competing colored pills. Accent shows only in the tiny progress track. */}
-        <div className="usage-group">
-          {resetsDaily && (
-            <>
-              <span className="ug-chip ug-reset" title={`Scraping limit resets in ${resetTxt} — daily at 00:00 UTC`}>
-                <IconClock />
-                <span className="ug-val muted">{resetTxt}<em> reset</em></span>
-              </span>
-              <span className="ug-div ug-div-reset" />
-            </>
-          )}
-
-          <span className="ug-chip" title={scrapeTitle}>
-            <IconChartBar />
-            <span className="ug-col">
-              <span className="ug-val">
-                {scrapeLeft.toLocaleString()}
-                <em> scrapes left</em>
-              </span>
-              <span className="ug-track">
-                <i style={{ width: scrapePct.toFixed(1) + '%', background: scrapeBar }} />
-              </span>
-            </span>
-          </span>
-
-          <span className="ug-div" />
-
-          <span
-            className="ug-chip"
-            title="Email credits — for enrichment & verification. 1 credit = 1 valid email · 2 verifications · ⅓ of a domain/LinkedIn enrichment (3 credits each)"
-          >
-            <IconZap />
-            <span className={'ug-val' + (lowCredits ? ' warn' : '')}>
-              {creditBal.toLocaleString()}<em> credits</em>
-            </span>
-          </span>
-
-          {expired ? (
-            <>
-              <span className="ug-div" />
-              <span className="ug-chip" title="Your account has expired — renew to run jobs">
-                <IconCalendar />
-                <span className="ug-val warn">Expired</span>
-              </span>
-            </>
-          ) : daysLeft > 0 && (
-            <>
-              <span className="ug-div" />
-              <span
-                className="ug-chip"
-                title={me?.expiresAt
-                  ? `Account expires ${new Date(me.expiresAt).toLocaleDateString()} · ${fmtTtl(secondsLeft)}`
-                  : 'Days left on your account'}
-              >
-                <IconCalendar />
-                <span className={'ug-val' + (lowDays ? ' warn' : '')}>
-                  {daysLeft.toLocaleString()}<em> day{daysLeft === 1 ? '' : 's'} left</em>
-                </span>
-              </span>
-            </>
-          )}
+      <div className="tb-res">
+        <div className="tb-cell" title={scrapeTitle}>
+          <IcBars />
+          <span className="n">{scrapeLeft.toLocaleString()}</span><span className="u">scrapes</span>
+          <span className="tb-track"><i style={{ width: scrapePct.toFixed(1) + '%', background: scrapeBar }} /></span>
         </div>
+        <span className="tb-divx" />
+        <div className="tb-cell credits" title="Email credits — for enrichment & verification. 1 credit = 1 valid email · 2 verifications · ⅓ of a domain/LinkedIn enrichment.">
+          <IcBolt />
+          <span className={'n' + (lowCredits ? ' warn' : '')}>{creditBal.toLocaleString()}</span><span className="u">credits</span>
+        </div>
+        <span className="tb-divx" />
+        <div className="tb-cell" title={expired ? 'Account expired — renew to run jobs' : (me?.expiresAt ? `Expires ${new Date(me.expiresAt).toLocaleDateString()} · ${fmtTtl(secondsLeft)}` : 'Days left on your account')}>
+          <IcCal />
+          {expired
+            ? <span className="n warn">Expired</span>
+            : <><span className={'n' + (lowDays ? ' warn' : '')}>{daysLeft}</span><span className="u">day{daysLeft === 1 ? '' : 's'}</span></>}
+        </div>
+      </div>
 
-        {/* Connection status lives here and ONLY here now. */}
+      <button
+        className={'tb-conn' + ((expired || localAccountMismatch) ? ' mismatch' : '')}
+        onClick={() => nav('set')}
+        title={expired ? 'Account expired — renew to run jobs.'
+          : localAccountMismatch ? 'This browser’s extension is signed in with a different Coldcast account.'
+          : `${connText} · manage extensions`}
+        aria-label={`Extensions: ${connText}`}
+      >
+        <span className={'d' + (connLive ? '' : ' off')} />
+        <span className="tb-conn-t">{connText}</span>
+      </button>
+
+      {onGuide && (
+        <button className="tb-ticon" onClick={onGuide} title="Help & setup guide" aria-label="Help">
+          <IcHelp />
+        </button>
+      )}
+      <button className="tb-ticon" onClick={() => toast('You’re all caught up — no new notifications.', 'info')} title="Notifications" aria-label="Notifications">
+        <IcBell />
+      </button>
+
+      <div className="acct" ref={ref}>
         <button
-          className={'conn-pill' + ((expired || localAccountMismatch) ? ' mismatch' : '')}
-          onClick={() => nav('set')}
-          title={expired
-            ? 'Your account has expired — renew to run jobs. You can still view your data.'
-            : localAccountMismatch
-            ? 'This browser’s extension is signed in with a different Coldcast account — open the extension and paste THIS account’s API key'
-            : `${connText} · manage extensions`}
-          aria-label={`Extensions: ${connText}`}
+          className="tb-me"
+          onClick={(e) => { e.stopPropagation(); setOpen((v) => !v) }}
+          title={username}
+          aria-label="Account menu"
         >
-          <span className={'dot' + (browserConnected && !localAccountMismatch && !expired ? '' : ' off')} />
-          <span>{connText}</span>
+          {(username[0] || '?').toUpperCase()}
         </button>
 
-        {/* Extension + Settings now live in the sidebar footer — the topbar stays calm:
-            resources, connection, the demo CTA, and the account menu. */}
-        <a
-          className="tb-demo"
-          href={waLink('Hi! I’d like to book a demo of Coldcast.')}
-          target="_blank"
-          rel="noopener noreferrer"
-          title="Book a demo on WhatsApp"
-        >
-          <IconWhatsApp /> <span className="tb-demo-t">Demo</span>
-        </a>
-
-        <div className="acct" ref={ref}>
-          <button
-            className="acct-btn"
-            onClick={(e) => {
-              e.stopPropagation()
-              setOpen((v) => !v)
-            }}
-          >
-            <span className="avatar">{(username[0] || '?').toUpperCase()}</span>
-            <span className="uname">{username}</span>
-            <IconChevronDown className="chev" />
+        <div className={'acct-menu' + (open ? ' on' : '')}>
+          <div className="ttl">{fmtTtl(secondsLeft)}</div>
+          {onGuide && (
+            <button className="acct-item" onClick={() => { setOpen(false); onGuide() }}>
+              <IconPuzzle /> Setup guide
+            </button>
+          )}
+          {!uiConfig.hideSettings && (
+            <button className="acct-item" onClick={() => { setOpen(false); nav('set') }}>
+              <IconGear /> Settings
+            </button>
+          )}
+          <button className="acct-item" onClick={() => { setOpen(false); nav('setup') }}>
+            <IconChain /> Setup
           </button>
-
-          <div className={'acct-menu' + (open ? ' on' : '')}>
-            <div className="ttl">{fmtTtl(secondsLeft)}</div>
-            {onGuide && (
-              <button className="acct-item" onClick={() => { setOpen(false); onGuide() }}>
-                <IconPuzzle /> Setup guide
-              </button>
-            )}
-            {!uiConfig.hideSettings && (
-              <button className="acct-item" onClick={() => { setOpen(false); nav('set') }}>
-                <IconGear /> Settings
-              </button>
-            )}
-            <button className="acct-item" onClick={() => { setOpen(false); nav('setup') }}>
-              <IconChain /> Setup
-            </button>
-            <button className="acct-item" onClick={() => { setOpen(false); nav('ext') }}>
-              <IconDownload /> Get extension
-            </button>
-            <button className="acct-item" onClick={() => { setOpen(false); nav('api') }}>
-              <IconKeyOutline /> API key
-            </button>
-            <div className="acct-sep" />
-            <button className="acct-item danger" onClick={() => { setOpen(false); onLogout() }}>
-              <IconSignout /> Sign out
-            </button>
-          </div>
+          <button className="acct-item" onClick={() => { setOpen(false); nav('ext') }}>
+            <IconDownload /> Get extension
+          </button>
+          <button className="acct-item" onClick={() => { setOpen(false); nav('api') }}>
+            <IconKeyOutline /> API key
+          </button>
+          <div className="acct-sep" />
+          <button className="acct-item danger" onClick={() => { setOpen(false); onLogout() }}>
+            <IconSignout /> Sign out
+          </button>
         </div>
       </div>
     </header>
