@@ -2,14 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { useApp } from '../store/AppStore.jsx'
 import { useToast } from '../store/ToastProvider.jsx'
 import { getProduct } from '../lib/products.js'
-import {
-  IconGear,
-  IconKeyOutline,
-  IconSignout,
-  IconChain,
-  IconDownload,
-  IconPuzzle,
-} from '../lib/icons.jsx'
+import { IconKeyOutline, IconSignout } from '../lib/icons.jsx'
 
 // Topbar icons — ported VERBATIM from the approved mockup (bare <svg>, CSS-sized).
 const IcBars = () => <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
@@ -46,7 +39,7 @@ function fmtTtl(secs) {
 }
 
 export default function Topbar({ route, nav, onLogout, onGuide }) {
-  const { me, uiConfig, browserConnected, credits, usage, localAccountMismatch, expired } = useApp()
+  const { me, browserConnected, credits, usage, localAccountMismatch, expired } = useApp()
   const toast = useToast()
   const [open, setOpen] = useState(false)
   const ref = useRef(null)
@@ -146,22 +139,6 @@ export default function Topbar({ route, nav, onLogout, onGuide }) {
 
         <div className={'acct-menu' + (open ? ' on' : '')}>
           <div className="ttl">{fmtTtl(secondsLeft)}</div>
-          {onGuide && (
-            <button className="acct-item" onClick={() => { setOpen(false); onGuide() }}>
-              <IconPuzzle /> Setup guide
-            </button>
-          )}
-          {!uiConfig.hideSettings && (
-            <button className="acct-item" onClick={() => { setOpen(false); nav('set') }}>
-              <IconGear /> Settings
-            </button>
-          )}
-          <button className="acct-item" onClick={() => { setOpen(false); nav('setup') }}>
-            <IconChain /> Setup
-          </button>
-          <button className="acct-item" onClick={() => { setOpen(false); nav('ext') }}>
-            <IconDownload /> Get extension
-          </button>
           <button className="acct-item" onClick={() => { setOpen(false); nav('api') }}>
             <IconKeyOutline /> API key
           </button>
