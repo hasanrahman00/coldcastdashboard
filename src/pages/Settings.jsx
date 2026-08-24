@@ -150,10 +150,10 @@ export default function Settings() {
           <h3>Enrichment sources</h3>
         </div>
         <p>
-          Sign in to Lusha, ContactOut, SalesQL & LinkedIn in <b>this browser</b> to enrich your scrapes —
+          Sign in to Lusha, ContactOut & SalesQL in <b>this browser</b> to enrich your scrapes —
           a free account for each is all the scraper needs.
         </p>
-        <ProviderStatus />
+        <ProviderStatus exclude={['linkedin']} />
 
         <div className="enrich-sub">
           <div className="enrich-sub-h">Grab a free account</div>

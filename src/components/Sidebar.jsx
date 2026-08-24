@@ -31,7 +31,7 @@ const SERVICES = [
 const SVC_FAMILY = new Set(['services', 'prospectteam', 'coldinfra', 'requestfeature', 'playbook'])
 const FOOTER = [
   { key: 'ext', route: 'ext', label: 'Extension' },
-  { key: 'billing', route: 'set', label: 'Billing', placeholder: true },
+  { key: 'billing', route: 'billing', label: 'Billing' },
   { key: 'settings', route: 'set', label: 'Settings' },
 ]
 

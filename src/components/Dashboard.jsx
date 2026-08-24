@@ -18,6 +18,7 @@ import LinkedInSearchScraper from '../pages/lisearch/LinkedInSearchScraper.jsx'
 import SalesNavDeal from '../pages/sndeal/SalesNavDeal.jsx'
 import ProductsHome from '../pages/ProductsHome.jsx'
 import ServicesHome from '../pages/ServicesHome.jsx'
+import Billing from '../pages/Billing.jsx'
 import ComingSoon from '../pages/ComingSoon.jsx'
 import Settings from '../pages/Settings.jsx'
 import Setup from '../pages/Setup.jsx'
@@ -32,7 +33,7 @@ import FreePlaybook from '../pages/services/FreePlaybook.jsx'
 // the Services area. Anything else (typo, stale #/login, #/dash, bare hash) → home.
 const VALID_ROUTES = new Set([
   ...PRODUCTS.map((p) => p.id),
-  'home', 'set', 'setup', 'api', 'ext', 'services',
+  'home', 'set', 'setup', 'api', 'ext', 'services', 'billing',
   'prospectteam', 'coldinfra', 'requestfeature', 'playbook',
 ])
 
@@ -83,6 +84,7 @@ export default function Dashboard({ onLogout }) {
   let page
   if (route === 'home') page = <ProductsHome nav={nav} />
   else if (route === 'services') page = <ServicesHome nav={nav} />
+  else if (route === 'billing') page = <Billing />
   else if (route === 'set') page = <Settings />
   else if (route === 'setup') page = <Setup />
   else if (route === 'api') page = <ApiKey />
