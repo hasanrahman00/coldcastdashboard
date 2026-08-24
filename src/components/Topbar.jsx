@@ -109,13 +109,8 @@ export default function Topbar({ route, nav, onLogout, onGuide }) {
           <IcBolt />
           <span className={'n' + (lowCredits ? ' warn' : '')}>{creditBal.toLocaleString()}</span><span className="u">credits</span>
         </div>
-        <span className="tb-divx" />
-        <div className="tb-cell" title={expired ? 'Account expired — renew to run jobs' : (me?.expiresAt ? `Expires ${new Date(me.expiresAt).toLocaleDateString()} · ${fmtTtl(secondsLeft)}` : 'Days left on your account')}>
-          <IcCal />
-          {expired
-            ? <span className="n warn">Expired</span>
-            : <><span className={'n' + (lowDays ? ' warn' : '')}>{daysLeft}</span><span className="u">day{daysLeft === 1 ? '' : 's'}</span></>}
-        </div>
+        {/* Days-left moved to the sidebar account card. Expiry still surfaces via the
+            connection pill ("Expired") + the account-menu TTL. */}
       </div>
 
       <button
