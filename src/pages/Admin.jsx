@@ -258,7 +258,7 @@ export default function Admin() {
   // Refreshes their allowance and restarts the clock from today.
   const changePlan = async (u, plan) => {
     if (plan === (u.trial ? 'free' : 'paid')) return
-    const label = plan === 'paid' ? 'Paid — 20,000 rows / 30 days' : 'Free — 1,000 rows / 1 day'
+    const label = plan === 'paid' ? 'Paid — 20,000 rows / 30 days' : 'Free — 100 rows / 1 day'
     if (!window.confirm(`Switch "${u.username}" to ${label}?\n\nThis refreshes their row allowance and restarts the clock from today.`)) {
       refresh() // user cancelled — re-sync the dropdown to the real value
       return
