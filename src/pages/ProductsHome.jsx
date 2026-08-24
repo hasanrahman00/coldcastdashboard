@@ -1,15 +1,26 @@
 import { useApp } from '../store/AppStore.jsx'
-import { getProduct } from '../lib/products.js'
-import { SERVICES } from '../lib/services.js'
+import { NavIcon } from '../lib/navicons.jsx'
 
-const badgeCls = (s) => (s.deal ? 'deal' : s.badge === 'Free' ? 'free' : 'dfy')
-
-// Home ("Dashboard") — greeting hero, grouped tool cards (real product logos kept), and a
-// recent-jobs strip aggregated across every scraper. Matches the approved shell mockup.
-const GROUPS = [
-  { title: 'Scrapers',   ids: ['salesnav', 'company', 'apollo', 'zoominfo', 'lisearch', 'post'] },
-  { title: 'Enrichment', ids: ['linkedin', 'waterfall', 'verify', 'domain'] },
+// Home ("Dashboard") — EXACT mockup: greeting hero, grouped tool cards with the mockup's
+// gradient icon tiles + line icons + copy, and a recent-jobs strip. Services live on their
+// own "Done-for-you" page (sidebar), not here.
+const SCRAPERS = [
+  { id: 'salesnav', grad: 't-nav', title: 'Sales Navigator', desc: 'Enriched lead lists from your Sales Navigator searches — names, titles, verified emails.' },
+  { id: 'company', grad: 't-co', title: 'Sales Nav Accounts', desc: 'Company & account lists from your Sales Navigator account searches, domain-enriched.' },
+  { id: 'apollo', grad: 't-apollo', title: 'Apollo', desc: 'Targeted contact & company lists straight from your Apollo searches, verified.' },
+  { id: 'zoominfo', grad: 't-zi', title: 'ZoomInfo', desc: 'Pull contacts & accounts from ZoomInfo into clean CSVs — direct dials and work emails.' },
+  { id: 'lisearch', grad: 't-search', title: 'LinkedIn Search', desc: 'Any People or Services search → clean CSV, scraped in your own connected browser.' },
+  { id: 'post', grad: 't-post', title: 'Post Engagers', desc: 'Everyone who reacted, commented, or reposted a LinkedIn post — one URL in, list out.' },
 ]
+const ENRICHMENT = [
+  { id: 'linkedin', grad: 't-url', title: 'LinkedIn URL Enrich', desc: 'Turn profile URLs into names, verified emails & firmographics — Lusha, ContactOut, SalesQL.' },
+  { id: 'waterfall', grad: 't-water', title: 'Waterfall Enrich', desc: 'Chain providers to maximize verified-email coverage, then run the built-in verifier.' },
+  { id: 'verify', grad: 't-verify', title: 'Email Verify', desc: 'Bulk-validate — syntax, MX, SMTP, catch-all & risk — so you only send to deliverable inboxes.' },
+  { id: 'domain', grad: 't-ai', title: 'AI SDR · Domain', desc: 'Turn company domains into full firmographics — the enrichment engine, pointed at domains.' },
+]
+const ALL_TOOLS = [...SCRAPERS, ...ENRICHMENT]
+const GRAD = Object.fromEntries(ALL_TOOLS.map((t) => [t.id, t.grad]))
+const LABEL = Object.fromEntries(ALL_TOOLS.map((t) => [t.id, t.title]))
 
 const ArrowGo = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -18,12 +29,7 @@ const ArrowGo = () => (
 )
 
 // Job shapes differ per scraper — read the row count + timestamp defensively.
-// (Apollo uses totalScraped; salesnav/company use totalLeads; zoominfo/lisearch/post/domain
-// use counts.total; the URL enricher uses total.)
 const jobCount = (j) => j.totalLeads ?? j.totalScraped ?? (j.counts && j.counts.total) ?? j.total ?? j.rows ?? j.leads ?? 0
-// createdAt is an ISO STRING for scraper jobs and a number for enricher uploads — new Date()
-// handles both. Missing → epoch (sorts last). Subtracting the raw strings would give NaN and
-// leave the list unsorted.
 const jobMs = (j) => new Date(j.createdAt || j.startedAt || j.at || 0).getTime()
 
 function statusChip(s) {
@@ -36,16 +42,13 @@ function statusChip(s) {
   return { cls: 'idle', txt: 'Ready' }
 }
 
-function ToolCard({ p, nav, count }) {
-  const Icon = p.icon
+function ToolCard({ t, nav, count }) {
   return (
-    <button className="thome-card" data-p={p.id} onClick={() => nav(p.id)} aria-label={`Open ${p.label}`}>
+    <button className="thome-card" onClick={() => nav(t.id)} aria-label={`Open ${t.title}`}>
       <span className="thome-go"><ArrowGo /></span>
-      <span className={'thome-ic' + (p.image ? ' img' : '')}>
-        {p.image ? <img src={p.image} alt="" /> : (p.emoji || <Icon />)}
-      </span>
-      <h4 className="thome-name">{p.navLabel || p.label}</h4>
-      <p className="thome-desc">{p.short || p.body || ''}</p>
+      <span className={'thome-ic grad ' + t.grad}><NavIcon k={t.id} /></span>
+      <h4 className="thome-name">{t.title}</h4>
+      <p className="thome-desc">{t.desc}</p>
       <div className="thome-foot">
         <span className="thome-live"><i />Live</span>
         {count > 0 && <span className="thome-cnt">{count} job{count === 1 ? '' : 's'}</span>}
@@ -58,7 +61,6 @@ export default function ProductsHome({ nav }) {
   const {
     me, jobs, companyJobs, apolloJobs, zoominfoJobs, lisearchJobs,
     postJobs, enricherJobs, domainJobs, browserConnected,
-    enrichUploads, verifyUploads,
   } = useApp()
 
   const name = me?.user?.username || 'there'
@@ -70,56 +72,35 @@ export default function ProductsHome({ nav }) {
     salesnav: jobs, company: companyJobs, apollo: apolloJobs, zoominfo: zoominfoJobs,
     lisearch: lisearchJobs, post: postJobs, linkedin: enricherJobs, domain: domainJobs,
   }
-  const countOf = (id) => {
-    if (id === 'waterfall') return Object.keys(enrichUploads || {}).length
-    if (id === 'verify') return Object.keys(verifyUploads || {}).length
-    return (arrays[id] || []).length
-  }
+  const countOf = (id) => (arrays[id] || []).length
 
   const recent = Object.entries(arrays)
     .flatMap(([pid, arr]) => (arr || []).map((j) => ({ key: `${pid}-${j.id}`, pid, j })))
     .sort((a, b) => jobMs(b.j) - jobMs(a.j))
     .slice(0, 6)
 
-  const groups = GROUPS.map((g) => ({ ...g, items: g.ids.map(getProduct).filter(Boolean) }))
-
   return (
     <div className="thome">
       <div className="thome-hero">
         <span className="thome-eyebrow">
           <span className={'d' + (browserConnected ? '' : ' off')} />
-          {browserConnected ? 'Extension connected · jobs run in your browser' : 'Connect the extension to start scraping'}
+          {browserConnected ? 'Everything connected · jobs run in your browser' : 'Connect the extension to start scraping'}
         </span>
         <h2>{greet}</h2>
-        <p>Pick a source to scrape or an enrichment to run. Every tool exports a clean, verified CSV.</p>
+        <p>Pick a source to scrape or an enrichment to run. Every tool exports a clean, verified CSV — and shows the cost before anything runs.</p>
       </div>
 
-      {groups.map((g) => (
-        <section className="thome-sec" key={g.title}>
-          <div className="thome-sechead"><h3>{g.title}</h3><span className="rule" /></div>
-          <div className="thome-grid">
-            {g.items.map((p) => <ToolCard key={p.id} p={p} nav={nav} count={countOf(p.id)} />)}
-          </div>
-        </section>
-      ))}
+      <section className="thome-sec">
+        <div className="thome-sechead"><h3>Scrapers</h3><span className="rule" /></div>
+        <div className="thome-grid">
+          {SCRAPERS.map((t) => <ToolCard key={t.id} t={t} nav={nav} count={countOf(t.id)} />)}
+        </div>
+      </section>
 
       <section className="thome-sec">
-        <div className="thome-sechead"><h3>Services</h3><span className="rule" /></div>
+        <div className="thome-sechead"><h3>Enrichment</h3><span className="rule" /></div>
         <div className="thome-grid">
-          {SERVICES.map((s) => {
-            const Icon = s.icon
-            return (
-              <button className="thome-card" key={s.id} onClick={() => nav(s.id)} aria-label={s.label}>
-                <span className="thome-go"><ArrowGo /></span>
-                <span className="thome-ic">{s.emoji || <Icon />}</span>
-                <h4 className="thome-name">{s.label}</h4>
-                <p className="thome-desc">{s.short}</p>
-                <div className="thome-foot">
-                  <span className={'thome-badge ' + badgeCls(s)}>{s.badge}</span>
-                </div>
-              </button>
-            )
-          })}
+          {ENRICHMENT.map((t) => <ToolCard key={t.id} t={t} nav={nav} count={countOf(t.id)} />)}
         </div>
       </section>
 
@@ -128,14 +109,13 @@ export default function ProductsHome({ nav }) {
         {recent.length ? (
           <div className="thome-recent">
             {recent.map(({ key, pid, j }) => {
-              const p = getProduct(pid)
               const st = statusChip(j.status)
               return (
                 <button className="jrow" key={key} onClick={() => nav(pid)} aria-label={`Open ${j.name || 'job'}`}>
-                  <span className="jrow-ic">{p?.image ? <img src={p.image} alt="" /> : (p?.emoji || '•')}</span>
+                  <span className={'jrow-ic grad ' + (GRAD[pid] || '')}><NavIcon k={pid} /></span>
                   <span className="jrow-name">
                     <b>{j.name || 'Untitled job'}</b>
-                    <span>{p?.navLabel || pid}</span>
+                    <span>{LABEL[pid] || pid}</span>
                   </span>
                   <span className="jrow-cnt">{jobCount(j).toLocaleString()} rows</span>
                   <span className={'jst ' + st.cls}>{st.cls === 'run' && <i />}{st.txt}</span>

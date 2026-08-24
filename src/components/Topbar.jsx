@@ -23,6 +23,7 @@ const IcBell = () => <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><pa
 // products.js navLabel (which differs, e.g. "LinkedIn Sales Navigator").
 const PAGE_NAMES = {
   home: 'Dashboard', set: 'Settings', setup: 'Setup', api: 'API key', ext: 'Extension',
+  services: 'Done-for-you',
   salesnav: 'Sales Navigator', company: 'Sales Nav Accounts', apollo: 'Apollo',
   zoominfo: 'ZoomInfo', lisearch: 'LinkedIn Search', post: 'Post Engagers',
   linkedin: 'LinkedIn URL Enrich', waterfall: 'Waterfall Enrich', verify: 'Email Verify',

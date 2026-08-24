@@ -1396,6 +1396,20 @@ body{flex-direction:column}
 .thome-badge.dfy{background:var(--accent-soft);color:var(--brand-2)}
 .thome-badge.free{background:var(--greenglow);color:var(--green)}
 .thome-badge.deal{background:rgba(196,240,66,.20);color:#4d6600;border:1px solid rgba(163,209,0,.4)}
+/* mockup gradient icon tiles (tool cards + recent-jobs) — white line icon on a color tile */
+.thome-ic.grad,.jrow-ic.grad{border:none;color:#fff}
+.thome-ic.grad svg,.jrow-ic.grad svg{color:#fff}
+.jrow-ic svg{width:16px;height:16px}
+.t-nav{background:linear-gradient(135deg,#2563eb,#1d4ed8)}
+.t-co{background:linear-gradient(135deg,#0ea5e9,#0369a1)}
+.t-apollo{background:linear-gradient(135deg,#7c3aed,#5b21b6)}
+.t-zi{background:linear-gradient(135deg,#0d9488,#115e59)}
+.t-search{background:linear-gradient(135deg,#f59e0b,#b45309)}
+.t-post{background:linear-gradient(135deg,#ec4899,#be185d)}
+.t-url{background:linear-gradient(135deg,#6366f1,#4338ca)}
+.t-water{background:linear-gradient(135deg,#06b6d4,#0e7490)}
+.t-verify{background:linear-gradient(135deg,#10b981,#047857)}
+.t-ai{background:linear-gradient(135deg,#8b5cf6,#6d28d9)}
 
 .thome-recent{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm)}
 .jrow{display:grid;grid-template-columns:auto 1fr auto auto;gap:16px;align-items:center;width:100%;text-align:left;padding:12px 16px;border:none;border-top:1px solid var(--border);background:transparent;cursor:pointer;font-family:var(--font);transition:background .12s}
