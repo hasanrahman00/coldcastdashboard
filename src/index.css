@@ -1152,7 +1152,7 @@ body{flex-direction:column}
 .side-acct .sa-who{flex:1;min-width:0}
 .side-acct .sa-who b{display:block;font-size:12.5px;color:#e9ebf2;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .side-acct .sa-who span{display:block;font-size:11px;color:var(--side-ink-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.side-acct .sa-cx{color:var(--side-ink-dim);flex-shrink:0}
+.side-acct .sa-cx{width:15px;height:15px;stroke-width:2.4;color:var(--side-ink-dim);flex-shrink:0}
 
 .side-nav{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:1px;padding:2px 12px 12px;scrollbar-width:thin;scrollbar-color:#20242e transparent}
 .side-nav::-webkit-scrollbar{width:8px}
@@ -1320,6 +1320,59 @@ body{flex-direction:column}
 .phome-search-x{position:absolute;right:8px;width:26px;height:26px;display:flex;align-items:center;justify-content:center;border:none;background:transparent;color:var(--text-muted);font-size:20px;line-height:1;cursor:pointer;border-radius:8px}
 .phome-search-x:hover{background:var(--bg-elev-2);color:var(--text)}
 .phome-empty{font-size:13.5px;color:var(--text-muted);padding:8px 2px 40px}
+
+/* ═══════════ Home ("Dashboard") — hero + grouped tool cards + recent jobs ═══════════ */
+.thome{padding:6px 0 44px}
+.thome-hero{margin:6px 2px 24px}
+.thome-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:var(--accent);background:var(--accent-soft);border:1px solid var(--accent-line);padding:5px 12px;border-radius:999px;margin-bottom:14px}
+.thome-eyebrow .d{width:6px;height:6px;border-radius:999px;background:var(--accent)}
+.thome-eyebrow .d.off{background:var(--amber)}
+.thome-hero h2{font-size:28px;font-weight:800;letter-spacing:-.03em;color:var(--text);text-wrap:balance}
+.thome-hero p{color:var(--text-muted);font-size:15px;margin-top:7px;max-width:60ch;line-height:1.5}
+
+.thome-sec{margin-bottom:28px}
+.thome-sechead{display:flex;align-items:center;gap:12px;margin:0 2px 14px}
+.thome-sechead h3{font-size:12.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-dim)}
+.thome-sechead .rule{flex:1;height:1px;background:var(--border)}
+
+.thome-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:14px}
+.thome-card{position:relative;display:flex;flex-direction:column;gap:10px;text-align:left;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;cursor:pointer;box-shadow:var(--shadow-sm);transition:transform .16s var(--ease-out),box-shadow .16s,border-color .16s;font-family:var(--font)}
+.thome-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-md);border-color:var(--border-strong)}
+.thome-ic{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:var(--bg-elev-2);border:1px solid var(--border);flex-shrink:0;font-size:22px;line-height:1}
+.thome-ic.img{background:#fff}
+.thome-ic img{width:26px;height:26px;object-fit:contain;border-radius:6px}
+.thome-ic svg{width:22px;height:22px;color:var(--accent);stroke-width:1.9}
+.thome-name{font-size:14.5px;font-weight:700;letter-spacing:-.01em;color:var(--text)}
+.thome-desc{font-size:12.5px;color:var(--text-muted);line-height:1.45;flex:1}
+.thome-go{position:absolute;top:16px;right:16px;color:var(--text-faint);transition:color .16s,transform .16s}
+.thome-card:hover .thome-go{color:var(--accent);transform:translate(2px,-2px)}
+.thome-foot{display:flex;align-items:center;gap:8px}
+.thome-live{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:600;color:var(--green);background:var(--greenglow);padding:3px 9px;border-radius:999px}
+.thome-live i{width:5px;height:5px;border-radius:999px;background:var(--green)}
+.thome-cnt{font-size:10.5px;font-weight:600;color:var(--text-muted);background:var(--bg-elev-2);border:1px solid var(--border);padding:3px 9px;border-radius:999px;font-family:var(--mono)}
+
+.thome-recent{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm)}
+.jrow{display:grid;grid-template-columns:auto 1fr auto auto;gap:16px;align-items:center;width:100%;text-align:left;padding:12px 16px;border:none;border-top:1px solid var(--border);background:transparent;cursor:pointer;font-family:var(--font);transition:background .12s}
+.jrow:first-child{border-top:none}
+.jrow:hover{background:var(--bg-elev-1)}
+.jrow-ic{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;background:#fff;border:1px solid var(--border);flex-shrink:0;font-size:15px}
+.jrow-ic img{width:18px;height:18px;object-fit:contain;border-radius:4px}
+.jrow-name{min-width:0}
+.jrow-name b{display:block;font-size:13.5px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.jrow-name span{font-size:11.5px;color:var(--text-dim)}
+.jrow-cnt{font-size:12.5px;color:var(--text-muted);font-variant-numeric:tabular-nums;font-family:var(--mono);white-space:nowrap}
+.jst{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;padding:4px 10px;border-radius:999px;white-space:nowrap}
+.jst i{width:6px;height:6px;border-radius:999px;background:currentColor;animation:jpulse 1.4s ease-in-out infinite}
+.jst.run{background:var(--accent-soft);color:var(--brand-2)}
+.jst.done{background:var(--greenglow);color:var(--green)}
+.jst.stop{background:var(--amberglow);color:var(--amber)}
+.jst.err{background:var(--redglow);color:var(--red)}
+.jst.idle{background:var(--bg-elev-2);color:var(--text-muted)}
+@keyframes jpulse{0%,100%{opacity:1}50%{opacity:.35}}
+@media (max-width:640px){
+  .jrow{grid-template-columns:auto 1fr auto;gap:12px}
+  .jrow-cnt{display:none}
+}
 
 /* Featured hero — flagship product as a wide banner card */
 .pcard-feat{display:flex;align-items:center;gap:22px;width:100%;text-align:left;font-family:var(--font);cursor:pointer;margin-bottom:30px;border:1px solid var(--border-strong);border-radius:18px;padding:24px 26px;background:linear-gradient(120deg,color-mix(in srgb,var(--brand) 9%,var(--bg-elev-1)),var(--bg-elev-1));box-shadow:0 6px 18px -10px rgba(0,0,0,.5);transition:transform .2s var(--ease),box-shadow .2s var(--ease),border-color .2s}
