@@ -4,6 +4,7 @@ import { useToast } from '../store/ToastProvider.jsx'
 import { IconUsers, IconAtSign } from '../lib/icons.jsx'
 import LocalExtBanner from '../components/LocalExtBanner.jsx'
 import ProviderStatus from '../components/ProviderStatus.jsx'
+import FreeAccountCard from '../components/FreeAccountCard.jsx'
 
 function ProfileCard({ p, isActive, isThisBrowser, onActivate, onDelete, onRename }) {
   const online = !!p.online
@@ -150,17 +151,20 @@ export default function Settings() {
         </div>
         <p>
           Sign in to Lusha, ContactOut, SalesQL & LinkedIn in <b>this browser</b> to enrich your scrapes —
-          a free account for each is enough. Grab free accounts below, then sign in.
+          a free account for each is all the scraper needs.
         </p>
         <ProviderStatus />
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 14 }}>
-          <button
-            className="btn btn-p"
-            onClick={() => { window.location.hash = '#/setup' }}
-            title="Get free Lusha, ContactOut & SalesQL accounts"
-          >
-            Fetch Free Accounts
-          </button>
+
+        <div className="enrich-sub">
+          <div className="enrich-sub-h">Grab a free account</div>
+          <p className="enrich-sub-p">
+            Fetch a free account for any source you’re not signed into, then log in above. The credentials are yours to keep.
+          </p>
+          <div className="enrich-grid">
+            <FreeAccountCard name="Lusha" source="lusha" />
+            <FreeAccountCard name="SalesQL" source="salesql" warn="Sign up with your own Gmail — you need your own free account, then log in." />
+            <FreeAccountCard name="ContactOut" source="contactout" warn="Sign up with your own Gmail — you need your own free account, then log in." />
+          </div>
         </div>
       </div>
 

@@ -86,14 +86,14 @@ export default function FreeAccountCard({ name, source, warn }) {
       )}
 
       <style>{`
-        .free-acct{display:flex;flex-direction:column;gap:10px}
-        .fa-warn{margin:0;font-size:12px;font-weight:700;color:#000;line-height:1.4;background:#fef3c7;border:1px solid #fcd34d;border-radius:8px;padding:7px 10px}
+        .free-acct{display:flex;flex-direction:column;gap:12px}
+        .fa-warn{margin:0;font-size:12px;font-weight:600;color:var(--amber);line-height:1.45;background:var(--amberglow);border:1px solid color-mix(in srgb,var(--amber) 26%,var(--border));border-radius:9px;padding:8px 11px}
         .fa-get{align-self:flex-start}
         .fa-creds{display:flex;flex-direction:column;gap:8px}
-        .fa-row{display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--bg-elev-2);border:1px solid var(--border);border-radius:8px;padding:7px 10px}
+        .fa-row{display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--bg-elev-1);border:1px solid var(--border);border-radius:9px;padding:8px 11px}
         .fa-field{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}
-        .fa-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-dim)}
-        .fa-val{font-family:var(--mono,'JetBrains Mono',monospace);font-size:12.5px;word-break:break-all;color:var(--text)}
+        .fa-label{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--text-dim)}
+        .fa-val{font-family:var(--mono);font-size:12.5px;word-break:break-all;color:var(--text)}
       `}</style>
     </div>
   )
