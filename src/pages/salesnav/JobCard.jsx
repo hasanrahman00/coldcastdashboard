@@ -82,7 +82,7 @@ export default function JobCard({ job, onOpenLogs }) {
       // The connect / API-key reasons (🔑 / 🧩) are written into the job log by the
       // scraper — open the Logs so the user sees the reason there (persistent), instead
       // of only a fleeting toast. Everything else still toasts.
-      if (/🔑|🧩/.test(m)) onOpenLogs(job)
+      if (/🔑|🧩|🔐/.test(m)) onOpenLogs(job)
       else toast(m, 'err')
     }
   }

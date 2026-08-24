@@ -44,7 +44,7 @@ export default function PostScraper() {
       await api.postStart(id)
     } catch (e) {
       const m = e.message || 'Could not start'
-      if (/🔑|🧩|extension/i.test(m)) {
+      if (/🔑|🧩|🔐|extension/i.test(m)) {
         const job = sorted.find((j) => j.id === id)
         if (job) setLogsJob(job); else toast(m, 'err')
       } else toast(m, 'err')

@@ -49,7 +49,7 @@ export default function CompanyScraper() {
       const m = e.message || 'Could not start'
       // Connect / API-key reasons (🔑 / 🧩) are written into the job log by the scraper —
       // open the Logs so the user sees the reason there, instead of only a fleeting toast.
-      if (/🔑|🧩/.test(m)) {
+      if (/🔑|🧩|🔐/.test(m)) {
         const job = sorted.find((j) => j.id === id)
         if (job) setLogsJob(job)
         else toast(m, 'err')
