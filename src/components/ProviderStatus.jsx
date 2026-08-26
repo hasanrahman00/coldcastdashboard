@@ -16,8 +16,9 @@ import { useApp } from '../store/AppStore.jsx'
 // the label + login link change. Pass `linkedin="linkedin"` for the post scraper.
 const BASE = [
   { key: 'lusha',      label: 'Free Lusha',      url: 'https://www.lusha.com/login/' },
-  // SalesQL & ContactOut need the user's OWN free account (their own Gmail) — send
+  // SignalHire, SalesQL & ContactOut need the user's OWN free account (their own Gmail) — send
   // them to the Setup page, which explains that + fetches/gets the free account.
+  { key: 'signalhire', label: 'Free SignalHire', url: '#/setup' },
   { key: 'contactout', label: 'Free ContactOut', url: '#/setup' },
   { key: 'salesql',    label: 'Free SalesQL',    url: '#/setup' },
 ]
