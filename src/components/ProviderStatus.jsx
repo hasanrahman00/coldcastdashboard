@@ -27,17 +27,6 @@ const LINKEDIN = {
   linkedin: { key: 'linkedin', label: 'LinkedIn',                 url: 'https://www.linkedin.com/feed/' },
 }
 
-const Check = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <path d="M20 6 9 17l-5-5" />
-  </svg>
-)
-const Cross = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <path d="M18 6 6 18M6 6l12 12" />
-  </svg>
-)
-
 // `exclude` hides sources a given scraper doesn't use (e.g. the Company scraper enriches via
 // Lusha + ContactOut + LinkedIn only, so it passes exclude={['salesql']}). Default shows all.
 export default function ProviderStatus({ linkedin = 'salesnav', exclude = [] }) {
@@ -58,12 +47,17 @@ export default function ProviderStatus({ linkedin = 'salesnav', exclude = [] }) 
         {PROVIDERS.map((p) => {
           const state = !providers ? 'unknown' : (providers[p.key] ? 'on' : 'off')
           const external = /^https?:/.test(p.url)   // provider login opens in a new tab; #/setup navigates in-app
+          const name  = p.label.replace(/^Free\s+/, '')                               // "Free Lusha" → "Lusha"
+          const emoji = state === 'on' ? '✅' : state === 'off' ? '⚠️' : '…'
+          const text  = state === 'on' ? `${name} logged in`
+                      : state === 'off' ? `${name} Not logged in`
+                      : `${name} — checking…`
           return (
             <a key={p.key} className={`provchip ${state}`} href={p.url}
               {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-              title={state === 'on' ? `${p.label} — logged in (click to open)` : state === 'off' ? `${p.label} — not logged in (click to log in)` : `${p.label} — click to log in`}>
-              <span className="provchip-ic">{state === 'on' ? <Check /> : state === 'off' ? <Cross /> : '…'}</span>
-              {p.label}
+              title={state === 'on' ? `${name} — logged in (click to open)` : state === 'off' ? `${name} — not logged in (click to log in)` : `${name} — click to log in`}>
+              <span className="provchip-ic" aria-hidden="true">{emoji}</span>
+              {text}
             </a>
           )
         })}
