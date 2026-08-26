@@ -1545,12 +1545,14 @@ input[type=password]{font-family:var(--font)}
 .provstat-head{display:flex;align-items:baseline;gap:10px;margin-bottom:12px}
 .provstat-title{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim)}
 .provstat-count{font-size:12px;font-weight:700;color:var(--text-muted);margin-left:auto}
-.provstat-chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-start}
-.provchip{display:inline-flex;align-items:center;gap:7px;padding:6px 13px;border-radius:999px;font-size:12.5px;font-weight:600;border:1px solid var(--border);line-height:1;text-decoration:none;cursor:pointer;transition:transform .12s,box-shadow .12s,border-color .12s}
-.provchip:hover{transform:translateY(-1px);box-shadow:0 4px 12px -6px rgba(20,30,80,.25)}
-.provchip-ic{display:inline-flex;width:14px;height:14px;align-items:center;justify-content:center;font-weight:800}
-.provchip-ic svg{width:13px;height:13px}
-.provchip.on{background:var(--greenglow);border-color:color-mix(in srgb,var(--green) 30%,var(--border));color:var(--green)}
+.provstat-chips{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.provchip{display:inline-flex;align-items:center;gap:10px;padding:13px 26px;border-radius:12px;font-size:16px;font-weight:700;border:1px solid var(--border);line-height:1;text-decoration:none;cursor:pointer;transition:transform .12s,box-shadow .12s,border-color .12s}
+.provchip:hover{transform:translateY(-1px);box-shadow:0 6px 16px -6px rgba(234,88,12,.35)}
+.provchip-ic{display:inline-flex;width:18px;height:18px;align-items:center;justify-content:center;font-weight:800}
+.provchip-ic svg{width:17px;height:17px}
+/* Enrichment-source chips: large, orange, centered. ON = solid orange button (white text);
+   OFF stays red so a signed-out source is still obvious. */
+.provchip.on{background:var(--orange);border-color:var(--orange);color:#fff}
 .provchip.off{background:var(--redglow);border-color:color-mix(in srgb,var(--red) 28%,var(--border));color:var(--red)}
 .provchip.unknown{color:var(--text-dim);opacity:.85}
 .provstat-hint{margin:12px 0 0;font-size:12px;font-weight:500;line-height:1.55;color:var(--text-muted)}
