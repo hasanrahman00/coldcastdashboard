@@ -3,6 +3,7 @@ import { api } from '../../lib/api.js'
 import { useApp } from '../../store/AppStore.jsx'
 import { useToast } from '../../store/ToastProvider.jsx'
 import Modal from '../../components/Modal.jsx'
+import ProviderStatus from '../../components/ProviderStatus.jsx'
 import CompanyJobCard from './CompanyJobCard.jsx'
 import CompanyNewJobModal from './CompanyNewJobModal.jsx'
 import { IconPlus, IconChevronLeft, IconChevronRight } from '../../lib/icons.jsx'
@@ -16,7 +17,7 @@ export default function CompanyScraper() {
   const toast = useToast()
   const configured = api.companyConfigured()
 
-  const { companyJobs, upsertCompanyJob, removeCompanyJob, scraperConnected, expired, busyJob } = useApp()
+  const { companyJobs, upsertCompanyJob, removeCompanyJob, scraperConnected, expired, busyJob, onlineProfileId } = useApp()
   const connected = scraperConnected('company')
   const jobs = companyJobs || []
   const [page, setPage] = useState(0)
@@ -42,7 +43,9 @@ export default function CompanyScraper() {
 
   const run = async (id) => {
     try {
-      await api.companyStart(id)
+      // Pass the browser online RIGHT NOW so the server re-binds the job to it (SSE keeps
+      // onlineProfileId fresh) — the user may have switched browsers since creating the job.
+      await api.companyStart(id, onlineProfileId)
     } catch (e) {
       const m = e.message || 'Could not start'
       // Connect / API-key reasons (🔑 / 🧩) are written into the job log by the scraper —
@@ -105,6 +108,11 @@ export default function CompanyScraper() {
           New Job
         </button>
       </div>
+
+      {/* Live enrichment-login badges for THIS browser (Lusha / ContactOut / LinkedIn). Refreshes
+          every few seconds via the extension bridge, so signing in/out of a source flips its badge
+          without a reload — the same sources the server gate blocks a run on. SalesQL isn't used here. */}
+      <ProviderStatus linkedin="salesnav" exclude={['salesql']} />
 
       <div className="jg-head">
         <h3>Active Jobs</h3>

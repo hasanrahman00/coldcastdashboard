@@ -39,6 +39,10 @@ export default function CompanyNewJobModal({ open, onClose, onCreated }) {
     const u = url.trim()
     if (!u) return toast('Paste a Sales Navigator company-search URL', 'err')
     if (!/linkedin\.com\/sales/i.test(u)) return toast('That doesn’t look like a Sales Navigator URL', 'err')
+    // The job binds to the browser online RIGHT NOW (auto-selected via the extension). If none is
+    // connected here, onlineProfileId is null — creating the job would post profileId:null and it
+    // could never run. Block early with a clear message instead of a silent dead job.
+    if (!onlineProfileId) return toast('No connected browser found — open your Coldcast extension in this browser (set your API key until it shows “connected”), then try again.', 'err')
 
     setBusy(true)
     try {

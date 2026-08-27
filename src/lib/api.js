@@ -283,7 +283,9 @@ export const api = {
   companyConfigured: () => Boolean(COMPANY_BASE),
   companyJobs: () => asJson('/api/jobs', { base: COMPANY_BASE }),
   companyCreate: (payload) => postJson('/api/jobs', payload, { base: COMPANY_BASE }),
-  companyStart: (id) => postJson(`/api/jobs/${id}/start`, undefined, { base: COMPANY_BASE }),
+  // profileId (optional): the browser online RIGHT NOW — sent so the server re-binds the job to
+  // the browser the user is actually in (they may have opened a different one since creating it).
+  companyStart: (id, profileId) => postJson(`/api/jobs/${id}/start`, profileId ? { profileId } : undefined, { base: COMPANY_BASE }),
   // "Add to existing list" — point a list at a new company search; its next run appends (deduped).
   companyAppend: (id, payload) => postJson(`/api/jobs/${id}/append`, payload, { base: COMPANY_BASE }),
   companyStop: (id) => postJson(`/api/jobs/${id}/stop`, undefined, { base: COMPANY_BASE }),
