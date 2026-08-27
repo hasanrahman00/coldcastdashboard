@@ -8,7 +8,6 @@ export default function Setup() {
       <h3 className="sbox-title">Enrichment sources</h3>
       <div className="enrich-grid">
         <FreeAccountCard name="Lusha" source="lusha" />
-        <FreeAccountCard name="SignalHire" source="signalhire" warn="Sign up with your own Gmail — you need your own free account, then log in." />
         <FreeAccountCard name="SalesQL" source="salesql" warn="Sign up with your own Gmail — you need your own free account, then log in." />
         <FreeAccountCard name="ContactOut" source="contactout" warn="Sign up with your own Gmail — you need your own free account, then log in." />
       </div>

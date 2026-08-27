@@ -40,9 +40,9 @@ export default function NewJobModal({ open, onClose }) {
   const [target, setTarget] = useState('new') // 'new' | 'existing'
   const [name, setName] = useState('')
   const [url, setUrl] = useState('')
-  const [profileId, setProfileId] = useState('')
-  const [mode, setMode] = useState('without_signal')
-  const [speed, setSpeed] = useState('fast')
+  const [profileId, setProfileId] = useState('')   // auto-selected (see effect below) — no picker
+  // ONE toggle now: off (default) = Without Signal + Fast; on = With Signal + Normal (safer) speed.
+  const [withSignal, setWithSignal] = useState(false)
   const [existingId, setExistingId] = useState('')
   const [busy, setBusy] = useState(false)
 
@@ -58,15 +58,14 @@ export default function NewJobModal({ open, onClose }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open])
 
-  // Default the profile to the active one (or first); default the existing-list
-  // dropdown to the newest list. Re-runs when fresh data arrives.
+  // AUTO-select the browser the job runs on (no picker): the connected one, kept fresh as
+  // profiles arrive over SSE. Also default the existing-list dropdown to the newest list.
   useEffect(() => {
     if (!open) return
     setProfileId((prev) => {
-      // Default to a CONNECTED browser so the job targets one that's actually
-      // online: keep the current pick if still online → THIS BROWSER (the
-      // dashboard's own extension) → the active profile if online → any online
-      // → fall back to active/first so the dropdown is never empty.
+      // Prefer a CONNECTED browser so the job targets one that's actually online: keep the
+      // current pick if still online → THIS BROWSER (the dashboard's own extension) → the
+      // active profile if online → any online → fall back to active/first.
       const isOnline = (id) => id && profiles.some((p) => p.id === id && (p.online || p.bridge))
       const firstOnline = profiles.find((p) => p && (p.online || p.bridge))
       if (isOnline(prev)) return prev
@@ -79,13 +78,18 @@ export default function NewJobModal({ open, onClose }) {
   }, [open, profiles, activeProfileId, localExt.profileId, sortedJobs])
 
   const submit = async () => {
-    if (!profileId) return toast('Pick a profile to run on', 'err')
+    if (!profileId) return toast('No connected browser found — open your Coldcast extension, then try again.', 'err')
     const u = url.trim()
     if (!u) return toast('Enter a LinkedIn Sales Nav URL', 'err')
     // Must be a Sales Navigator URL — reject Apollo / plain LinkedIn / anything else early.
     if (!/linkedin\.com\/sales\//i.test(u)) {
       return toast('⚠️ That isn’t a Sales Navigator URL. Paste a link that starts with https://www.linkedin.com/sales/…', 'err')
     }
+
+    // The single "With Signal" toggle drives BOTH mode and speed: signal-on runs the safer
+    // Normal pace, signal-off (default) runs standard contact data at Fast pace.
+    const mode = withSignal ? 'with_signal' : 'without_signal'
+    const speed = withSignal ? 'normal' : 'fast'
 
     setBusy(true)
     try {
@@ -163,88 +167,26 @@ export default function NewJobModal({ open, onClose }) {
         />
       </div>
 
-      <div className="fg">
-        <label>
-          🖥️ Run with profile <span style={subLabel}>— which connected browser to use</span>
-        </label>
-        <select value={profileId} onChange={(e) => setProfileId(e.target.value)} style={selStyle}>
-          {profiles.length === 0 && <option value="">— Select a profile —</option>}
-          {profiles.map((p) => (
-            <option key={p.id} value={p.id}>
-              {p.name || p.id}
-              {p.online ? '  🟢 connected' : '  ⚪ offline'}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {target === 'new' && (
-        <div className="fg">
-          <label>
-            ⏱️ Scraper speed <span style={subLabel}>— how fast it moves between pages</span>
-          </label>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-            <label style={card(speed === 'fast')}>
-              <input type="radio" name="jobSpeed" value="fast" checked={speed === 'fast'} onChange={() => setSpeed('fast')} style={{ marginTop: 3, flexShrink: 0 }} />
-              <div>
-                <div style={{ fontSize: 13, fontWeight: 600 }}>⚡ Fast</div>
-                <div style={{ fontSize: 11.5, color: 'var(--text-faint)', lineHeight: 1.4, marginTop: 2 }}>
-                  Quicker — 5–10s per page.
-                </div>
-              </div>
-            </label>
-            <label style={card(speed === 'normal')}>
-              <input type="radio" name="jobSpeed" value="normal" checked={speed === 'normal'} onChange={() => setSpeed('normal')} style={{ marginTop: 3, flexShrink: 0 }} />
-              <div>
-                <div style={{ fontSize: 13, fontWeight: 600 }}>🛡️ Normal</div>
-                <div style={{ fontSize: 11.5, color: 'var(--text-faint)', lineHeight: 1.4, marginTop: 2 }}>
-                  Safer, more human — 12–20s per page.
-                </div>
-              </div>
-            </label>
-          </div>
-        </div>
-      )}
-
       {target === 'new' ? (
         <div className="fg">
           <label>
             🎛️ Mode <span style={subLabel}>— what to capture</span>
           </label>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-            <label style={card(mode === 'without_signal')}>
-              <input
-                type="radio"
-                name="jobMode"
-                value="without_signal"
-                checked={mode === 'without_signal'}
-                onChange={() => setMode('without_signal')}
-                style={{ marginTop: 3, flexShrink: 0 }}
-              />
-              <div>
-                <div style={{ fontSize: 13, fontWeight: 600 }}>📇 Without Signal</div>
-                <div style={{ fontSize: 11.5, color: 'var(--text-faint)', lineHeight: 1.4, marginTop: 2 }}>
-                  Standard contact data. Faster.
-                </div>
+          <label style={card(withSignal)}>
+            <input
+              type="checkbox"
+              checked={withSignal}
+              onChange={(e) => setWithSignal(e.target.checked)}
+              style={{ marginTop: 3, flexShrink: 0 }}
+            />
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 600 }}>🎯 With Signal</div>
+              <div style={{ fontSize: 11.5, color: 'var(--text-faint)', lineHeight: 1.4, marginTop: 2 }}>
+                Adds badges (mutual connections, recently hired…) + post text, and runs at the safer
+                <b> Normal</b> pace (12–20s/page). Leave off for standard contact data at <b>Fast</b> pace.
               </div>
-            </label>
-            <label style={card(mode === 'with_signal')}>
-              <input
-                type="radio"
-                name="jobMode"
-                value="with_signal"
-                checked={mode === 'with_signal'}
-                onChange={() => setMode('with_signal')}
-                style={{ marginTop: 3, flexShrink: 0 }}
-              />
-              <div>
-                <div style={{ fontSize: 13, fontWeight: 600 }}>🎯 With Signal</div>
-                <div style={{ fontSize: 11.5, color: 'var(--text-faint)', lineHeight: 1.4, marginTop: 2 }}>
-                  Adds badges (mutual connections, recently hired…) + post text. Slower, safer.
-                </div>
-              </div>
-            </label>
-          </div>
+            </div>
+          </label>
         </div>
       ) : (
         selectedJob && (

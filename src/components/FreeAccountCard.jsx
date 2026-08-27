@@ -5,7 +5,6 @@ import { useToast } from '../store/ToastProvider.jsx'
 
 const LOGIN_URLS = {
   Lusha: 'https://www.lusha.com/login/',
-  SignalHire: 'https://www.signalhire.com/',
   SalesQL: 'https://salesql.com/',
   ContactOut: 'https://contactout.com/login',
 }
