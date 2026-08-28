@@ -129,6 +129,7 @@ export function AppProvider({ initialMe, onLogout, children }) {
   // the live SSE/poll below replaces it with authoritative data the moment it arrives.
   const [jobs, setJobs] = useState(() => readJobsCache(uid, 'salesnav'))
   const [apolloJobs, setApolloJobs] = useState(() => readJobsCache(uid, 'apollo')) // Apollo scraper jobs (separate server) — see the SSE slice below
+  const [apolloFreeJobs, setApolloFreeJobs] = useState(() => readJobsCache(uid, 'apollofree')) // Apollo FREE scraper jobs (its OWN server) — SSE slice below
   const [enricherJobs, setEnricherJobs] = useState(() => readJobsCache(uid, 'enricher')) // LinkedIn URL Enricher jobs (separate server) — polled below
   const [companyJobs, setCompanyJobs] = useState(() => readJobsCache(uid, 'company')) // Company scraper jobs (separate server) — SSE below
   const [postJobs, setPostJobs] = useState(() => readJobsCache(uid, 'post')) // LinkedIn post-engagers scraper (separate server) — SSE below
@@ -333,6 +334,52 @@ export function AppProvider({ initialMe, onLogout, children }) {
     const poll = setInterval(() => { if (!document.hidden) load() }, 5000)
     return () => { alive = false; clearInterval(poll); try { es?.close() } catch {} }
   }, [upsertApolloJob])
+
+  // ── Apollo FREE scraper jobs (its OWN separate server) — same shape as the Apollo slice ──
+  const upsertApolloFreeJob = useCallback((job) => {
+    if (!job || !job.id) return
+    setApolloFreeJobs((prev) => {
+      const i = prev.findIndex((j) => j.id === job.id)
+      if (i === -1) return [job, ...prev]
+      const next = prev.slice()
+      next[i] = job
+      return next
+    })
+  }, [])
+  const removeApolloFreeJob = useCallback((id) => {
+    setApolloFreeJobs((prev) => prev.filter((j) => j.id !== id))
+  }, [])
+
+  useEffect(() => {
+    if (!api.apolloFreeConfigured()) return
+    let alive = true
+    let es
+    const load = async () => {
+      try {
+        const list = await api.apolloFreeJobs()
+        if (alive) setApolloFreeJobs(Array.isArray(list) ? list : [])
+      } catch {
+        /* keep last-known; the 5s poll reconciles */
+      }
+    }
+    load()
+    try {
+      es = api.apolloFreeEvents()
+      es.addEventListener('init', (e) => {
+        try { const d = JSON.parse(e.data); if (alive) setApolloFreeJobs(Array.isArray(d) ? d : []) } catch {}
+      })
+      es.addEventListener('job:update', (e) => {
+        try { upsertApolloFreeJob(JSON.parse(e.data)) } catch {}
+      })
+      es.addEventListener('job:delete', (e) => {
+        try { const { id } = JSON.parse(e.data); if (alive) setApolloFreeJobs((p) => p.filter((j) => j.id !== id)) } catch {}
+      })
+    } catch {
+      /* EventSource unavailable → poll only */
+    }
+    const poll = setInterval(() => { if (!document.hidden) load() }, 5000)
+    return () => { alive = false; clearInterval(poll); try { es?.close() } catch {} }
+  }, [upsertApolloFreeJob])
 
   // ── LinkedIn URL Enricher jobs (its OWN server) — polled for the GLOBAL counters ──
   // No global SSE (its stream is per-job), so a light 6s poll keeps the header's
@@ -680,7 +727,7 @@ export function AppProvider({ initialMe, onLogout, children }) {
   // usage now tick live as a job runs, without a reload — and stay quiet when idle
   // (the 8s poll covers that) so Core isn't hammered.
   useEffect(() => {
-    const active = [jobs, apolloJobs, companyJobs, postJobs, zoominfoJobs, domainJobs, lisearchJobs, enricherJobs]
+    const active = [jobs, apolloJobs, apolloFreeJobs, companyJobs, postJobs, zoominfoJobs, domainJobs, lisearchJobs, enricherJobs]
       .some((list) => (list || []).some((j) => j && (j.status === 'running' || j.status === 'queued')))
     if (!active) return
     const t = setTimeout(() => {
@@ -689,7 +736,7 @@ export function AppProvider({ initialMe, onLogout, children }) {
       refreshProfiles()
     }, 1200)
     return () => clearTimeout(t)
-  }, [jobs, apolloJobs, companyJobs, postJobs, zoominfoJobs, domainJobs, lisearchJobs, enricherJobs, refreshCredits, refreshProfiles])
+  }, [jobs, apolloJobs, apolloFreeJobs, companyJobs, postJobs, zoominfoJobs, domainJobs, lisearchJobs, enricherJobs, refreshCredits, refreshProfiles])
 
   // ── Default the active-profile radio to THIS BROWSER ───────────────────
   // The profile connected through the dashboard's own browser (localExt) is the
@@ -860,6 +907,7 @@ export function AppProvider({ initialMe, onLogout, children }) {
   // changes; the live SSE/poll stays the source of truth — this is just the warm snapshot.
   useEffect(() => { writeJobsCache(uid, 'salesnav', jobs) }, [uid, jobs])
   useEffect(() => { writeJobsCache(uid, 'apollo', apolloJobs) }, [uid, apolloJobs])
+  useEffect(() => { writeJobsCache(uid, 'apollofree', apolloFreeJobs) }, [uid, apolloFreeJobs])
   useEffect(() => { writeJobsCache(uid, 'enricher', enricherJobs) }, [uid, enricherJobs])
   useEffect(() => { writeJobsCache(uid, 'company', companyJobs) }, [uid, companyJobs])
   useEffect(() => { writeJobsCache(uid, 'post', postJobs) }, [uid, postJobs])
@@ -1085,10 +1133,10 @@ export function AppProvider({ initialMe, onLogout, children }) {
       }
       return null
     }
-    return scan(jobs, 'Sales Nav') || scan(apolloJobs, 'Apollo') || scan(companyJobs, 'Company')
+    return scan(jobs, 'Sales Nav') || scan(apolloJobs, 'Apollo') || scan(apolloFreeJobs, 'Apollo Free') || scan(companyJobs, 'Company')
         || scan(postJobs, 'Post Engagers') || scan(zoominfoJobs, 'ZoomInfo') || scan(domainJobs, 'Domain Enricher')
         || scan(lisearchJobs, 'LinkedIn Search') || scan(enricherJobs, 'URL Enricher', ENRICH_ACTIVE) || null
-  }, [jobs, apolloJobs, companyJobs, postJobs, zoominfoJobs, domainJobs, lisearchJobs, enricherJobs])
+  }, [jobs, apolloJobs, apolloFreeJobs, companyJobs, postJobs, zoominfoJobs, domainJobs, lisearchJobs, enricherJobs])
 
   // Tell the extension (via its dashboard-bridge) when THIS browser is connected under a
   // DIFFERENT account than the one logged in here, so the extension popup + sidebar can
@@ -1123,6 +1171,9 @@ export function AppProvider({ initialMe, onLogout, children }) {
     apolloJobs,
     upsertApolloJob,
     removeApolloJob,
+    apolloFreeJobs,
+    upsertApolloFreeJob,
+    removeApolloFreeJob,
     enricherJobs,
     companyJobs,
     upsertCompanyJob,

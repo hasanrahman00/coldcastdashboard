@@ -23,6 +23,12 @@ export const coreUrl = (path) => CORE_BASE + path
 const APOLLO_BASE = (import.meta.env.VITE_APOLLO_SCRAPER_URL || '').replace(/\/$/, '')
 export const apolloUrl = (path) => APOLLO_BASE + path
 
+// The Apollo FREE scraper — a SEPARATE product/server (the extension-bridge webapp:
+// browser-IP mixed_people/search replay + real-time CSRF), distinct from the paid Apollo above.
+// Defaults to the production host; override with VITE_APOLLO_FREE_SCRAPER_URL.
+const APOLLO_FREE_BASE = (import.meta.env.VITE_APOLLO_FREE_SCRAPER_URL || 'https://apollo-free-scraper.coldcast.io').replace(/\/$/, '')
+export const apolloFreeUrl = (path) => APOLLO_FREE_BASE + path
+
 // The LinkedIn URL Enricher also runs on its OWN server. Point the dashboard at it
 // via VITE_LINKEDIN_ENRICHER_URL. Empty until deployed — the tab shows a setup hint.
 const ENRICHER_BASE = (import.meta.env.VITE_LINKEDIN_ENRICHER_URL || '').replace(/\/$/, '')
@@ -63,6 +69,7 @@ const hostOf = (u) => { try { return new URL(u).host } catch { return '' } }
 export const SCRAPER_HOSTS = {
   salesnav: hostOf(BASE),
   apollo: hostOf(APOLLO_BASE),
+  apollofree: hostOf(APOLLO_FREE_BASE),
   company: hostOf(COMPANY_BASE),
   enricher: hostOf(ENRICHER_BASE),
   post: hostOf(POST_BASE),
@@ -256,6 +263,19 @@ export const api = {
   apolloLogs: (id) => asJson(`/api/jobs/${id}/logs`, { base: APOLLO_BASE }),
   apolloEvents: () => new EventSource(apolloUrl(`/api/events?token=${encodeURIComponent(getToken())}`)),
   apolloDownloadUrl: (id) => apolloUrl(`/api/jobs/${id}/csv?token=${encodeURIComponent(getToken())}`),
+
+  // ── Apollo FREE scraper (SEPARATE server — the extension-bridge webapp) ──
+  apolloFreeConfigured: () => Boolean(APOLLO_FREE_BASE),
+  apolloFreeJobs: () => asJson('/api/jobs', { base: APOLLO_FREE_BASE }),
+  apolloFreeCreate: (payload) => postJson('/api/jobs', payload, { base: APOLLO_FREE_BASE }),
+  // profileId (optional): the browser online now → the server re-binds the job to it (run-time bind).
+  apolloFreeStart: (id, profileId) => postJson(`/api/jobs/${id}/start`, profileId ? { profileId } : undefined, { base: APOLLO_FREE_BASE }),
+  apolloFreeAppend: (id, payload) => postJson(`/api/jobs/${id}/append`, payload, { base: APOLLO_FREE_BASE }),
+  apolloFreeStop: (id) => postJson(`/api/jobs/${id}/stop`, undefined, { base: APOLLO_FREE_BASE }),
+  apolloFreeDelete: (id) => del(`/api/jobs/${id}`, { base: APOLLO_FREE_BASE }),
+  apolloFreeLogs: (id) => asJson(`/api/jobs/${id}/logs`, { base: APOLLO_FREE_BASE }),
+  apolloFreeEvents: () => new EventSource(apolloFreeUrl(`/api/events?token=${encodeURIComponent(getToken())}`)),
+  apolloFreeDownloadUrl: (id) => apolloFreeUrl(`/api/jobs/${id}/csv?token=${encodeURIComponent(getToken())}`),
 
   // ── LinkedIn URL Enricher (its OWN server; same Bearer auth + shared Core billing) ──
   // Jobs are created by UPLOADING a CSV / pasting URLs (multipart), logs are plain

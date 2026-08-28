@@ -69,6 +69,18 @@ export const PRODUCTS = [
     body: 'Export targeted contact and company lists straight from your Apollo searches — names, titles, verified emails, and firmographics — with the same one-click flow as the Sales Nav scraper.',
   },
   {
+    id: 'apollofree',
+    label: 'Scrape Apollo Leads — Free',   // big page header + tools card
+    navLabel: 'Apollo Free',                // sidebar tab
+    soon: false,
+    icon: IconFeather,
+    emoji: '🚀',
+    image: '/apollo-icon.png',   // same Apollo.io logo
+    title: 'Scrape Apollo Leads — Free',
+    short: 'Apollo people-search → CSV, run in your own connected browser.',
+    body: 'Export Apollo people searches into a clean CSV — names, titles, emails, and firmographics — scraped straight from your own connected browser via the Coldcast extension (your IP + session), with the same one-click flow as the Sales Nav scraper.',
+  },
+  {
     id: 'zoominfo',
     label: 'Scrape ZoomInfo Leads',   // big page header + tools card
     navLabel: 'Scrape ZoomInfo',       // sidebar tab
