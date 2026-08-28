@@ -13,6 +13,7 @@ const SCRAPERS = [
   { key: 'salesnav', route: 'salesnav', label: 'Sales Navigator' },
   { key: 'company', route: 'company', label: 'Sales Nav Accounts' },
   { key: 'apollo', route: 'apollo', label: 'Apollo' },
+  { key: 'apollofree', route: 'apollofree', label: 'Apollo Free' },
   { key: 'zoominfo', route: 'zoominfo', label: 'ZoomInfo' },
   { key: 'lisearch', route: 'lisearch', label: 'LinkedIn Search' },
   { key: 'post', route: 'post', label: 'Post Engagers' },
@@ -36,7 +37,7 @@ const FOOTER = [
 ]
 
 export default function Sidebar({ route, nav }) {
-  const { me, jobs, companyJobs, apolloJobs, zoominfoJobs, lisearchJobs, postJobs, enricherJobs, domainJobs } = useApp()
+  const { me, jobs, companyJobs, apolloJobs, apolloFreeJobs, zoominfoJobs, lisearchJobs, postJobs, enricherJobs, domainJobs } = useApp()
   const username = me?.user?.username || 'Account'
   const secondsLeft = me?.secondsLeft ?? 0
   // Account card subline — "<plan> · <n> days left" (moved here from the topbar). Plan is
@@ -49,6 +50,7 @@ export default function Sidebar({ route, nav }) {
 
   const counts = {
     salesnav: (jobs || []).length, company: (companyJobs || []).length, apollo: (apolloJobs || []).length,
+    apollofree: (apolloFreeJobs || []).length,
     zoominfo: (zoominfoJobs || []).length, lisearch: (lisearchJobs || []).length, post: (postJobs || []).length,
     linkedin: (enricherJobs || []).length, domain: (domainJobs || []).length,
   }

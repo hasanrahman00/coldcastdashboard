@@ -7,6 +7,7 @@ export const NAV_ICONS = {
   salesnav: <><circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.7" /><path d="M15.5 8.5l-2 5-5 2 2-5 5-2z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" /></>,
   company: <><rect x="4" y="3" width="10" height="18" rx="1.5" stroke="currentColor" strokeWidth="1.7" /><path d="M14 8h6v13h-6M7 7h4M7 11h4M7 15h4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" /></>,
   apollo: <><path d="M12 2s5 2 5 9c0 3-2 6-5 9-3-3-5-6-5-9 0-7 5-9 5-9z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" /><circle cx="12" cy="10" r="2" stroke="currentColor" strokeWidth="1.7" /></>,
+  apollofree: <><path d="M12 2s5 2 5 9c0 3-2 6-5 9-3-3-5-6-5-9 0-7 5-9 5-9z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" /><circle cx="12" cy="10" r="2" stroke="currentColor" strokeWidth="1.7" /></>,
   zoominfo: <><circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.7" /><path d="M20 20l-3.5-3.5M11 8v6M8 11h6" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" /></>,
   lisearch: <><circle cx="9" cy="8" r="3.2" stroke="currentColor" strokeWidth="1.7" /><path d="M3.5 19c.7-3 3-4.5 5.5-4.5s4.8 1.5 5.5 4.5M17 11l2 2 3.5-3.5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" /></>,
   post: <path d="M12 20s-7-4.3-7-9.3A3.7 3.7 0 0112 8a3.7 3.7 0 017 2.7C19 15.7 12 20 12 20z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />,
