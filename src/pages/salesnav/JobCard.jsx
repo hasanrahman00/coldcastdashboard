@@ -78,12 +78,10 @@ export default function JobCard({ job, onOpenLogs }) {
     try {
       await startJob(job.id)
     } catch (e) {
+      // Show the reason as a dashboard NOTIFICATION (toast), not buried in the Logs view.
+      // Sign-in / connect reasons (🔐 / 🔑 / 🧩) get a longer read so the user can act on them.
       const m = e.message || 'Action failed'
-      // The connect / API-key reasons (🔑 / 🧩) are written into the job log by the
-      // scraper — open the Logs so the user sees the reason there (persistent), instead
-      // of only a fleeting toast. Everything else still toasts.
-      if (/🔑|🧩|🔐/.test(m)) onOpenLogs(job)
-      else toast(m, 'err')
+      toast(m, 'err', /🔐|🔑|🧩/.test(m) ? 7000 : 3500)
     }
   }
   const stop = wrap(() => stopJob(job.id))

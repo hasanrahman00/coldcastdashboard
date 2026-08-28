@@ -46,16 +46,10 @@ export default function CompanyScraper() {
       // onlineProfileId fresh) — the user may have switched browsers since creating the job.
       await api.companyStart(id, onlineProfileId)
     } catch (e) {
+      // Show the reason as a dashboard NOTIFICATION (toast), not buried in the Logs view.
+      // Sign-in / connect reasons (🔐 / 🔑 / 🧩) get a longer read so the user can act on them.
       const m = e.message || 'Could not start'
-      // Connect / API-key reasons (🔑 / 🧩) are written into the job log by the scraper —
-      // open the Logs so the user sees the reason there, instead of only a fleeting toast.
-      if (/🔑|🧩|🔐/.test(m)) {
-        const job = sorted.find((j) => j.id === id)
-        if (job) setLogsJob(job)
-        else toast(m, 'err')
-      } else {
-        toast(m, 'err')
-      }
+      toast(m, 'err', /🔐|🔑|🧩/.test(m) ? 7000 : 3500)
     }
   }
   const stop = async (id) => {
