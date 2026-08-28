@@ -3,7 +3,6 @@ import { api } from '../../lib/api.js'
 import { useApp } from '../../store/AppStore.jsx'
 import { useToast } from '../../store/ToastProvider.jsx'
 import Modal from '../../components/Modal.jsx'
-import ProviderStatus from '../../components/ProviderStatus.jsx'
 import CompanyJobCard from './CompanyJobCard.jsx'
 import CompanyNewJobModal from './CompanyNewJobModal.jsx'
 import { IconPlus, IconChevronLeft, IconChevronRight } from '../../lib/icons.jsx'
@@ -108,11 +107,6 @@ export default function CompanyScraper() {
           New Job
         </button>
       </div>
-
-      {/* Live enrichment-login badges for THIS browser (Lusha / ContactOut / LinkedIn). Refreshes
-          every few seconds via the extension bridge, so signing in/out of a source flips its badge
-          without a reload — the same sources the server gate blocks a run on. SalesQL isn't used here. */}
-      <ProviderStatus linkedin="salesnav" exclude={['salesql']} />
 
       <div className="jg-head">
         <h3>Active Jobs</h3>
