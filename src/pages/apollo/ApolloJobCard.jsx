@@ -50,7 +50,17 @@ export default function ApolloJobCard({ job, anotherRunning, onRun, onStop, onDe
 
   const runTitle = anotherRunning ? 'You already have a job running. Stop it first.' : 'Start scraping'
   const pct = job.progress || 0
-  const dl = () => window.open(downloadUrl, '_blank')
+  // Auto-download the CSV: click a hidden anchor so the browser downloads it straight away
+  // (the server sends Content-Disposition: attachment) instead of popping a blank tab. The
+  // filename comes from that header (the download attr is ignored cross-origin, but harmless).
+  const dl = () => {
+    const a = document.createElement('a')
+    a.href = downloadUrl
+    a.download = ''
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+  }
 
   return (
     <div className={'jc jc-' + stCls}>
