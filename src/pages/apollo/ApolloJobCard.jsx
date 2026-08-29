@@ -100,8 +100,25 @@ export default function ApolloJobCard({ job, anotherRunning, onRun, onStop, onDe
       </div>
 
       <div className={'jc-st ' + stCls}>
-        <StIcon /> {stTxt}
+        <StIcon /> {job.warning && scrapeBusy ? 'Needs your attention' : stTxt}
       </div>
+
+      {job.warning && scrapeBusy && (
+        <div
+          className="jc-warn"
+          title={job.warning}
+          style={{
+            display: 'flex', gap: 6, alignItems: 'flex-start',
+            fontSize: 12, lineHeight: 1.35, fontWeight: 600,
+            color: '#92400e', background: 'rgba(245,158,11,.12)',
+            border: '1px solid rgba(245,158,11,.35)', borderRadius: 8,
+            padding: '8px 10px', margin: '2px 0',
+          }}
+        >
+          <IconWarn />
+          <span>{job.warning}</span>
+        </div>
+      )}
 
       <div className="jc-m">
         <span>
