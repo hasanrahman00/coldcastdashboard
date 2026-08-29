@@ -50,16 +50,39 @@ export default function ApolloJobCard({ job, anotherRunning, onRun, onStop, onDe
 
   const runTitle = anotherRunning ? 'You already have a job running. Stop it first.' : 'Start scraping'
   const pct = job.progress || 0
-  // Auto-download the CSV: click a hidden anchor so the browser downloads it straight away
-  // (the server sends Content-Disposition: attachment) instead of popping a blank tab. The
-  // filename comes from that header (the download attr is ignored cross-origin, but harmless).
-  const dl = () => {
-    const a = document.createElement('a')
-    a.href = downloadUrl
-    a.download = ''
-    document.body.appendChild(a)
-    a.click()
-    a.remove()
+  // Auto-download the CSV straight to the Downloads folder — no "Save as" popup.
+  // The CSV lives on the scraper's own origin, so a plain <a href> is a CROSS-ORIGIN
+  // download: the browser ignores the download attr and prompts a save dialog. Instead
+  // we fetch the bytes (CORS is `*`, auth is a query-string token — no headers needed)
+  // and download from a same-origin blob: URL, where the download attr IS honored.
+  const dl = async () => {
+    const fallbackName = ((job.name || 'apollo-leads').replace(/[^a-zA-Z0-9_-]/g, '_')) + '.csv'
+    try {
+      const res = await fetch(downloadUrl)
+      if (!res.ok) throw new Error('HTTP ' + res.status)
+      const blob = await res.blob()
+      // Use the server's filename when it's exposed (Content-Disposition), else the job name.
+      let filename = fallbackName
+      const cd = res.headers.get('Content-Disposition') || ''
+      const m = /filename\*?=(?:UTF-8'')?"?([^";]+)"?/i.exec(cd)
+      if (m) { try { filename = decodeURIComponent(m[1]) } catch { filename = m[1] } }
+      const objUrl = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = objUrl
+      a.download = filename
+      document.body.appendChild(a)
+      a.click()
+      a.remove()
+      setTimeout(() => URL.revokeObjectURL(objUrl), 4000)
+    } catch {
+      // Network/CORS fallback: direct nav (may show a save prompt, but still downloads).
+      const a = document.createElement('a')
+      a.href = downloadUrl
+      a.download = ''
+      document.body.appendChild(a)
+      a.click()
+      a.remove()
+    }
   }
 
   return (
