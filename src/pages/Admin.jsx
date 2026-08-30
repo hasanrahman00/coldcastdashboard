@@ -218,19 +218,6 @@ export default function Admin() {
   const onUnlock = async () => { setAuthed(true); await refresh() }
 
   // actions
-  const extend = async (u) => {
-    const d = window.prompt(`Extend "${u.username}" by how many days?`, '30')
-    if (d === null) return
-    try { await admin.extend(u.id, Number(d) || 0); toast('Extended', 'ok'); refresh() } catch (e) { toast(e.message, 'err') }
-  }
-  const renew = async (u) => {
-    const d = window.prompt(`Renew "${u.username}" for how many days (resets the clock from today)?`, '30')
-    if (d === null) return
-    try { await admin.renew(u.id, Number(d) || 0); toast('Renewed', 'ok'); refresh() } catch (e) { toast(e.message, 'err') }
-  }
-  const toggle = async (u) => {
-    try { await admin.setDisabled(u.id, !u.disabled); toast(u.disabled ? 'Enabled' : 'Disabled', 'ok'); refresh() } catch (e) { toast(e.message, 'err') }
-  }
   const remove = async (u) => {
     if (!window.confirm(`Delete user "${u.username}"? Their job data is NOT deleted, but they lose access.`)) return
     try { await admin.remove(u.id); toast('User deleted', 'ok'); refresh() } catch (e) { toast(e.message, 'err') }
@@ -389,9 +376,6 @@ export default function Admin() {
                           </td>
                           <td>
                             <div className="adm-actions">
-                              <button className="btn btn-g btn-sm" onClick={() => extend(u)}>Extend</button>
-                              <button className="btn btn-g btn-sm" onClick={() => renew(u)}>Renew</button>
-                              <button className="btn btn-g btn-sm" onClick={() => toggle(u)}>{u.disabled ? 'Enable' : 'Disable'}</button>
                               <button className="btn btn-d btn-sm" onClick={() => remove(u)}><IconTrash /> Del</button>
                             </div>
                           </td>
