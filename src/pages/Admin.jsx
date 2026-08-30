@@ -226,13 +226,6 @@ export default function Admin() {
     if (!key) return
     navigator.clipboard?.writeText(key).then(() => toast('API key copied', 'ok')).catch(() => toast('Copy failed', 'err'))
   }
-  const setLimit = async (u) => {
-    const v = window.prompt(`Total scrape allowance for "${u.username}" (rows):`, String(u.scrapeLimit ?? ''))
-    if (v === null) return
-    const n = parseInt(v, 10)
-    if (isNaN(n) || n < 0) return toast('Enter a valid number', 'err')
-    try { await admin.setLimit(u.id, n); toast('Allowance updated', 'ok'); refresh() } catch (e) { toast(e.message, 'err') }
-  }
   // Top up (or set) a user's credit wallet for email enrich / verify / domain.
   const editCredits = async (u) => {
     const v = window.prompt(`Credits for "${u.username}" (enrich / verify / domain):`, String(u.credits ?? ''))
@@ -321,7 +314,7 @@ export default function Admin() {
               <div className="adm-table-wrap">
                 <table className="adm-table">
                   <thead>
-                    <tr><th>Username</th><th>Email</th><th>Created</th><th>Plan</th><th>Allowance</th><th>Scrape cr</th><th>Credits</th><th>Spent</th><th>Status</th><th>Profiles</th><th>API key</th><th className="adm-actions-h">Actions</th></tr>
+                    <tr><th>Username</th><th>Email</th><th>Created</th><th>Plan</th><th>Scrape cr</th><th>Credits</th><th>Status</th><th>API key</th><th className="adm-actions-h">Actions</th></tr>
                   </thead>
                   <tbody>
                     {users.map((u) => {
@@ -343,11 +336,6 @@ export default function Admin() {
                             </select>
                           </td>
                           <td>
-                            <button className="adm-limit" onClick={() => setLimit(u)} title="Click to change the total row allowance">
-                              {(u.scrapeLimit ?? 0).toLocaleString()}<span className="adm-limit-edit"> rows ✎</span>
-                            </button>
-                          </td>
-                          <td>
                             <button className="adm-limit" onClick={() => grantScrape(u)} title="Click to ADD prepaid scrape credits (10,000 = one $3 pack)">
                               {(u.scrapeCredits ?? 0).toLocaleString()}<span className="adm-limit-edit"> scr ✎</span>
                             </button>
@@ -357,13 +345,7 @@ export default function Admin() {
                               {(u.credits ?? 0).toLocaleString()}<span className="adm-limit-edit"> cr ✎</span>
                             </button>
                           </td>
-                          <td>
-                            <span className="adm-spent" title="Lifetime credits spent (enrich / verify / domain)">
-                              {(u.creditsSpent ?? 0).toLocaleString()}<span className="adm-limit-edit"> cr</span>
-                            </span>
-                          </td>
                           <td><span className="adm-badge" style={{ color: st.color, background: st.color + '18' }}>{st.label}</span></td>
-                          <td>{Array.isArray(u.profiles) ? u.profiles.length : 0}</td>
                           <td>
                             {u.key ? (
                               <span className="adm-key">
