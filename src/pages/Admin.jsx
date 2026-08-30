@@ -280,11 +280,6 @@ export default function Admin() {
               </div>
             </div>
           )}
-          {proxy && proxy.shortage === 0 && proxy.total > 0 && (
-            <div className="proxy-ok">
-              🛰️ Proxy pool healthy — {proxy.alive}/{proxy.total} live · {proxy.owned} dedicated to {proxy.paidActive} paying {proxy.paidActive === 1 ? 'user' : 'users'} · {proxy.idle} idle.
-            </div>
-          )}
           {proxy && proxy.total > 0 && (
             <div className="proxy-test">
               <button className="btn btn-g btn-sm" onClick={runProxyTest} disabled={testing}>
