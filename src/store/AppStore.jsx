@@ -1212,7 +1212,10 @@ export function AppProvider({ initialMe, onLogout, children }) {
     // job actions (SSE pushes the resulting state back, so no manual refetch)
     createJob: (payload) => guarded(() => api.createJob(payload)),
     appendJob: (id, payload) => guarded(() => api.appendJob(id, payload)),
-    startJob: (id) => guarded(() => api.startJob(id)),
+    // Pre-job SSE sync: force a fresh profile/fingerprint fetch BEFORE starting, so a
+    // multi-browser user who switched browsers runs against the CURRENT active profile
+    // (and the server's online/provider gate validates against fresh state), not a stale one.
+    startJob: (id) => guarded(async () => { try { await refreshProfiles() } catch {} return api.startJob(id) }),
     stopJob: (id) => guarded(() => api.stopJob(id)),
     deleteJob: (id) => guarded(() => api.deleteJob(id)),
     jobLogs: (id) => guarded(() => api.jobLogs(id)),
