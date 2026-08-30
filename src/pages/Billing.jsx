@@ -22,9 +22,12 @@ const ENT = ['Higher rate limits', 'Volume credit discounts', 'Priority support'
 
 export default function Billing() {
   const { credits, usage, me } = useApp()
+  // secondsLeft === null → time-expiry is off (pay-as-you-go): accounts never expire, so
+  // don't derive "expired" from daysLeft<=0. Credits are the only gate.
+  const noExpiry = me?.secondsLeft == null
   const secondsLeft = me?.secondsLeft ?? 0
   const daysLeft = secondsLeft > 0 ? Math.ceil(secondsLeft / 86400) : 0
-  const expired = !!(me?.user?.expired || daysLeft <= 0)
+  const expired = !noExpiry && !!(me?.user?.expired || daysLeft <= 0)
   const planName = me?.user?.trial ? 'Free trial' : 'Paid plan'
 
   const creditModel = !!usage?.creditModel
@@ -42,8 +45,8 @@ export default function Billing() {
       <div className="bill-status">
         <div className="bstat">
           <span className="bstat-l">Plan</span>
-          <div className="bstat-v"><b className={expired ? 'warn' : ''}>{expired ? 'Expired' : planName}</b></div>
-          <span className="bstat-s">{expired ? 'Renew to run jobs again' : daysLeft > 0 ? `${daysLeft} day${daysLeft === 1 ? '' : 's'} left` : 'Active'}</span>
+          <div className="bstat-v"><b className={expired ? 'warn' : ''}>{expired ? 'Expired' : (noExpiry ? 'Pay as you go' : planName)}</b></div>
+          <span className="bstat-s">{expired ? 'Renew to run jobs again' : noExpiry ? 'Active · credits never expire' : daysLeft > 0 ? `${daysLeft} day${daysLeft === 1 ? '' : 's'} left` : 'Active'}</span>
         </div>
 
         <div className="bstat">
