@@ -39,14 +39,18 @@ const FOOTER = [
 export default function Sidebar({ route, nav }) {
   const { me, jobs, companyJobs, apolloJobs, apolloFreeJobs, zoominfoJobs, lisearchJobs, postJobs, enricherJobs, domainJobs } = useApp()
   const username = me?.user?.username || 'Account'
+  // secondsLeft === null → time-expiry disabled (pay-as-you-go); show just the plan, no countdown.
+  const noExpiry = me?.secondsLeft == null
   const secondsLeft = me?.secondsLeft ?? 0
   // Account card subline — "<plan> · <n> days left" (moved here from the topbar). Plan is
   // binary in Core (trial = Free, else Paid); no plan name, so we label it plainly.
   const daysLeft = secondsLeft > 0 ? Math.ceil(secondsLeft / 86400) : 0
   const planLabel = me?.user?.trial ? 'Free trial' : 'Paid plan'
-  const planLine = (me?.user?.expired || daysLeft <= 0)
-    ? 'Plan expired'
-    : `${planLabel} · ${daysLeft} day${daysLeft === 1 ? '' : 's'} left`
+  const planLine = noExpiry
+    ? planLabel
+    : (me?.user?.expired || daysLeft <= 0)
+      ? 'Plan expired'
+      : `${planLabel} · ${daysLeft} day${daysLeft === 1 ? '' : 's'} left`
 
   const counts = {
     salesnav: (jobs || []).length, company: (companyJobs || []).length, apollo: (apolloJobs || []).length,

@@ -148,7 +148,7 @@ export default function Topbar({ route, nav, onLogout, onGuide }) {
         </button>
 
         <div className={'acct-menu' + (open ? ' on' : '')}>
-          <div className="ttl">{fmtTtl(secondsLeft)}</div>
+          <div className="ttl">{me?.secondsLeft == null ? 'No expiry' : fmtTtl(secondsLeft)}</div>
           <button className="acct-item" onClick={() => { setOpen(false); nav('api') }}>
             <IconKeyOutline /> API key
           </button>

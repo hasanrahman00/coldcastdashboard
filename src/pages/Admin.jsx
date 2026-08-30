@@ -334,7 +334,7 @@ export default function Admin() {
               <div className="adm-table-wrap">
                 <table className="adm-table">
                   <thead>
-                    <tr><th>Username</th><th>Email</th><th>Created</th><th>Expires</th><th>Days left</th><th>Plan</th><th>Allowance</th><th>Scrape cr</th><th>Credits</th><th>Spent</th><th>Status</th><th>Profiles</th><th>API key</th><th className="adm-actions-h">Actions</th></tr>
+                    <tr><th>Username</th><th>Email</th><th>Created</th><th>Plan</th><th>Allowance</th><th>Scrape cr</th><th>Credits</th><th>Spent</th><th>Status</th><th>Profiles</th><th>API key</th><th className="adm-actions-h">Actions</th></tr>
                   </thead>
                   <tbody>
                     {users.map((u) => {
@@ -344,8 +344,6 @@ export default function Admin() {
                           <td className="adm-name">{u.username}</td>
                           <td className="adm-emailcell">{u.email || <span style={{ color: 'var(--text-faint)' }}>—</span>}</td>
                           <td>{fmtDate(u.createdAt)}</td>
-                          <td>{fmtDate(u.expiresAt)}</td>
-                          <td className="adm-days">{daysLeft(u)}</td>
                           <td>
                             <select
                               className={'adm-plan adm-plan-' + (u.trial ? 'free' : 'paid')}

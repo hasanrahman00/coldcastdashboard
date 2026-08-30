@@ -789,7 +789,9 @@ export function AppProvider({ initialMe, onLogout, children }) {
   useEffect(() => {
     const t = setInterval(() => {
       setMe((m) =>
-        m ? { ...m, secondsLeft: Math.max(0, (m.secondsLeft || 0) - 1) } : m,
+        // secondsLeft === null means time-expiry is disabled server-side (pure pay-as-you-go) —
+        // preserve null so the countdown never manufactures a 0 that reads as "expired".
+        m ? { ...m, secondsLeft: m.secondsLeft == null ? null : Math.max(0, m.secondsLeft - 1) } : m,
       )
     }, 1000)
     return () => clearInterval(t)
