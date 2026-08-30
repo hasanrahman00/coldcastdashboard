@@ -25,11 +25,11 @@ const ENRICHMENT = [
   { key: 'domain', route: 'domain', label: 'AI SDR · Domain', tag: 'AI' },
 ]
 const SERVICES = [
-  { key: 'sndeal', route: 'sndeal', label: 'Sales Nav Deal', tag: '75% OFF', deal: true },
   { key: 'doneforyou', route: 'services', label: 'Done-for-you' },
 ]
-// "Done-for-you" lights up on the services hub AND any individual service page it links to.
-const SVC_FAMILY = new Set(['services', 'prospectteam', 'coldinfra', 'requestfeature', 'playbook'])
+// "Done-for-you" lights up on the services hub AND any individual service page it links to
+// (the Sales Nav Deal now lives INSIDE the hub, not as its own sidebar item).
+const SVC_FAMILY = new Set(['services', 'sndeal', 'prospectteam', 'coldinfra', 'requestfeature', 'playbook'])
 const FOOTER = [
   { key: 'ext', route: 'ext', label: 'Extension' },
   { key: 'billing', route: 'billing', label: 'Billing' },
