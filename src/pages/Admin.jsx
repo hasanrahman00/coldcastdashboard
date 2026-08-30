@@ -254,6 +254,14 @@ export default function Admin() {
     if (isNaN(n) || n < 0) return toast('Enter a valid number', 'err')
     try { await admin.setCredits(u.id, n); toast('Credits updated', 'ok'); refresh() } catch (e) { toast(e.message, 'err') }
   }
+  // Grant prepaid SCRAPE credits (the $3 / 10,000 pack) — ADDS to the balance.
+  const grantScrape = async (u) => {
+    const v = window.prompt(`ADD scrape credits to "${u.username}" (10,000 = one $3 pack).\nCurrent balance: ${(u.scrapeCredits ?? 0).toLocaleString()}`, '10000')
+    if (v === null) return
+    const n = parseInt(v, 10)
+    if (isNaN(n) || n <= 0) return toast('Enter a positive number', 'err')
+    try { await admin.grantScrapeCredits(u.id, n); toast(`Granted ${n.toLocaleString()} scrape credits`, 'ok'); refresh() } catch (e) { toast(e.message, 'err') }
+  }
   // Switch a user between Free (1,000 rows / 1 day) and Paid (20,000 rows / 30 days).
   // Refreshes their allowance and restarts the clock from today.
   const changePlan = async (u, plan) => {
@@ -326,7 +334,7 @@ export default function Admin() {
               <div className="adm-table-wrap">
                 <table className="adm-table">
                   <thead>
-                    <tr><th>Username</th><th>Email</th><th>Created</th><th>Expires</th><th>Days left</th><th>Plan</th><th>Allowance</th><th>Credits</th><th>Spent</th><th>Status</th><th>Profiles</th><th>API key</th><th className="adm-actions-h">Actions</th></tr>
+                    <tr><th>Username</th><th>Email</th><th>Created</th><th>Expires</th><th>Days left</th><th>Plan</th><th>Allowance</th><th>Scrape cr</th><th>Credits</th><th>Spent</th><th>Status</th><th>Profiles</th><th>API key</th><th className="adm-actions-h">Actions</th></tr>
                   </thead>
                   <tbody>
                     {users.map((u) => {
@@ -352,6 +360,11 @@ export default function Admin() {
                           <td>
                             <button className="adm-limit" onClick={() => setLimit(u)} title="Click to change the total row allowance">
                               {(u.scrapeLimit ?? 0).toLocaleString()}<span className="adm-limit-edit"> rows ✎</span>
+                            </button>
+                          </td>
+                          <td>
+                            <button className="adm-limit" onClick={() => grantScrape(u)} title="Click to ADD prepaid scrape credits (10,000 = one $3 pack)">
+                              {(u.scrapeCredits ?? 0).toLocaleString()}<span className="adm-limit-edit"> scr ✎</span>
                             </button>
                           </td>
                           <td>

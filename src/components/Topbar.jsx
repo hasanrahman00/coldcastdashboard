@@ -54,13 +54,20 @@ export default function Topbar({ route, nav, onLogout, onGuide }) {
   const username = me?.user?.username || '—'
   const secondsLeft = me?.secondsLeft ?? 0
 
-  // Scrape budget — one row allowance shared across ALL scrapers. Fills live as a job runs.
+  // Scrape budget — shared across ALL scrapers. Prepaid model (creditModel): a persistent
+  // scrape-credit balance ($3/10k). Legacy model: a daily-reset row quota.
+  const creditModel = !!usage?.creditModel
   const scrapeLimit = usage?.limit ?? 0
   const scrapeUsed = usage?.used ?? 0
+  const scrapeBalance = usage?.remaining ?? 0
   const scrapePct = scrapeLimit > 0 ? Math.min(100, (scrapeUsed / scrapeLimit) * 100) : 0
-  const scrapeLeft = Math.max(0, scrapeLimit - scrapeUsed)
-  const scrapeBar = scrapePct >= 100 ? '#dc2626' : scrapePct >= 90 ? '#d97706' : '#6366f1'
-  const resetsDaily = !!usage?.resetsDaily && scrapeLimit > 0
+  const scrapeLeft = creditModel ? scrapeBalance : Math.max(0, scrapeLimit - scrapeUsed)
+  // In credit mode the strip is a wallet-health indicator (full unless the balance runs low).
+  const scrapeBarW = creditModel ? 100 : scrapePct
+  const scrapeBar = creditModel
+    ? (scrapeBalance <= 0 ? '#dc2626' : scrapeBalance < 500 ? '#d97706' : '#6366f1')
+    : (scrapePct >= 100 ? '#dc2626' : scrapePct >= 90 ? '#d97706' : '#6366f1')
+  const resetsDaily = !creditModel && !!usage?.resetsDaily && scrapeLimit > 0
   let resetTxt = ''
   if (resetsDaily) {
     const now = new Date()
@@ -69,9 +76,11 @@ export default function Topbar({ route, nav, onLogout, onGuide }) {
     const m = Math.floor((ms % 3600000) / 60000)
     resetTxt = h >= 1 ? `${h}h ${m}m` : `${m}m`
   }
-  const scrapeTitle = scrapeLimit > 0
-    ? `Scraping rows — ${scrapeUsed.toLocaleString()} used of ${scrapeLimit.toLocaleString()} (${scrapePct.toFixed(0)}%) · ${scrapeLeft.toLocaleString()} left. Shared across ALL your scrapers. ${resetsDaily ? `Resets in ${resetTxt} (daily 00:00 UTC).` : 'Total allowance (no daily reset).'}`
-    : 'Scrape limit not loaded — check you are logged in and the scraper API is reachable.'
+  const scrapeTitle = creditModel
+    ? `Scrape credits — ${scrapeBalance.toLocaleString()} left. 1 credit ≈ 1 scraped row (some scrapers cost more per row). Shared across ALL your scrapers. Buy more on the Billing page.`
+    : scrapeLimit > 0
+      ? `Scraping rows — ${scrapeUsed.toLocaleString()} used of ${scrapeLimit.toLocaleString()} (${scrapePct.toFixed(0)}%) · ${scrapeLeft.toLocaleString()} left. Shared across ALL your scrapers. ${resetsDaily ? `Resets in ${resetTxt} (daily 00:00 UTC).` : 'Total allowance (no daily reset).'}`
+      : 'Scrape limit not loaded — check you are logged in and the scraper API is reachable.'
 
   const creditBal = credits ?? 0
   const lowCredits = creditBal > 0 && creditBal < 50
@@ -96,7 +105,7 @@ export default function Topbar({ route, nav, onLogout, onGuide }) {
         <div className="tb-cell" title={scrapeTitle}>
           <IcBars />
           <span className="n">{scrapeLeft.toLocaleString()}</span><span className="u">scrapes</span>
-          <span className="tb-track"><i style={{ width: scrapePct.toFixed(1) + '%', background: scrapeBar }} /></span>
+          <span className="tb-track"><i style={{ width: scrapeBarW.toFixed(1) + '%', background: scrapeBar }} /></span>
         </div>
         <span className="tb-divx" />
         <div className="tb-cell credits" title="Email credits — for enrichment & verification. 1 credit = 1 valid email · 2 verifications · ⅓ of a domain/LinkedIn enrichment.">

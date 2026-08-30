@@ -432,6 +432,8 @@ export const admin = {
   setLimit: (id, limit) => adminPost(`/api/auth/users/${encodeURIComponent(id)}/scrape-limit`, { limit }),
   setPlan: (id, plan) => adminPost(`/api/auth/users/${encodeURIComponent(id)}/plan`, { plan }), // 'free' | 'paid'
   setCredits: (id, credits) => adminPost(`/api/auth/users/${encodeURIComponent(id)}/credits`, { credits }),
+  // ADD prepaid scrape credits (the $3 / 10,000 pack grant). `add` increments the balance.
+  grantScrapeCredits: (id, add) => adminPost(`/api/auth/users/${encodeURIComponent(id)}/scrape-credits`, { add }),
   remove: (id) => adminReq(`/api/auth/users/${encodeURIComponent(id)}`, { method: 'DELETE' }),
   // Proxy pool health → { total, alive, owned, idle, paidActive, shortage }.
   proxyStatus: () => adminReq('/api/proxy/status'),

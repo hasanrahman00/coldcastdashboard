@@ -2,6 +2,12 @@ import { useApp } from '../store/AppStore.jsx'
 import { waLink } from '../lib/whatsapp.js'
 
 const contact = (msg) => window.open(waLink(msg), '_blank', 'noopener,noreferrer')
+// Optional Stripe Payment Link for the $3 / 10k scrape pack. When unset, the buy
+// button falls back to the same WhatsApp-contact flow as the other packs (admin grants).
+const SCRAPE_PACK_URL = import.meta.env.VITE_SCRAPE_PACK_URL || ''
+const buyScrape = () => SCRAPE_PACK_URL
+  ? window.open(SCRAPE_PACK_URL, '_blank', 'noopener,noreferrer')
+  : contact('Hi! I’d like to buy 10,000 Coldcast scrape credits ($3).')
 
 const IcBolt = () => <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" /></svg>
 const IcCheck = () => <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 6L9 17l-5-5" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -21,17 +27,15 @@ export default function Billing() {
   const expired = !!(me?.user?.expired || daysLeft <= 0)
   const planName = me?.user?.trial ? 'Free trial' : 'Paid plan'
 
-  const scrapeLimit = usage?.limit ?? 0
-  const scrapeUsed = usage?.used ?? 0
-  const scrapeLeft = Math.max(0, scrapeLimit - scrapeUsed)
-  const scrapePct = scrapeLimit > 0 ? Math.min(100, (scrapeUsed / scrapeLimit) * 100) : 0
+  const creditModel = !!usage?.creditModel
+  const scrapeBalance = usage?.remaining ?? 0
   const creditBal = credits ?? 0
 
   return (
     <div className="bill">
       <div className="bill-head">
         <h2>Billing</h2>
-        <p>Your plan, scrape allowance, and credit wallet — top up or upgrade any time.</p>
+        <p>Your scrape credits and enrichment wallet — top up any time, credits never expire.</p>
       </div>
 
       {/* ── Status ───────────────────────────────────────────── */}
@@ -43,10 +47,10 @@ export default function Billing() {
         </div>
 
         <div className="bstat">
-          <span className="bstat-l">Scrapes left</span>
-          <div className="bstat-v"><b>{scrapeLeft.toLocaleString()}</b><em>/ {scrapeLimit.toLocaleString()}</em></div>
-          <div className="bstat-track"><i style={{ width: scrapePct.toFixed(1) + '%' }} /></div>
-          <span className="bstat-s">{usage?.resetsDaily ? 'Daily cap · resets 00:00 UTC' : 'This billing period'}</span>
+          <span className="bstat-l">Scrape credits</span>
+          <div className="bstat-v"><b>{scrapeBalance.toLocaleString()}</b></div>
+          <span className="bstat-s">{creditModel ? 'Prepaid · never expires' : 'Row allowance'}</span>
+          <button className="btn btn-p btn-sm bstat-btn" onClick={buyScrape}>+ Buy credits</button>
         </div>
 
         <div className="bstat">
@@ -57,25 +61,23 @@ export default function Billing() {
         </div>
       </div>
 
-      {/* ── Scraping plan ────────────────────────────────────── */}
-      <h3 className="bill-sec">Scraping</h3>
+      {/* ── Scraping credits ─────────────────────────────────── */}
+      <h3 className="bill-sec">Scraping credits</h3>
       <div className="bill-scrape">
         <div className="bsc-main">
-          <span className="bsc-tag">Scraper subscription</span>
-          <div className="bsc-price"><b>$49</b><em>/mo</em></div>
-          <p>600,000 rows a month — 20,000 per day — shared across <b>every</b> scraper (Sales Nav, Apollo, ZoomInfo, LinkedIn & more). Enrichment included; verified emails via the waterfall.</p>
+          <span className="bsc-tag">Pay as you go</span>
+          <div className="bsc-price"><b>$3</b><em>/ 10,000 credits</em></div>
+          <p>1 credit ≈ 1 scraped row (some scrapers cost a little more per row). Credits never expire and are shared across <b>every</b> scraper (Sales Nav, Apollo, ZoomInfo, LinkedIn & more). Enrichment included; verified emails via the waterfall.</p>
         </div>
         <ul className="bsc-feats">
-          <li><IcCheck /> 600k rows / month</li>
-          <li><IcCheck /> 20k rows / day</li>
+          <li><IcCheck /> 10,000 credits for $3</li>
+          <li><IcCheck /> ~10,000 rows (varies by scraper)</li>
           <li><IcCheck /> All scrapers included</li>
-          <li><IcCheck /> One-click CSV / XLSX export</li>
+          <li><IcCheck /> Credits never expire</li>
         </ul>
         <div className="bsc-cta">
-          <button className="btn btn-p" onClick={() => contact('Hi! I’d like to activate the Coldcast scraping plan ($49/mo — 600k rows).')}>
-            {expired || me?.user?.trial ? 'Activate plan' : 'Manage plan'}
-          </button>
-          <span className="bsc-note">No automated checkout — we activate it with you.</span>
+          <button className="btn btn-p" onClick={buyScrape}>Buy 10,000 — $3</button>
+          <span className="bsc-note">{SCRAPE_PACK_URL ? 'Secure checkout via Stripe.' : 'No automated checkout yet — we top you up with you.'}</span>
         </div>
       </div>
 
