@@ -91,11 +91,14 @@ export default function ApolloFreeScraper() {
         <button
           className="btn btn-p"
           onClick={() => setShowNew(true)}
-          disabled={!connected || expired || !!busyJob}
+          // Creating/queuing a job does NOT need the extension — only RUNNING it does (the Run
+          // button + server enforce the connection). Matches the empty-state "Create Job" button,
+          // which was never gated on `connected`. So don't block creation on the hub connection.
+          disabled={expired || !!busyJob}
           title={
             expired ? 'Account expired — renew to run jobs'
               : busyJob ? `Finish your ${busyJob.scraper} job first — only one job runs at a time across all scrapers`
-              : !connected ? 'Connect the Coldcast extension to Apollo Free in this browser to run a job here'
+              : !connected ? 'Tip: connect the Coldcast extension to Apollo Free in this browser before you Run this job'
               : ''
           }
         >
