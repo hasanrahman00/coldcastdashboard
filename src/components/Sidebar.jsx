@@ -42,15 +42,14 @@ export default function Sidebar({ route, nav }) {
   // secondsLeft === null → time-expiry disabled (pay-as-you-go); show just the plan, no countdown.
   const noExpiry = me?.secondsLeft == null
   const secondsLeft = me?.secondsLeft ?? 0
-  // Account card subline — "<plan> · <n> days left" (moved here from the topbar). Plan is
-  // binary in Core (trial = Free, else Paid); no plan name, so we label it plainly.
+  // Account card subline. We're credit-based now — no Free/Paid plan, just "Pay as you go".
+  // (When time-expiry is enabled we still show the countdown; by default it's off.)
   const daysLeft = secondsLeft > 0 ? Math.ceil(secondsLeft / 86400) : 0
-  const planLabel = me?.user?.trial ? 'Free trial' : 'Paid plan'
   const planLine = noExpiry
-    ? planLabel
+    ? 'Pay as you go'
     : (me?.user?.expired || daysLeft <= 0)
-      ? 'Plan expired'
-      : `${planLabel} · ${daysLeft} day${daysLeft === 1 ? '' : 's'} left`
+      ? 'Access expired'
+      : `Pay as you go · ${daysLeft} day${daysLeft === 1 ? '' : 's'} left`
 
   const counts = {
     salesnav: (jobs || []).length, company: (companyJobs || []).length, apollo: (apolloJobs || []).length,

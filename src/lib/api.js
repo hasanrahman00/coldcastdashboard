@@ -430,7 +430,6 @@ export const admin = {
   renew: (id, days) => adminPost(`/api/auth/users/${encodeURIComponent(id)}/renew`, { days }),
   setDisabled: (id, disabled) => adminPost(`/api/auth/users/${encodeURIComponent(id)}/disable`, { disabled }),
   setLimit: (id, limit) => adminPost(`/api/auth/users/${encodeURIComponent(id)}/scrape-limit`, { limit }),
-  setPlan: (id, plan) => adminPost(`/api/auth/users/${encodeURIComponent(id)}/plan`, { plan }), // 'free' | 'paid'
   setCredits: (id, credits) => adminPost(`/api/auth/users/${encodeURIComponent(id)}/credits`, { credits }),
   // ADD prepaid scrape credits (the $3 / 10,000 pack grant). `add` increments the balance.
   grantScrapeCredits: (id, add) => adminPost(`/api/auth/users/${encodeURIComponent(id)}/scrape-credits`, { add }),
