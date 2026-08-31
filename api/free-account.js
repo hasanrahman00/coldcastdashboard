@@ -38,12 +38,14 @@ if (!cached) cached = global._freeAccountsMongo = { promise: null }
 
 async function getDb() {
   if (!cached.promise) {
-    const uri = process.env.MONGODB_URI
-    if (!uri) throw new Error('MONGODB_URI not set')
+    // Meaningful names (this pool is ONLY the lusha/salesql/contactout free-login pool, not
+    // the app DB). Old MONGODB_URI/MONGODB_DB kept as a fallback for a zero-downtime rename.
+    const uri = process.env.FREE_ACCOUNTS_MONGODB_URI || process.env.MONGODB_URI
+    if (!uri) throw new Error('FREE_ACCOUNTS_MONGODB_URI not set')
     cached.promise = new MongoClient(uri, { maxPoolSize: 5 }).connect()
   }
   const client = await cached.promise
-  return client.db(process.env.MONGODB_DB || 'cold_cast_free_accounts')
+  return client.db(process.env.FREE_ACCOUNTS_DB || process.env.MONGODB_DB || 'cold_cast_free_accounts')
 }
 
 // Only logged-in Coldcast users can pull accounts. Validate the Bearer token
