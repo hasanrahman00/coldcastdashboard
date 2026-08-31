@@ -92,7 +92,12 @@ export default function ApolloFreeScraper() {
           className="btn btn-p"
           onClick={() => setShowNew(true)}
           disabled={!connected || expired || !!busyJob}
-          title={expired ? 'Account expired — renew to run jobs' : connected ? '' : 'Connect the Coldcast extension in this browser to run a job here'}
+          title={
+            expired ? 'Account expired — renew to run jobs'
+              : busyJob ? `Finish your ${busyJob.scraper} job first — only one job runs at a time across all scrapers`
+              : !connected ? 'Connect the Coldcast extension to Apollo Free in this browser to run a job here'
+              : ''
+          }
         >
           <IconPlus />
           New Job
