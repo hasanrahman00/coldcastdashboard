@@ -40,8 +40,8 @@ async function getDb() {
   if (!cached.promise) {
     // Meaningful name — this pool is ONLY the lusha/salesql/contactout free-LOGIN pool, not
     // the app DB. Old MONGODB_URI kept as a fallback so the Vercel rename is zero-downtime.
-    const uri = process.env.MONGODB_COLDCAST_FREE_LUSHA_CONTACTOUT_SALESQL_ACCOUNTS || process.env.MONGODB_URI
-    if (!uri) throw new Error('MONGODB_COLDCAST_FREE_LUSHA_CONTACTOUT_SALESQL_ACCOUNTS not set')
+    const uri = process.env.MONGODB_COLDCAST_FREE_LUSHA_CONTACTOUT_SALESQL_SERPER_ACCOUNTS || process.env.MONGODB_URI
+    if (!uri) throw new Error('MONGODB_COLDCAST_FREE_LUSHA_CONTACTOUT_SALESQL_SERPER_ACCOUNTS not set')
     cached.promise = new MongoClient(uri, { maxPoolSize: 5 }).connect()
   }
   const client = await cached.promise
