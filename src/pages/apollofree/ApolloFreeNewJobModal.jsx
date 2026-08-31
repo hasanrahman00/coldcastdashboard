@@ -27,6 +27,7 @@ export default function ApolloFreeNewJobModal({ open, onClose, onCreated }) {
   const [name, setName] = useState('')
   const [url, setUrl] = useState('')
   const [existingId, setExistingId] = useState('')
+  const [enrichMasked, setEnrichMasked] = useState(false)
   const [busy, setBusy] = useState(false)
 
   const sortedJobs = useMemo(
@@ -48,11 +49,11 @@ export default function ApolloFreeNewJobModal({ open, onClose, onCreated }) {
       if (target === 'existing') {
         const id = existingId || sortedJobs[0]?.id
         if (!id) { setBusy(false); return toast('Select a list to add to', 'err') }
-        const job = await api.apolloFreeAppend(id, { url: u, profileId: onlineProfileId })
+        const job = await api.apolloFreeAppend(id, { url: u, profileId: onlineProfileId, enrichMasked })
         onCreated?.(job)
         toast(`Added to “${selectedJob?.name || 'list'}” — click Run to scrape & append`, 'ok')
       } else {
-        const job = await api.apolloFreeCreate({ name: name.trim() || 'Apollo Scrape', url: u, profileId: onlineProfileId })
+        const job = await api.apolloFreeCreate({ name: name.trim() || 'Apollo Scrape', url: u, profileId: onlineProfileId, enrichMasked })
         onCreated?.(job)
         toast('Job created!', 'ok')
       }
@@ -129,6 +130,22 @@ export default function ApolloFreeNewJobModal({ open, onClose, onCreated }) {
           ℹ️ New leads are <b>appended</b> to this list and deduped — existing rows are kept.
         </div>
       )}
+
+      {/* Opt-in: resolve masked rows (last name = initial, no LinkedIn) via serper.dev. */}
+      <div className="fg">
+        <label style={{ display: 'flex', alignItems: 'flex-start', gap: 9, cursor: 'pointer', textTransform: 'none', letterSpacing: 0 }}>
+          <input
+            type="checkbox"
+            checked={enrichMasked}
+            onChange={(e) => setEnrichMasked(e.target.checked)}
+            style={{ marginTop: 3, width: 16, height: 16, cursor: 'pointer', flexShrink: 0 }}
+          />
+          <span style={{ fontSize: 13.5, lineHeight: 1.5 }}>
+            🔍 Enrich masked profiles
+            <span style={subLabel}> — for rows Apollo hides, find the LinkedIn URL &amp; full last name (slower; uses a search lookup per masked row)</span>
+          </span>
+        </label>
+      </div>
 
       <button
         className="btn btn-p"
