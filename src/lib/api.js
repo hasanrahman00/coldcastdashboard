@@ -20,7 +20,7 @@ export const coreUrl = (path) => CORE_BASE + path
 // The Apollo FREE scraper — a SEPARATE product/server (the extension-bridge webapp:
 // browser-IP mixed_people/search replay + real-time CSRF), distinct from the paid Apollo above.
 // Defaults to the production host; override with VITE_APOLLO_FREE_SCRAPER_URL.
-const APOLLO_FREE_BASE = (import.meta.env.VITE_APOLLO_FREE_SCRAPER_URL || 'https://apollo-free-scraper.coldcast.io').replace(/\/$/, '')
+const APOLLO_FREE_BASE = (import.meta.env.VITE_APOLLO_FREE_SCRAPER_URL || 'https://apollo.coldcast.io').replace(/\/$/, '')
 export const apolloFreeUrl = (path) => APOLLO_FREE_BASE + path
 
 // The LinkedIn URL Enricher also runs on its OWN server. Point the dashboard at it
