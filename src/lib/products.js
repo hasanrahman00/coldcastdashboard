@@ -57,18 +57,6 @@ export const PRODUCTS = [
     body: 'Export company & account lists straight from your LinkedIn Sales Navigator account searches — company names, domains, size, industry, and firmographics — with the same one-click flow as the lead scrapers.',
   },
   {
-    id: 'apollo',
-    label: 'Scrape Apollo Leads',   // big page header + tools card
-    navLabel: 'Scrape Apollo',       // sidebar tab
-    soon: false,
-    icon: IconFeather,
-    emoji: '🚀',
-    image: '/apollo-icon.png',   // Apollo.io logo (public/); falls back to emoji
-    title: 'Scrape Apollo Leads',
-    short: 'Targeted contact & company lists from your Apollo searches.',
-    body: 'Export targeted contact and company lists straight from your Apollo searches — names, titles, verified emails, and firmographics — with the same one-click flow as the Sales Nav scraper.',
-  },
-  {
     id: 'apollofree',
     label: 'Scrape Apollo Leads — Free',   // big page header + tools card
     navLabel: 'Apollo Free',                // sidebar tab

@@ -17,12 +17,6 @@ const CORE_BASE = (import.meta.env.VITE_CORE_URL || '').replace(/\/$/, '') || BA
 export const apiUrl = (path) => BASE + path
 export const coreUrl = (path) => CORE_BASE + path
 
-// The Apollo scraper runs on its OWN server (separate VPS). Point the dashboard at
-// it via VITE_APOLLO_SCRAPER_URL. Empty until you deploy it — the Apollo tab shows a
-// setup hint instead of silently hitting the Sales Nav server.
-const APOLLO_BASE = (import.meta.env.VITE_APOLLO_SCRAPER_URL || '').replace(/\/$/, '')
-export const apolloUrl = (path) => APOLLO_BASE + path
-
 // The Apollo FREE scraper — a SEPARATE product/server (the extension-bridge webapp:
 // browser-IP mixed_people/search replay + real-time CSRF), distinct from the paid Apollo above.
 // Defaults to the production host; override with VITE_APOLLO_FREE_SCRAPER_URL.
@@ -68,7 +62,6 @@ export const lisearchUrl = (path) => LISEARCH_BASE + path
 const hostOf = (u) => { try { return new URL(u).host } catch { return '' } }
 export const SCRAPER_HOSTS = {
   salesnav: hostOf(BASE),
-  apollo: hostOf(APOLLO_BASE),
   apollofree: hostOf(APOLLO_FREE_BASE),
   company: hostOf(COMPANY_BASE),
   enricher: hostOf(ENRICHER_BASE),
@@ -250,19 +243,6 @@ export const api = {
   // Opened as a link → token rides in the query (Core's requireAuth accepts ?token=).
   verifyDownloadUrl: (id, fmt = 'csv') =>
     coreUrl(`/api/verify/download/${encodeURIComponent(id)}?format=${fmt}&token=${encodeURIComponent(getToken())}`),
-
-  // ── Apollo scraper (its OWN server; same Bearer auth + shared Core billing) ──
-  apolloConfigured: () => Boolean(APOLLO_BASE),
-  apolloJobs: () => asJson('/api/jobs', { base: APOLLO_BASE }),
-  apolloCreate: (payload) => postJson('/api/jobs', payload, { base: APOLLO_BASE }),
-  apolloStart: (id) => postJson(`/api/jobs/${id}/start`, undefined, { base: APOLLO_BASE }),
-  // "Add to existing list" — point a list at a new Apollo search; its next run appends (deduped).
-  apolloAppend: (id, payload) => postJson(`/api/jobs/${id}/append`, payload, { base: APOLLO_BASE }),
-  apolloStop: (id) => postJson(`/api/jobs/${id}/stop`, undefined, { base: APOLLO_BASE }),
-  apolloDelete: (id) => del(`/api/jobs/${id}`, { base: APOLLO_BASE }),
-  apolloLogs: (id) => asJson(`/api/jobs/${id}/logs`, { base: APOLLO_BASE }),
-  apolloEvents: () => new EventSource(apolloUrl(`/api/events?token=${encodeURIComponent(getToken())}`)),
-  apolloDownloadUrl: (id) => apolloUrl(`/api/jobs/${id}/csv?token=${encodeURIComponent(getToken())}`),
 
   // ── Apollo FREE scraper (SEPARATE server — the extension-bridge webapp) ──
   apolloFreeConfigured: () => Boolean(APOLLO_FREE_BASE),

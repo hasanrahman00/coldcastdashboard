@@ -4,19 +4,17 @@ import { IconGrid, IconPlay } from '../lib/icons.jsx'
 // At-a-glance activity metrics — rendered as a rounded pill group on the LEFT of the top
 // bar (it replaced the page title). Labels collapse on narrow screens.
 export default function StatsBox() {
-  const { jobs, apolloJobs, apolloFreeJobs, enricherJobs, companyJobs, enrichUploads } = useApp()
+  const { jobs, apolloFreeJobs, enricherJobs, companyJobs, enrichUploads } = useApp()
 
-  // Jobs + Running span ALL products: Sales Nav + Apollo (+ Apollo Free) + Company scrape
+  // Jobs + Running span ALL products: Sales Nav + Apollo Free + Company scrape
   // jobs, LinkedIn URL enricher jobs, and Waterfall enrich uploads.
   const enrichJobs = Object.values(enrichUploads || {})
-  const apollo = apolloJobs || []
   const apolloFree = apolloFreeJobs || []
   const linkedin = enricherJobs || []
   const company = companyJobs || []
-  const totalJobs = jobs.length + apollo.length + apolloFree.length + company.length + linkedin.length + enrichJobs.length
+  const totalJobs = jobs.length + apolloFree.length + company.length + linkedin.length + enrichJobs.length
   const running =
     jobs.filter((j) => j.status === 'running').length +
-    apollo.filter((j) => j.status === 'running' || j.status === 'stopping').length +
     apolloFree.filter((j) => j.status === 'running' || j.status === 'stopping').length +
     company.filter((j) => j.status === 'running' || j.status === 'stopping').length +
     linkedin.filter((j) => j.status === 'running' || j.status === 'queued').length +

@@ -3,7 +3,7 @@ import { api } from '../../lib/api.js'
 import { useApp } from '../../store/AppStore.jsx'
 import { useToast } from '../../store/ToastProvider.jsx'
 import Modal from '../../components/Modal.jsx'
-import ApolloJobCard from '../apollo/ApolloJobCard.jsx'   // generic card — reused as-is
+import ApolloJobCard from './ApolloJobCard.jsx'   // generic card (moved out of the removed paid-Apollo dir)
 import ApolloFreeNewJobModal from './ApolloFreeNewJobModal.jsx'
 import { IconPlus, IconChevronLeft, IconChevronRight } from '../../lib/icons.jsx'
 

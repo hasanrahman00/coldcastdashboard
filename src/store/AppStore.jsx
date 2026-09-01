@@ -128,7 +128,6 @@ export function AppProvider({ initialMe, onLogout, children }) {
   // Hydrate each grid from THIS user's cached snapshot so a reload renders instantly;
   // the live SSE/poll below replaces it with authoritative data the moment it arrives.
   const [jobs, setJobs] = useState(() => readJobsCache(uid, 'salesnav'))
-  const [apolloJobs, setApolloJobs] = useState(() => readJobsCache(uid, 'apollo')) // Apollo scraper jobs (separate server) — see the SSE slice below
   const [apolloFreeJobs, setApolloFreeJobs] = useState(() => readJobsCache(uid, 'apollofree')) // Apollo FREE scraper jobs (its OWN server) — SSE slice below
   const [enricherJobs, setEnricherJobs] = useState(() => readJobsCache(uid, 'enricher')) // LinkedIn URL Enricher jobs (separate server) — polled below
   const [companyJobs, setCompanyJobs] = useState(() => readJobsCache(uid, 'company')) // Company scraper jobs (separate server) — SSE below
@@ -284,58 +283,7 @@ export function AppProvider({ initialMe, onLogout, children }) {
     }
   }, [])
 
-  // ── Apollo scraper jobs (its OWN server) — live for the GLOBAL counters ──
-  // Apollo runs on a separate backend, so the header's Total/Running counters
-  // can't see it through the Sales Nav SSE above. Stream Apollo's jobs here (SSE
-  // + 5s poll) so StatsBox — and the Apollo tab — read ONE shared, always-live
-  // source, instead of the tab opening its own duplicate stream only while it's
-  // mounted. No-op when the Apollo server isn't configured.
-  const upsertApolloJob = useCallback((job) => {
-    if (!job || !job.id) return
-    setApolloJobs((prev) => {
-      const i = prev.findIndex((j) => j.id === job.id)
-      if (i === -1) return [job, ...prev]
-      const next = prev.slice()
-      next[i] = job
-      return next
-    })
-  }, [])
-  const removeApolloJob = useCallback((id) => {
-    setApolloJobs((prev) => prev.filter((j) => j.id !== id))
-  }, [])
-
-  useEffect(() => {
-    if (!api.apolloConfigured()) return
-    let alive = true
-    let es
-    const load = async () => {
-      try {
-        const list = await api.apolloJobs()
-        if (alive) setApolloJobs(Array.isArray(list) ? list : [])
-      } catch {
-        /* keep last-known; the 5s poll reconciles */
-      }
-    }
-    load()
-    try {
-      es = api.apolloEvents()
-      es.addEventListener('init', (e) => {
-        try { const d = JSON.parse(e.data); if (alive) setApolloJobs(Array.isArray(d) ? d : []) } catch {}
-      })
-      es.addEventListener('job:update', (e) => {
-        try { upsertApolloJob(JSON.parse(e.data)) } catch {}
-      })
-      es.addEventListener('job:delete', (e) => {
-        try { const { id } = JSON.parse(e.data); if (alive) setApolloJobs((p) => p.filter((j) => j.id !== id)) } catch {}
-      })
-    } catch {
-      /* EventSource unavailable → poll only */
-    }
-    const poll = setInterval(() => { if (!document.hidden) load() }, 5000)
-    return () => { alive = false; clearInterval(poll); try { es?.close() } catch {} }
-  }, [upsertApolloJob])
-
-  // ── Apollo FREE scraper jobs (its OWN separate server) — same shape as the Apollo slice ──
+  // ── Apollo FREE scraper jobs (its OWN separate server) — same SSE + 5s poll shape ──
   const upsertApolloFreeJob = useCallback((job) => {
     if (!job || !job.id) return
     setApolloFreeJobs((prev) => {
@@ -727,7 +675,7 @@ export function AppProvider({ initialMe, onLogout, children }) {
   // usage now tick live as a job runs, without a reload — and stay quiet when idle
   // (the 8s poll covers that) so Core isn't hammered.
   useEffect(() => {
-    const active = [jobs, apolloJobs, apolloFreeJobs, companyJobs, postJobs, zoominfoJobs, domainJobs, lisearchJobs, enricherJobs]
+    const active = [jobs, apolloFreeJobs, companyJobs, postJobs, zoominfoJobs, domainJobs, lisearchJobs, enricherJobs]
       .some((list) => (list || []).some((j) => j && (j.status === 'running' || j.status === 'queued')))
     if (!active) return
     const t = setTimeout(() => {
@@ -736,7 +684,7 @@ export function AppProvider({ initialMe, onLogout, children }) {
       refreshProfiles()
     }, 1200)
     return () => clearTimeout(t)
-  }, [jobs, apolloJobs, apolloFreeJobs, companyJobs, postJobs, zoominfoJobs, domainJobs, lisearchJobs, enricherJobs, refreshCredits, refreshProfiles])
+  }, [jobs, apolloFreeJobs, companyJobs, postJobs, zoominfoJobs, domainJobs, lisearchJobs, enricherJobs, refreshCredits, refreshProfiles])
 
   // ── Default the active-profile radio to THIS BROWSER ───────────────────
   // The profile connected through the dashboard's own browser (localExt) is the
@@ -908,7 +856,6 @@ export function AppProvider({ initialMe, onLogout, children }) {
   // the grids instantly (see readJobsCache). Each effect rewrites only when its own list
   // changes; the live SSE/poll stays the source of truth — this is just the warm snapshot.
   useEffect(() => { writeJobsCache(uid, 'salesnav', jobs) }, [uid, jobs])
-  useEffect(() => { writeJobsCache(uid, 'apollo', apolloJobs) }, [uid, apolloJobs])
   useEffect(() => { writeJobsCache(uid, 'apollofree', apolloFreeJobs) }, [uid, apolloFreeJobs])
   useEffect(() => { writeJobsCache(uid, 'enricher', enricherJobs) }, [uid, enricherJobs])
   useEffect(() => { writeJobsCache(uid, 'company', companyJobs) }, [uid, companyJobs])
@@ -1135,10 +1082,10 @@ export function AppProvider({ initialMe, onLogout, children }) {
       }
       return null
     }
-    return scan(jobs, 'Sales Nav') || scan(apolloJobs, 'Apollo') || scan(apolloFreeJobs, 'Apollo Free') || scan(companyJobs, 'Company')
+    return scan(jobs, 'Sales Nav') || scan(apolloFreeJobs, 'Apollo Free') || scan(companyJobs, 'Company')
         || scan(postJobs, 'Post Engagers') || scan(zoominfoJobs, 'ZoomInfo') || scan(domainJobs, 'Domain Enricher')
         || scan(lisearchJobs, 'LinkedIn Search') || scan(enricherJobs, 'URL Enricher', ENRICH_ACTIVE) || null
-  }, [jobs, apolloJobs, apolloFreeJobs, companyJobs, postJobs, zoominfoJobs, domainJobs, lisearchJobs, enricherJobs])
+  }, [jobs, apolloFreeJobs, companyJobs, postJobs, zoominfoJobs, domainJobs, lisearchJobs, enricherJobs])
 
   // Tell the extension (via its dashboard-bridge) when THIS browser is connected under a
   // DIFFERENT account than the one logged in here, so the extension popup + sidebar can
@@ -1170,9 +1117,6 @@ export function AppProvider({ initialMe, onLogout, children }) {
     me,
     expired,
     jobs,
-    apolloJobs,
-    upsertApolloJob,
-    removeApolloJob,
     apolloFreeJobs,
     upsertApolloFreeJob,
     removeApolloFreeJob,

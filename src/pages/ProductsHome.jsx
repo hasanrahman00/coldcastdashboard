@@ -7,7 +7,7 @@ import { NavIcon } from '../lib/navicons.jsx'
 const SCRAPERS = [
   { id: 'salesnav', grad: 't-nav', title: 'Sales Navigator', desc: 'Enriched lead lists from your Sales Navigator searches — names, titles, verified emails.' },
   { id: 'company', grad: 't-co', title: 'Sales Nav Accounts', desc: 'Company & account lists from your Sales Navigator account searches, domain-enriched.' },
-  { id: 'apollo', grad: 't-apollo', title: 'Apollo', desc: 'Targeted contact & company lists straight from your Apollo searches, verified.' },
+  { id: 'apollofree', grad: 't-apollo', title: 'Apollo Free', desc: 'Apollo people-search → clean CSV, scraped in your own connected browser via the extension.' },
   { id: 'zoominfo', grad: 't-zi', title: 'ZoomInfo', desc: 'Pull contacts & accounts from ZoomInfo into clean CSVs — direct dials and work emails.' },
   { id: 'lisearch', grad: 't-search', title: 'LinkedIn Search', desc: 'Any People or Services search → clean CSV, scraped in your own connected browser.' },
   { id: 'post', grad: 't-post', title: 'Post Engagers', desc: 'Everyone who reacted, commented, or reposted a LinkedIn post — one URL in, list out.' },
@@ -59,7 +59,7 @@ function ToolCard({ t, nav, count }) {
 
 export default function ProductsHome({ nav }) {
   const {
-    me, jobs, companyJobs, apolloJobs, zoominfoJobs, lisearchJobs,
+    me, jobs, companyJobs, apolloFreeJobs, zoominfoJobs, lisearchJobs,
     postJobs, enricherJobs, domainJobs, browserConnected,
   } = useApp()
 
@@ -69,7 +69,7 @@ export default function ProductsHome({ nav }) {
   const greet = hour < 5 ? `Working late, ${name}?` : `${partOfDay}, ${name}.`
 
   const arrays = {
-    salesnav: jobs, company: companyJobs, apollo: apolloJobs, zoominfo: zoominfoJobs,
+    salesnav: jobs, company: companyJobs, apollofree: apolloFreeJobs, zoominfo: zoominfoJobs,
     lisearch: lisearchJobs, post: postJobs, linkedin: enricherJobs, domain: domainJobs,
   }
   const countOf = (id) => (arrays[id] || []).length

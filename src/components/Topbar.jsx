@@ -18,7 +18,7 @@ const IcBell = () => <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><pa
 const PAGE_NAMES = {
   home: 'Dashboard', set: 'Settings', setup: 'Setup', api: 'API key', ext: 'Extension',
   services: 'Done-for-you', billing: 'Billing',
-  salesnav: 'Sales Navigator', company: 'Sales Nav Accounts', apollo: 'Apollo',
+  salesnav: 'Sales Navigator', company: 'Sales Nav Accounts',
   zoominfo: 'ZoomInfo', lisearch: 'LinkedIn Search', post: 'Post Engagers',
   linkedin: 'LinkedIn URL Enrich', waterfall: 'Waterfall Enrich', verify: 'Email Verify',
   domain: 'AI SDR · Domain',

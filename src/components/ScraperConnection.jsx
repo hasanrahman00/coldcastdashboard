@@ -6,7 +6,7 @@ import { useApp } from '../store/AppStore.jsx'
 // Auto-updates: the store refreshes it live from the extension's dashboard bridge
 // (on connect/disconnect/profile change) plus the 8s poll and window focus.
 //
-// `scraper` = key in SCRAPER_HOSTS (salesnav | apollo | company | enricher).
+// `scraper` = key in SCRAPER_HOSTS (salesnav | apollofree | company | enricher).
 export default function ScraperConnection({ scraper, name }) {
   const { scraperConnected, localProfileName, localExt, localAccountMismatch, expired } = useApp()
   const connected = scraperConnected(scraper)

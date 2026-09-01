@@ -12,7 +12,6 @@ const PRIMARY = [
 const SCRAPERS = [
   { key: 'salesnav', route: 'salesnav', label: 'Sales Navigator' },
   { key: 'company', route: 'company', label: 'Sales Nav Accounts' },
-  { key: 'apollo', route: 'apollo', label: 'Apollo' },
   { key: 'apollofree', route: 'apollofree', label: 'Apollo Free' },
   { key: 'zoominfo', route: 'zoominfo', label: 'ZoomInfo' },
   { key: 'lisearch', route: 'lisearch', label: 'LinkedIn Search' },
@@ -37,7 +36,7 @@ const FOOTER = [
 ]
 
 export default function Sidebar({ route, nav }) {
-  const { me, jobs, companyJobs, apolloJobs, apolloFreeJobs, zoominfoJobs, lisearchJobs, postJobs, enricherJobs, domainJobs } = useApp()
+  const { me, jobs, companyJobs, apolloFreeJobs, zoominfoJobs, lisearchJobs, postJobs, enricherJobs, domainJobs } = useApp()
   const username = me?.user?.username || 'Account'
   // secondsLeft === null → time-expiry disabled (pay-as-you-go); show just the plan, no countdown.
   const noExpiry = me?.secondsLeft == null
@@ -52,7 +51,7 @@ export default function Sidebar({ route, nav }) {
       : `Pay as you go · ${daysLeft} day${daysLeft === 1 ? '' : 's'} left`
 
   const counts = {
-    salesnav: (jobs || []).length, company: (companyJobs || []).length, apollo: (apolloJobs || []).length,
+    salesnav: (jobs || []).length, company: (companyJobs || []).length,
     apollofree: (apolloFreeJobs || []).length,
     zoominfo: (zoominfoJobs || []).length, lisearch: (lisearchJobs || []).length, post: (postJobs || []).length,
     linkedin: (enricherJobs || []).length, domain: (domainJobs || []).length,

@@ -8,7 +8,6 @@ import Sidebar from './Sidebar.jsx'
 import SalesNav from '../pages/salesnav/SalesNav.jsx'
 import WaterfallEnricher from '../pages/waterfall/WaterfallEnricher.jsx'
 import VerifyEmail from '../pages/verify/VerifyEmail.jsx'
-import ApolloScraper from '../pages/apollo/ApolloScraper.jsx'
 import ApolloFreeScraper from '../pages/apollofree/ApolloFreeScraper.jsx'
 import LinkedInEnricher from '../pages/enricher/LinkedInEnricher.jsx'
 import CompanyScraper from '../pages/company/CompanyScraper.jsx'
@@ -98,7 +97,6 @@ export default function Dashboard({ onLogout }) {
     const product = getProduct(route)
     if (route === 'waterfall') page = <WaterfallEnricher />
     else if (route === 'verify') page = <VerifyEmail />
-    else if (route === 'apollo') page = <ApolloScraper />
     else if (route === 'apollofree') page = <ApolloFreeScraper />
     else if (route === 'linkedin') page = <LinkedInEnricher />
     else if (route === 'company') page = <CompanyScraper />
