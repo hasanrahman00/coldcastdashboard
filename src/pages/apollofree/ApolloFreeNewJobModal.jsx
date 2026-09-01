@@ -68,7 +68,7 @@ export default function ApolloFreeNewJobModal({ open, onClose, onCreated }) {
   }
 
   return (
-    <Modal open={open} onClose={onClose} title="🪶 New Apollo Free Job">
+    <Modal open={open} onClose={onClose} title="🪶 New Apollo Job">
       <p style={{ margin: '-2px 0 16px', fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.5 }}>
         Turn an Apollo people-search into a clean, exportable lead list. It runs in your connected browser
         using your own Apollo session 👇

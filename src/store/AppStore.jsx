@@ -1082,7 +1082,7 @@ export function AppProvider({ initialMe, onLogout, children }) {
       }
       return null
     }
-    return scan(jobs, 'Sales Nav') || scan(apolloFreeJobs, 'Apollo Free') || scan(companyJobs, 'Company')
+    return scan(jobs, 'Sales Nav') || scan(apolloFreeJobs, 'Apollo') || scan(companyJobs, 'Company')
         || scan(postJobs, 'Post Engagers') || scan(zoominfoJobs, 'ZoomInfo') || scan(domainJobs, 'Domain Enricher')
         || scan(lisearchJobs, 'LinkedIn Search') || scan(enricherJobs, 'URL Enricher', ENRICH_ACTIVE) || null
   }, [jobs, apolloFreeJobs, companyJobs, postJobs, zoominfoJobs, domainJobs, lisearchJobs, enricherJobs])

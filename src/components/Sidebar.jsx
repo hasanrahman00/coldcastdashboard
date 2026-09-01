@@ -12,7 +12,7 @@ const PRIMARY = [
 const SCRAPERS = [
   { key: 'salesnav', route: 'salesnav', label: 'Sales Navigator' },
   { key: 'company', route: 'company', label: 'Sales Nav Accounts' },
-  { key: 'apollofree', route: 'apollofree', label: 'Apollo Free' },
+  { key: 'apollofree', route: 'apollofree', label: 'Apollo' },
   { key: 'zoominfo', route: 'zoominfo', label: 'ZoomInfo' },
   { key: 'lisearch', route: 'lisearch', label: 'LinkedIn Search' },
   { key: 'post', route: 'post', label: 'Post Engagers' },

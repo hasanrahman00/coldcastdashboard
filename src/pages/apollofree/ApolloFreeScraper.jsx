@@ -75,9 +75,9 @@ export default function ApolloFreeScraper() {
       <div className="jg" style={{ marginTop: 20 }}>
         <div className="empty">
           <div className="empty-ic">🪶</div>
-          <h3>Apollo Free server not connected</h3>
+          <h3>Apollo server not connected</h3>
           <p>
-            Set <code>VITE_APOLLO_FREE_SCRAPER_URL</code> to your Apollo Free scraper server, then redeploy the dashboard.
+            Set <code>VITE_APOLLO_FREE_SCRAPER_URL</code> to your Apollo scraper server, then redeploy the dashboard.
           </p>
         </div>
       </div>
@@ -98,7 +98,7 @@ export default function ApolloFreeScraper() {
           title={
             expired ? 'Account expired — renew to run jobs'
               : busyJob ? `Finish your ${busyJob.scraper} job first — only one job runs at a time across all scrapers`
-              : !connected ? 'Tip: connect the Coldcast extension to Apollo Free in this browser before you Run this job'
+              : !connected ? 'Tip: connect the Coldcast extension to Apollo in this browser before you Run this job'
               : ''
           }
         >
