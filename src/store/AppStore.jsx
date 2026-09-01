@@ -140,7 +140,12 @@ export function AppProvider({ initialMe, onLogout, children }) {
   const [connectorOnline, setConnectorOnline] = useState(false)
   const [statusLoaded, setStatusLoaded] = useState(false) // first agentStatus poll returned (avoids flashing "different account" before profiles load)
   const [accountKeyHash, setAccountKeyHash] = useState('') // sha256 of THIS account's login key — compared with the extension's reported key hash
-  const [usage, setUsage] = useState({ limit: 0, used: 0, resetsDaily: false }) // scrape cap (paid resets daily; free = hard total)
+  // Scrape wallet — prepaid credit model, read straight from Core (refreshCredits). Seed
+  // from the login `me` snapshot so the header paints the right number with no zero-flash.
+  const [usage, setUsage] = useState(() => {
+    const s = initialMe?.user?.scrapeCredits ?? 0
+    return { creditModel: true, remaining: s, limit: s, used: 0, resetsDaily: false }
+  })
   const [credits, setCredits] = useState(() => initialMe?.user?.credits ?? 0) // pay-per-use wallet (enrich / verify / domain)
   const [uiConfig, setUiConfig] = useState({ hideLogs: false, hideSettings: false })
   // THIS browser's extension state, reported by the extension's dashboard
@@ -585,11 +590,10 @@ export function AppProvider({ initialMe, onLogout, children }) {
       setActiveProfileId(d.activeProfileId || null)
       setConnectorOnline(!!d.connectorOnline)
       setStatusLoaded(true)
-      setUsage({ limit: d.scrapeLimit ?? 0, used: d.scrapedToday ?? 0, resetsDaily: !!d.scrapeResetsDaily })
-      // NOTE: credits are NOT taken from agentStatus — the scraper's value can lag
-      // behind Core's live wallet and made the pill flicker between the persisted
-      // total and the live remaining. The credit pill is driven solely by Core's
-      // live balance below (refreshCredits) + the per-job enrich poller.
+      // NOTE: neither the scrape meter NOR credits come from agentStatus anymore.
+      // BOTH balances are read straight from Core (refreshCredits → /api/credits/balance),
+      // so the header no longer depends on a scraper being up + Core-wired, and can't
+      // flicker between a scraper's lagging value and Core's live wallet.
     } catch (e) {
       if (e instanceof AuthError) onLogout()
       // network blip → keep last-known cache
@@ -621,6 +625,12 @@ export function AppProvider({ initialMe, onLogout, children }) {
     try {
       const d = await api.creditsBalance()
       if (d && typeof d.credits === 'number') setCredits(d.credits)
+      // Scrape balance comes STRAIGHT from Core now (like email credits) — no longer
+      // relayed through the Sales Nav /api/agent/status. Prepaid credit model: the
+      // wallet IS the balance (1 credit = 1 scrape unit), so limit==remaining, used=0.
+      if (d && typeof d.scrapeCredits === 'number') {
+        setUsage({ creditModel: true, remaining: d.scrapeCredits, limit: d.scrapeCredits, used: 0, resetsDaily: false })
+      }
     } catch (e) {
       if (e instanceof AuthError) onLogout()
     }
@@ -649,7 +659,14 @@ export function AppProvider({ initialMe, onLogout, children }) {
   // logs out; a transient network error is swallowed so the poll survives.
   const refreshMe = useCallback(async () => {
     const d = await guarded(() => api.me())
-    if (d) setMe((m) => ({ ...(m || {}), ...d }))
+    if (d) {
+      setMe((m) => ({ ...(m || {}), ...d }))
+      // publicView already carries the scrape wallet, so keep the header's scrape meter
+      // fresh from Core here too — no dependency on /api/credits/balance being redeployed
+      // or on any scraper's agentStatus.
+      const s = d?.user?.scrapeCredits
+      if (typeof s === 'number') setUsage({ creditModel: true, remaining: s, limit: s, used: 0, resetsDaily: false })
+    }
     return d
   }, [guarded])
 
