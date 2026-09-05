@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import {
   IconCalendar,
   IconUsersSm,
@@ -69,39 +70,25 @@ export default function ApolloJobCard({ job, anotherRunning, onRun, onStop, onDe
     : isPaused ? 'Re-run — resumes exactly where it paused (already-collected leads are skipped)'
     : 'Start scraping'
   const pct = job.progress || 0
-  // Auto-download the CSV straight to the Downloads folder — no "Save as" popup.
-  // The CSV lives on the scraper's own origin, so a plain <a href> is a CROSS-ORIGIN
-  // download: the browser ignores the download attr and prompts a save dialog. Instead
-  // we fetch the bytes (CORS is `*`, auth is a query-string token — no headers needed)
-  // and download from a same-origin blob: URL, where the download attr IS honored.
-  const dl = async () => {
-    const fallbackName = ((job.name || 'apollo-leads').replace(/[^a-zA-Z0-9_-]/g, '_')) + '.csv'
-    try {
-      const res = await fetch(downloadUrl)
-      if (!res.ok) throw new Error('HTTP ' + res.status)
-      const blob = await res.blob()
-      // Use the server's filename when it's exposed (Content-Disposition), else the job name.
-      let filename = fallbackName
-      const cd = res.headers.get('Content-Disposition') || ''
-      const m = /filename\*?=(?:UTF-8'')?"?([^";]+)"?/i.exec(cd)
-      if (m) { try { filename = decodeURIComponent(m[1]) } catch { filename = m[1] } }
-      const objUrl = URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = objUrl
-      a.download = filename
-      document.body.appendChild(a)
-      a.click()
-      a.remove()
-      setTimeout(() => URL.revokeObjectURL(objUrl), 4000)
-    } catch {
-      // Network/CORS fallback: direct nav (may show a save prompt, but still downloads).
-      const a = document.createElement('a')
-      a.href = downloadUrl
-      a.download = ''
-      document.body.appendChild(a)
-      a.click()
-      a.remove()
-    }
+  const [downloading, setDownloading] = useState(false)
+  // Native STREAMING download via a hidden iframe — the server sends Content-Disposition:
+  // attachment (+ an exact Content-Length), so the browser downloads with the server's filename
+  // and a real progress bar WITHOUT buffering the whole file into JS memory (the old blob path).
+  // The ?token= in downloadUrl authenticates (no headers needed); the iframe isolates any error
+  // body from the SPA. A successful attachment download doesn't navigate the iframe, so cleanup is
+  // on a short timer; an error body fires onload and cleans up at once. Removing the iframe never
+  // cancels an already-started download.
+  const dl = () => {
+    if (downloading) return
+    setDownloading(true)
+    const iframe = document.createElement('iframe')
+    iframe.style.display = 'none'
+    iframe.src = downloadUrl
+    document.body.appendChild(iframe)
+    let done = false
+    const cleanup = () => { if (done) return; done = true; try { iframe.remove() } catch {} ; setDownloading(false) }
+    iframe.onload = cleanup
+    setTimeout(cleanup, 2500)
   }
 
   return (
@@ -179,8 +166,8 @@ export default function ApolloJobCard({ job, anotherRunning, onRun, onStop, onDe
             <IconStop /> Stop
           </button>
         )}
-        <button className="btn btn-csv btn-sm" onClick={dl}>
-          <IconDownload /> CSV
+        <button className="btn btn-csv btn-sm" onClick={dl} disabled={!hasData || downloading} title={!hasData ? 'No leads yet' : 'Download CSV'}>
+          <IconDownload /> {downloading ? 'Downloading…' : 'CSV'}
         </button>
         <button className="btn btn-logs btn-sm" onClick={onOpenLogs}>
           <IconLogsLines /> Logs
