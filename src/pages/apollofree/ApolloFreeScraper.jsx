@@ -16,7 +16,7 @@ export default function ApolloFreeScraper() {
   const toast = useToast()
   const configured = api.apolloFreeConfigured()
 
-  const { apolloFreeJobs, upsertApolloFreeJob, removeApolloFreeJob, scraperConnected, expired, busyJob, onlineProfileId } = useApp()
+  const { apolloFreeJobs, upsertApolloFreeJob, removeApolloFreeJob, scraperConnected, expired, busyJob, onlineProfileId, refreshProfiles } = useApp()
   const connected = scraperConnected('apollofree')
   const jobs = apolloFreeJobs || []
   const [page, setPage] = useState(0)
@@ -57,9 +57,19 @@ export default function ApolloFreeScraper() {
   }, [jobs])
 
   const run = async (id) => {
+    // Auto-select the CURRENT browser: onlineProfileId is the profile the extension is connected
+    // as in THIS browser (from the localExt postMessage bridge, refreshed every ~2.5s + on focus),
+    // independent of how many profiles the account has. Block early with a clear message when this
+    // browser isn't connected, instead of sending null and letting the server run the stale
+    // create-time profile.
+    if (!onlineProfileId) {
+      return toast('No connected browser found — open the Coldcast extension in this Chrome (set your API key until it shows “connected”), then Run again.', 'err')
+    }
     try {
-      // Pass the browser online RIGHT NOW so the server re-binds the job to it (SSE keeps
-      // onlineProfileId fresh) — the user may have switched browsers since creating the job.
+      // Freshen the server's online view right before binding, then send the current browser's
+      // profileId so the server re-binds the job to it (the user may have switched browsers since
+      // creating the job). Freshness is the localExt bridge + this refresh, NOT SSE.
+      await refreshProfiles().catch(() => {})
       await api.apolloFreeStart(id, onlineProfileId)
     } catch (e) {
       toast(e.message || 'Could not start', 'err')

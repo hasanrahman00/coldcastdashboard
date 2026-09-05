@@ -303,35 +303,71 @@ export function AppProvider({ initialMe, onLogout, children }) {
     setApolloFreeJobs((prev) => prev.filter((j) => j.id !== id))
   }, [])
 
+  // Resilient live stream for Apollo-FREE — same hardened shape as the Sales Nav slice above:
+  // reconnect with exponential backoff on a CLOSED stream, a paired load() that detects a dead
+  // token (AuthError → onLogout, since an SSE 401 only closes silently), and a focus/visibility
+  // revive so a slept/backgrounded tab's dead stream comes back instantly instead of freezing on
+  // the 5s poll. Retry is applied ONLY to the read-only stream + jobs GET — never to mutations.
   useEffect(() => {
     if (!api.apolloFreeConfigured()) return
-    let alive = true
     let es
+    let closed = false
+    let retry
+    let backoff = 3000
+    let failures = 0
+
     const load = async () => {
+      if (closed) return
       try {
         const list = await api.apolloFreeJobs()
-        if (alive) setApolloFreeJobs(Array.isArray(list) ? list : [])
-      } catch {
-        /* keep last-known; the 5s poll reconciles */
+        if (!closed && Array.isArray(list)) setApolloFreeJobs(list)
+      } catch (e) {
+        if (e instanceof AuthError) { closed = true; clearTimeout(retry); onLogout(); return }
+        /* else keep last-known; the SSE + next poll reconcile */
       }
     }
-    load()
-    try {
-      es = api.apolloFreeEvents()
+
+    const connect = () => {
+      try { es = api.apolloFreeEvents() } catch { return }
       es.addEventListener('init', (e) => {
-        try { const d = JSON.parse(e.data); if (alive) setApolloFreeJobs(Array.isArray(d) ? d : []) } catch {}
+        failures = 0; backoff = 3000   // healthy stream → reset the backoff
+        try { const d = JSON.parse(e.data); setApolloFreeJobs(Array.isArray(d) ? d : []) } catch {}
       })
       es.addEventListener('job:update', (e) => {
         try { upsertApolloFreeJob(JSON.parse(e.data)) } catch {}
       })
       es.addEventListener('job:delete', (e) => {
-        try { const { id } = JSON.parse(e.data); if (alive) setApolloFreeJobs((p) => p.filter((j) => j.id !== id)) } catch {}
+        try { const { id } = JSON.parse(e.data); setApolloFreeJobs((p) => p.filter((j) => j.id !== id)) } catch {}
       })
-    } catch {
-      /* EventSource unavailable → poll only */
+      es.onerror = () => {
+        if (es.readyState === EventSource.CLOSED && !closed) {
+          clearTimeout(retry)
+          if (++failures >= 4) load()   // several straight closes → confirm the token (AuthError → logout)
+          retry = setTimeout(connect, backoff)
+          backoff = Math.min(backoff * 2, 30000)
+        }
+      }
     }
+
+    load()
+    connect()
     const poll = setInterval(() => { if (!document.hidden) load() }, 5000)
-    return () => { alive = false; clearInterval(poll); try { es?.close() } catch {} }
+    const onVisible = () => {
+      if (document.hidden) return
+      load()
+      if (!es || es.readyState !== EventSource.OPEN) { try { if (es) es.close() } catch {} connect() }
+    }
+    window.addEventListener('focus', onVisible)
+    document.addEventListener('visibilitychange', onVisible)
+
+    return () => {
+      closed = true
+      clearTimeout(retry)
+      clearInterval(poll)
+      window.removeEventListener('focus', onVisible)
+      document.removeEventListener('visibilitychange', onVisible)
+      try { es?.close() } catch {}
+    }
   }, [upsertApolloFreeJob])
 
   // ── LinkedIn URL Enricher jobs (its OWN server) — polled for the GLOBAL counters ──

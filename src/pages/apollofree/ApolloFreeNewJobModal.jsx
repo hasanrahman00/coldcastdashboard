@@ -22,7 +22,7 @@ const selStyle = {
 // extension bridge; billing + the run are handled server-side.
 export default function ApolloFreeNewJobModal({ open, onClose, onCreated }) {
   const toast = useToast()
-  const { onlineProfileId, apolloFreeJobs } = useApp()
+  const { onlineProfileId, apolloFreeJobs, refreshProfiles } = useApp()
   const [target, setTarget] = useState('new') // 'new' | 'existing'
   const [name, setName] = useState('')
   const [url, setUrl] = useState('')
@@ -40,7 +40,10 @@ export default function ApolloFreeNewJobModal({ open, onClose, onCreated }) {
     const u = url.trim()
     if (!u) return toast('Paste an Apollo people-search URL', 'err')
     if (!/apollo\.io/i.test(u)) return toast('That doesn’t look like an Apollo URL', 'err')
-    // The job binds to the browser online RIGHT NOW (auto-selected via the extension). If none is
+    // Freshen the server's online view so the profile we auto-bind is current at create time.
+    await refreshProfiles().catch(() => {})
+    // The job binds to the browser online RIGHT NOW (auto-selected via the extension — the profile
+    // THIS browser is connected as, regardless of how many profiles the account has). If none is
     // connected here, block early instead of creating a job that could never run.
     if (!onlineProfileId) return toast('No connected browser found — open your Coldcast extension in this browser (set your API key until it shows “connected”), then try again.', 'err')
 
