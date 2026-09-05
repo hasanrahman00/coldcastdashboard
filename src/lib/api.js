@@ -410,6 +410,8 @@ export const admin = {
   setCredits: (id, credits) => adminPost(`/api/auth/users/${encodeURIComponent(id)}/credits`, { credits }),
   // ADD prepaid scrape credits (the $3 / 10,000 pack grant). `add` increments the balance.
   grantScrapeCredits: (id, add) => adminPost(`/api/auth/users/${encodeURIComponent(id)}/scrape-credits`, { add }),
+  // Set the user's scraper concurrency cap (jobs at once, all scrapers). Default 1; raise per plan.
+  setConcurrency: (id, limit) => adminPost(`/api/auth/users/${encodeURIComponent(id)}/concurrency`, { limit }),
   remove: (id) => adminReq(`/api/auth/users/${encodeURIComponent(id)}`, { method: 'DELETE' }),
   // Proxy pool health → { total, alive, owned, idle, paidActive, shortage }.
   proxyStatus: () => adminReq('/api/proxy/status'),

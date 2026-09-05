@@ -242,6 +242,15 @@ export default function Admin() {
     if (isNaN(n) || n <= 0) return toast('Enter a positive number', 'err')
     try { await admin.grantScrapeCredits(u.id, n); toast(`Granted ${n.toLocaleString()} scrape credits`, 'ok'); refresh() } catch (e) { toast(e.message, 'err') }
   }
+  // Set the user's concurrency cap (how many scraper jobs they can run at once, across all scrapers).
+  const editConcurrency = async (u) => {
+    const cur = u.concurrencyLimit ?? 1
+    const v = window.prompt(`Concurrent jobs for "${u.username}" (how many scrapers can run at once).\nDefault 1. Raise for upgraded plans.`, String(cur))
+    if (v == null) return
+    const n = parseInt(v, 10)
+    if (!Number.isFinite(n) || n < 1) return toast('Enter a whole number ≥ 1', 'err')
+    try { await admin.setConcurrency(u.id, n); toast(`Concurrency set to ${n}`, 'ok'); refresh() } catch (e) { toast(e.message, 'err') }
+  }
 
   if (loading) return <div className="boot"><span className="spin" /><span>Loading…</span></div>
   if (!authed) return <><Gate onUnlock={onUnlock} /><AdminStyles /></>
@@ -297,7 +306,7 @@ export default function Admin() {
               <div className="adm-table-wrap">
                 <table className="adm-table">
                   <thead>
-                    <tr><th>Username</th><th>Email</th><th>Created</th><th>Scrape cr</th><th>Credits</th><th>Status</th><th>API key</th><th className="adm-actions-h">Actions</th></tr>
+                    <tr><th>Username</th><th>Email</th><th>Created</th><th>Scrape cr</th><th>Credits</th><th>Concur</th><th>Status</th><th>API key</th><th className="adm-actions-h">Actions</th></tr>
                   </thead>
                   <tbody>
                     {users.map((u) => {
@@ -315,6 +324,11 @@ export default function Admin() {
                           <td>
                             <button className="adm-limit" onClick={() => editCredits(u)} title="Click to top up the credit wallet (enrich / verify / domain)">
                               {(u.credits ?? 0).toLocaleString()}<span className="adm-limit-edit"> cr ✎</span>
+                            </button>
+                          </td>
+                          <td>
+                            <button className="adm-limit" onClick={() => editConcurrency(u)} title="Click to set how many scraper jobs this user can run at once (all scrapers). Default 1.">
+                              {u.concurrencyLimit ?? 1}<span className="adm-limit-edit"> job ✎</span>
                             </button>
                           </td>
                           <td><span className="adm-badge" style={{ color: st.color, background: st.color + '18' }}>{st.label}</span></td>
