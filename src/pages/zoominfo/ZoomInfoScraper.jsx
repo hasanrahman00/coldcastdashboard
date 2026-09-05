@@ -13,7 +13,7 @@ export default function ZoomInfoScraper() {
   const toast = useToast()
   const configured = api.zoominfoConfigured()
 
-  const { zoominfoJobs, upsertZoomInfoJob, removeZoomInfoJob, scraperConnected, expired, busyJob } = useApp()
+  const { zoominfoJobs, upsertZoomInfoJob, removeZoomInfoJob, scraperConnected, expired, busyJob, atConcurrencyCap, jobAtCap } = useApp()
   const connected = scraperConnected('zoominfo')
   const jobs = zoominfoJobs || []
   const [page, setPage] = useState(0)
@@ -68,7 +68,7 @@ export default function ZoomInfoScraper() {
         <button
           className="btn btn-p"
           onClick={() => setShowNew(true)}
-          disabled={!connected || expired || !!busyJob}
+          disabled={!connected || expired || atConcurrencyCap}
           title={expired ? 'Account expired — renew to run jobs' : connected ? '' : 'Connect the Coldcast extension in this browser to run a job here'}
         >
           <IconPlus />
@@ -87,14 +87,14 @@ export default function ZoomInfoScraper() {
             <div className="empty-ic">🔎</div>
             <h3>No jobs yet</h3>
             <p>Paste a ZoomInfo (Lite) people or company search URL to export it</p>
-            <button className="btn btn-p" onClick={() => setShowNew(true)} disabled={expired || !!busyJob} title={expired ? 'Account expired — renew to run jobs' : busyJob ? 'Finish your running job first — only one at a time' : ''}>
+            <button className="btn btn-p" onClick={() => setShowNew(true)} disabled={expired || atConcurrencyCap} title={expired ? 'Account expired — renew to run jobs' : busyJob ? 'Finish your running job first — only one at a time' : ''}>
               <IconPlus />
               Create Job
             </button>
           </div>
         ) : (
           slice.map((j) => {
-            const otherRunning = !!busyJob && busyJob.id !== j.id
+            const otherRunning = jobAtCap(j.id)
             return (
               <ZoomInfoJobCard
                 key={j.id}

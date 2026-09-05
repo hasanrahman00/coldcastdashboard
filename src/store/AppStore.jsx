@@ -1125,20 +1125,30 @@ export function AppProvider({ initialMe, onLogout, children }) {
   // ── One scraper at a time (per user, across ALL products) ─────────────────
   // Each scraper runs on its OWN backend, so their per-user caps can't stop a
   // user running two products at once. This is the dashboard-wide guard: the
-  // FIRST active job across every scraper. Pages disable Run/New Job whenever it's
-  // set (a running job's own Stop stays enabled by excluding its id).
-  const busyJob = useMemo(() => {
+  // ALL active jobs across every scraper (per-plan concurrency, item 11). Core is the hard
+  // authority; this drives the UI so an upgraded user (concurrencyLimit=N) can open/run up to N at
+  // once. For the default limit of 1 these reduce EXACTLY to the old one-at-a-time semantics
+  // (atConcurrencyCap === !!busyJob, jobAtCap(id) === "another job is running").
+  const runningJobs = useMemo(() => {
     const A = ['running', 'stopping', 'queued', 'queueing', 'starting', 'pausing']
+    const out = []
     const scan = (list, label, set) => {
       for (const j of (list || [])) {
-        if ((set || A).includes(String((j && j.status) || '').toLowerCase())) return { scraper: label, id: j.id, name: j.name || '' }
+        if ((set || A).includes(String((j && j.status) || '').toLowerCase())) out.push({ scraper: label, id: j.id, name: j.name || '' })
       }
-      return null
     }
-    return scan(jobs, 'Sales Nav') || scan(apolloFreeJobs, 'Apollo') || scan(companyJobs, 'Company')
-        || scan(postJobs, 'Post Engagers') || scan(zoominfoJobs, 'ZoomInfo') || scan(domainJobs, 'Domain Enricher')
-        || scan(lisearchJobs, 'LinkedIn Search') || scan(enricherJobs, 'URL Enricher', ENRICH_ACTIVE) || null
+    scan(jobs, 'Sales Nav'); scan(apolloFreeJobs, 'Apollo'); scan(companyJobs, 'Company')
+    scan(postJobs, 'Post Engagers'); scan(zoominfoJobs, 'ZoomInfo'); scan(domainJobs, 'Domain Enricher')
+    scan(lisearchJobs, 'LinkedIn Search'); scan(enricherJobs, 'URL Enricher', ENRICH_ACTIVE)
+    return out
   }, [jobs, apolloFreeJobs, companyJobs, postJobs, zoominfoJobs, domainJobs, lisearchJobs, enricherJobs])
+
+  const concurrencyLimit = Math.max(1, Number(me?.user?.concurrencyLimit) || 1)
+  const runningCount = runningJobs.length
+  const busyJob = runningJobs[0] || null   // kept for label text ("Finish your <scraper> job…")
+  const atConcurrencyCap = runningCount >= concurrencyLimit   // block a NEW job at the plan limit
+  // block a specific job's Run when the OTHER running jobs already fill the plan limit
+  const jobAtCap = useCallback((id) => runningJobs.filter((j) => j.id !== id).length >= concurrencyLimit, [runningJobs, concurrencyLimit])
 
   // Tell the extension (via its dashboard-bridge) when THIS browser is connected under a
   // DIFFERENT account than the one logged in here, so the extension popup + sidebar can
@@ -1203,7 +1213,10 @@ export function AppProvider({ initialMe, onLogout, children }) {
     credits: expired ? 0 : credits,
     uiConfig,
     localExt,
-    busyJob,   // the user's one active job across ALL scrapers (or null) — one-at-a-time gate
+    busyJob,   // FIRST active job across ALL scrapers (or null) — label text only now
+    // Per-plan concurrency (item 11): default 1 → same as one-at-a-time. Pages gate New Job on
+    // atConcurrencyCap and a job's Run on jobAtCap(id); Core is the hard authority server-side.
+    concurrencyLimit, runningCount, atConcurrencyCap, jobAtCap,
     refreshProfiles,
 
     // job actions (SSE pushes the resulting state back, so no manual refetch)

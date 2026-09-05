@@ -15,7 +15,7 @@ export default function PostScraper() {
   const toast = useToast()
   const configured = api.postConfigured()
 
-  const { postJobs, upsertPostJob, removePostJob, scraperConnected, expired, busyJob } = useApp()
+  const { postJobs, upsertPostJob, removePostJob, scraperConnected, expired, busyJob, atConcurrencyCap, jobAtCap } = useApp()
   const connected = scraperConnected('post')
   const jobs = postJobs || []
   const [page, setPage] = useState(0)
@@ -78,7 +78,7 @@ export default function PostScraper() {
         <button
           className="btn btn-p"
           onClick={() => setShowNew(true)}
-          disabled={!connected || expired || !!busyJob}
+          disabled={!connected || expired || atConcurrencyCap}
           title={expired ? 'Account expired — renew to run jobs' : busyJob ? `You already have a job running (${busyJob.scraper}). Only one at a time.` : connected ? '' : 'Connect the Coldcast extension in this browser to run a job here'}
         >
           <IconPlus />
@@ -97,14 +97,14 @@ export default function PostScraper() {
             <div className="empty-ic">👥</div>
             <h3>No jobs yet</h3>
             <p>Paste a LinkedIn post URL to pull everyone who engaged with it</p>
-            <button className="btn btn-p" onClick={() => setShowNew(true)} disabled={expired || !!busyJob} title={expired ? 'Account expired — renew to run jobs' : busyJob ? 'Finish your running job first — only one at a time' : ''}>
+            <button className="btn btn-p" onClick={() => setShowNew(true)} disabled={expired || atConcurrencyCap} title={expired ? 'Account expired — renew to run jobs' : busyJob ? 'Finish your running job first — only one at a time' : ''}>
               <IconPlus />
               Create Job
             </button>
           </div>
         ) : (
           slice.map((j) => {
-            const otherRunning = !!busyJob && busyJob.id !== j.id
+            const otherRunning = jobAtCap(j.id)
             return (
               <PostJobCard
                 key={j.id}

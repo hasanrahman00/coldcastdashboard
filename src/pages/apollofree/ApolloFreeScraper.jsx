@@ -16,7 +16,7 @@ export default function ApolloFreeScraper() {
   const toast = useToast()
   const configured = api.apolloFreeConfigured()
 
-  const { apolloFreeJobs, upsertApolloFreeJob, removeApolloFreeJob, scraperConnected, expired, busyJob, onlineProfileId, refreshProfiles } = useApp()
+  const { apolloFreeJobs, upsertApolloFreeJob, removeApolloFreeJob, scraperConnected, expired, busyJob, atConcurrencyCap, jobAtCap, onlineProfileId, refreshProfiles } = useApp()
   const connected = scraperConnected('apollofree')
   const jobs = apolloFreeJobs || []
   const [page, setPage] = useState(0)
@@ -120,7 +120,7 @@ export default function ApolloFreeScraper() {
           // Creating/queuing a job does NOT need the extension — only RUNNING it does (the Run
           // button + server enforce the connection). Matches the empty-state "Create Job" button,
           // which was never gated on `connected`. So don't block creation on the hub connection.
-          disabled={expired || !!busyJob}
+          disabled={expired || atConcurrencyCap}
           title={
             expired ? 'Account expired — renew to run jobs'
               : busyJob ? `Finish your ${busyJob.scraper} job first — only one job runs at a time across all scrapers`
@@ -151,14 +151,14 @@ export default function ApolloFreeScraper() {
             </div>
             <h3>No jobs yet</h3>
             <p>Create your first Apollo scraping job to get started</p>
-            <button className="btn btn-p" onClick={() => setShowNew(true)} disabled={expired || !!busyJob} title={expired ? 'Account expired — renew to run jobs' : busyJob ? 'Finish your running job first — only one at a time' : ''}>
+            <button className="btn btn-p" onClick={() => setShowNew(true)} disabled={expired || atConcurrencyCap} title={expired ? 'Account expired — renew to run jobs' : busyJob ? 'Finish your running job first — only one at a time' : ''}>
               <IconPlus />
               Create Job
             </button>
           </div>
         ) : (
           slice.map((j) => {
-            const otherRunning = !!busyJob && busyJob.id !== j.id   // one job at a time across ALL scrapers
+            const otherRunning = jobAtCap(j.id)   // one job at a time across ALL scrapers
             return (
               <ApolloJobCard
                 key={j.id}

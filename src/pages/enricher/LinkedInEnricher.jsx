@@ -15,7 +15,7 @@ const JOBS_PER_PAGE = 9 // 3 × 3 — matches the Sales Nav / Apollo grid
 export default function LinkedInEnricher() {
   const toast = useToast()
   const configured = api.enricherConfigured()
-  const { scraperConnected, onlineProfileId, usage, expired, busyJob } = useApp()
+  const { scraperConnected, onlineProfileId, usage, expired, busyJob, atConcurrencyCap, jobAtCap } = useApp()
   const connected = scraperConnected('enricher')
   // The enricher debits the shared SCRAPING limit (usage), not the credit wallet.
   const scrapeLeft = Math.max(0, (usage?.limit ?? 0) - (usage?.used ?? 0))
@@ -154,7 +154,7 @@ export default function LinkedInEnricher() {
 
         <button
           className="btn btn-s wf-btn"
-          disabled={!file || busy || !connected || expired || !!busyJob}
+          disabled={!file || busy || !connected || expired || atConcurrencyCap}
           title={expired ? 'Account expired — renew to run jobs' : connected ? '' : 'Connect the Coldcast extension in this browser to run a job'}
           onClick={run}
         >
@@ -180,7 +180,7 @@ export default function LinkedInEnricher() {
             <EnricherJobCard
               key={j.id}
               job={j}
-              anotherRunning={(!!busyJob && busyJob.id !== j.id) || expired}
+              anotherRunning={(jobAtCap(j.id)) || expired}
               onPause={() => pause(j.id)}
               onResume={() => resume(j.id)}
               onStop={() => stop(j.id)}

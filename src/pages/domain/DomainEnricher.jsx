@@ -13,7 +13,7 @@ export default function DomainEnricher() {
   const toast = useToast()
   const configured = api.domainConfigured()
 
-  const { domainJobs, upsertDomainJob, removeDomainJob, scraperConnected, expired, busyJob } = useApp()
+  const { domainJobs, upsertDomainJob, removeDomainJob, scraperConnected, expired, busyJob, atConcurrencyCap, jobAtCap } = useApp()
   const connected = scraperConnected('domain')
   const jobs = domainJobs || []
   const [page, setPage] = useState(0)
@@ -68,7 +68,7 @@ export default function DomainEnricher() {
         <button
           className="btn btn-p"
           onClick={() => setShowNew(true)}
-          disabled={!connected || expired || !!busyJob}
+          disabled={!connected || expired || atConcurrencyCap}
           title={expired ? 'Account expired — renew to run jobs' : connected ? '' : 'Connect the Coldcast extension in this browser to run a job here'}
         >
           <IconPlus />
@@ -87,14 +87,14 @@ export default function DomainEnricher() {
             <div className="empty-ic">🌐</div>
             <h3>No jobs yet</h3>
             <p>Upload a CSV of company domains to enrich — firmographics + key contacts</p>
-            <button className="btn btn-p" onClick={() => setShowNew(true)} disabled={expired || !!busyJob} title={expired ? 'Account expired — renew to run jobs' : busyJob ? 'Finish your running job first — only one at a time' : ''}>
+            <button className="btn btn-p" onClick={() => setShowNew(true)} disabled={expired || atConcurrencyCap} title={expired ? 'Account expired — renew to run jobs' : busyJob ? 'Finish your running job first — only one at a time' : ''}>
               <IconPlus />
               Create Job
             </button>
           </div>
         ) : (
           slice.map((j) => {
-            const otherRunning = !!busyJob && busyJob.id !== j.id
+            const otherRunning = jobAtCap(j.id)
             return (
               <DomainJobCard
                 key={j.id}
