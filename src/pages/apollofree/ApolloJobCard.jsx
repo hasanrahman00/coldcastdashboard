@@ -17,9 +17,14 @@ import {
 // this card has no store coupling. Apollo counts leads in `totalScraped`, is
 // CSV-only, and has no profile label (profiles arrive with the bridge).
 export default function ApolloJobCard({ job, anotherRunning, onRun, onStop, onDelete, onOpenLogs, downloadUrl }) {
-  const scrapeIdle = ['idle', 'stopped', 'done', 'failed'].includes(job.status)
+  const scrapeIdle = ['idle', 'stopped', 'done', 'failed', 'blocked'].includes(job.status)
   const scrapeRun = job.status === 'running'
   const scrapeBusy = scrapeRun || job.status === 'stopping'
+  // A resumable PAUSE (captcha / signed-out / restriction / rate-limit) surfaces as 'stopped' with
+  // a persistent pauseMessage; a non-resumable BLOCK (search too large) surfaces as 'blocked'.
+  const isPaused = !scrapeBusy && !!job.pauseMessage
+  const isBlocked = job.status === 'blocked' || (!scrapeBusy && !!job.blockReason)
+  const attentionMsg = (scrapeBusy && job.warning) || (isBlocked && job.blockReason) || (isPaused && job.pauseMessage) || ''
   const leads = job.totalScraped ?? job.totalLeads ?? 0
   const hasData = job.hasData || leads > 0
   const url = job.url || ''
@@ -39,6 +44,14 @@ export default function ApolloJobCard({ job, anotherRunning, onRun, onStop, onDe
   if (scrapeBusy) {
     stCls = 'run'
     stTxt = job.status === 'stopping' ? 'Stopping…' : 'Scraping…'
+  } else if (isBlocked) {
+    stCls = 'bad'
+    stTxt = 'Search too large'
+    StIcon = IconWarn
+  } else if (isPaused) {
+    stCls = 'bad'
+    stTxt = 'Paused — action needed'
+    StIcon = IconWarn
   } else if (hasData) {
     stCls = 'ok'
     stTxt = 'File available'
@@ -48,7 +61,13 @@ export default function ApolloJobCard({ job, anotherRunning, onRun, onStop, onDe
     StIcon = IconWarn
   }
 
-  const runTitle = anotherRunning ? 'You already have a job running. Stop it first.' : 'Start scraping'
+  // A paused (resumable) job re-starts EXACTLY where it left off → "Re-run"; a blocked one needs
+  // the user to narrow the search first, so no resume framing.
+  const runLabel = isPaused || (job.status === 'stopped' && job.currentPage > 0) ? 'Re-run' : 'Run'
+  const runTitle = anotherRunning
+    ? 'You already have a job running. Stop it first.'
+    : isPaused ? 'Re-run — resumes exactly where it paused (already-collected leads are skipped)'
+    : 'Start scraping'
   const pct = job.progress || 0
   // Auto-download the CSV straight to the Downloads folder — no "Save as" popup.
   // The CSV lives on the scraper's own origin, so a plain <a href> is a CROSS-ORIGIN
@@ -103,10 +122,10 @@ export default function ApolloJobCard({ job, anotherRunning, onRun, onStop, onDe
         <StIcon /> {job.warning && scrapeBusy ? 'Needs your attention' : stTxt}
       </div>
 
-      {job.warning && scrapeBusy && (
+      {attentionMsg && (
         <div
           className="jc-warn"
-          title={job.warning}
+          title={attentionMsg}
           style={{
             display: 'flex', gap: 6, alignItems: 'flex-start',
             fontSize: 12, lineHeight: 1.35, fontWeight: 600,
@@ -116,7 +135,7 @@ export default function ApolloJobCard({ job, anotherRunning, onRun, onStop, onDe
           }}
         >
           <IconWarn />
-          <span>{job.warning}</span>
+          <span>{attentionMsg}</span>
         </div>
       )}
 
@@ -152,7 +171,7 @@ export default function ApolloJobCard({ job, anotherRunning, onRun, onStop, onDe
       <div className="jc-a">
         {scrapeIdle && (
           <button className="btn btn-s btn-sm" disabled={anotherRunning} title={runTitle} onClick={onRun}>
-            <IconPlay /> Run
+            <IconPlay /> {runLabel}
           </button>
         )}
         {scrapeRun && (

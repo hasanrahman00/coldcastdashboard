@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { api } from '../../lib/api.js'
 import { useApp } from '../../store/AppStore.jsx'
 import { useToast } from '../../store/ToastProvider.jsx'
@@ -39,6 +39,22 @@ export default function ApolloFreeScraper() {
     const cnt = document.querySelector('.cnt')
     if (cnt) cnt.scrollTo({ top: 0, behavior: 'smooth' })
   }
+
+  // Auto-open the logs ONCE when a job pauses for an action the user must take in their Apollo tab
+  // (not signed in / captcha / account restricted) — so a non-technical user immediately sees the
+  // exact instruction. Keyed on `${id}:${pauseAt}` so it fires exactly once per pause and never
+  // reopens after the user closes it; a Re-run clears pauseAt server-side, re-arming it.
+  const autoOpenedRef = useRef(new Set())
+  useEffect(() => {
+    for (const j of jobs) {
+      if (!j || !j.pauseReason || !j.pauseAt) continue
+      const key = `${j.id}:${j.pauseAt}`
+      if (autoOpenedRef.current.has(key)) continue
+      autoOpenedRef.current.add(key)
+      setLogsJob(j)
+      break   // one at a time
+    }
+  }, [jobs])
 
   const run = async (id) => {
     try {
