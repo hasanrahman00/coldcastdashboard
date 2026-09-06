@@ -66,6 +66,14 @@ export default function JobCard({ job, onOpenLogs }) {
     stTxt = 'Failed'
     StIcon = IconWarn
   }
+  // A required enrichment source logged out mid-scrape → the job stopped (resumable). Surface it as
+  // an attention state — not buried in the Logs view: amber status + a persistent banner + Resume.
+  const isPaused = !!job.pauseReason && !scrapeBusy
+  if (isPaused) {
+    stCls = 'bad'
+    stTxt = `Paused — sign in to ${job.pauseReason}`
+    StIcon = IconWarn
+  }
 
   const wrap = (fn) => async () => {
     try {
@@ -119,6 +127,15 @@ export default function JobCard({ job, onOpenLogs }) {
         <StIcon /> {stTxt}
       </div>
 
+      {isPaused && (
+        <div
+          className="jc-pause"
+          style={{ margin: '8px 0 0', padding: '9px 11px', borderRadius: 9, background: '#fef3c7', border: '1px solid #fcd34d', color: '#92400e', fontSize: 12, fontWeight: 600, lineHeight: 1.4 }}
+        >
+          🔓 {job.pauseMessage || `${job.pauseReason} logged out mid-scrape — sign back into ${job.pauseReason} in this browser, then Resume to continue enriching.`}
+        </div>
+      )}
+
       <div className="jc-m">
         <span>
           <IconCalendar /> {d}
@@ -155,8 +172,8 @@ export default function JobCard({ job, onOpenLogs }) {
 
       <div className="jc-a">
         {scrapeIdle && (
-          <button className="btn btn-s btn-sm" disabled={anotherRunning || expired} title={expired ? 'Account expired — renew to run jobs' : runTitle} onClick={run}>
-            <IconPlay /> Run
+          <button className="btn btn-s btn-sm" disabled={anotherRunning || expired} title={expired ? 'Account expired — renew to run jobs' : (isPaused ? `Sign back into ${job.pauseReason}, then resume` : runTitle)} onClick={run}>
+            <IconPlay /> {isPaused ? 'Resume' : 'Run'}
           </button>
         )}
         {scrapeRun && (
