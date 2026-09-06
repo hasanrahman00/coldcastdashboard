@@ -164,7 +164,7 @@ export default function JobCard({ job, onOpenLogs }) {
             <IconStop /> Stop
           </button>
         )}
-        <button className="btn btn-csv btn-sm" onClick={() => dl('csv')}>
+        <button className="btn btn-csv btn-sm" disabled={!hasData} title={hasData ? 'Download CSV' : 'No data yet — run the job first'} onClick={() => dl('csv')}>
           <IconDownload /> CSV
         </button>
         {!uiConfig.hideLogs && (
